@@ -1,0 +1,28 @@
+# Job URLs to analyze
+# Add your job links here (one per line)
+
+# BrowserStack (Workday - manual job extraction recommended)
+https://browserstack.wd3.myworkdayjobs.com/External
+
+# Fidelity
+https://jobs.fidelity.com/in/jobs/2124076/software-engineer/
+
+# Cisco
+https://careers.cisco.com/global/en/job/CISCISGLOBAL2010563EXTERNALENGLOBAL/Software-Engineer
+https://careers.cisco.com/global/en/job/CISCISGLOBAL2009207EXTERNALENGLOBAL/Software-Engineer
+
+# Microsoft
+https://apply.careers.microsoft.com/careers/job/1970393556636678
+
+# Nvidia
+https://nvidia.wd5.myworkdayjobs.com/en-US/NVIDIAExternalCareerSite/job/India,-Bengaluru/Software-Engineer---Release-Infrastructure-Engineer_JR2012993-1
+
+# Nutanix
+https://jobs.jobvite.com/nutanix/job/o2pPzfwz
+
+# PayPal
+http://paypal.eightfold.ai/careers?domain=paypal.com&sort_by=relevance&query=R0135007&Codes=W-LINKEDIN
+
+# LinkedIn jobs (need to extract actual job URL)
+# LinkedIn job ID: 4385353454
+# LinkedIn job ID: 7438511745326903298

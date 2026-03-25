@@ -1,0 +1,45 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+dist/
+*.egg-info/
+*.egg
+
+# Virtual env
+.venv/
+venv/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Environment
+.env
+.env.local
+
+# Outputs (generated)
+outputs/
+*.pdf
+*.aux
+*.log
+
+# Applications
+data/applications*.json
+
+# MCP & Claude
+.claude-flow/
+.claude/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Tests (optional - keep for CI)
+.pytest_cache/
+.pytest-*/

@@ -1,0 +1,17 @@
+{
+  "learnings": [
+    {
+      "timestamp": "2026-03-25T03:33:14.039894",
+      "company": "Google",
+      "job_title": "Backend Engineer",
+      "outcome": "interview",
+      "score": 8.5,
+      "strategy_used": "auto",
+      "what_worked": [],
+      "what_didnt_work": [],
+      "insights": ""
+    }
+  ],
+  "patterns": {},
+  "metrics": {}
+}

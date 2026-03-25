@@ -1,0 +1,78 @@
+{
+  "permissions": {
+    "allow": [
+      "Read",
+      "Write",
+      "Edit",
+      "Bash",
+      "Glob",
+      "Grep",
+      "WebFetch",
+      "WebSearch",
+      "TodoRead",
+      "TodoWrite",
+      "NotebookEdit",
+      "Agent",
+      "Mcp",
+      "Todo",
+      "UnitTest",
+      "WriteSpec"
+    ],
+    "deny": []
+  },
+  "customInstructions": {
+    "project": "job-agent: A Python-based job application assistant for resume generation, job discovery, and application tracking.",
+    "architecture": "Python package with modules: ats, board_finder, cli, discovery, gap_analysis, inventory, jobspy_adapter, latex, models, parsing, scraping, tailoring, tracker",
+    "memoryOptimization": {
+      "enabled": true,
+      "summarizeAfterTokens": 100000,
+      "useSemanticSearch": true,
+      "qmdFallback": true
+    },
+    "sessionRules": [
+      "Summarize completed work after major milestones to save tokens",
+      "Batch file operations - read multiple files in one call when possible",
+      "Delete temp/intermediate files after use",
+      "Use execute_command over read_file when output is sufficient",
+      "Use qmd MCP for semantic search before reading files",
+      "Summarize context when approaching token limits",
+      "Prefer subagents for parallel tasks"
+    ],
+    "rules": [
+      "Always verify Python syntax before saving files",
+      "Use type hints for all function parameters and return types",
+      "Keep functions under 50 lines when possible",
+      "Run tests after making code changes: pytest tests/",
+      "Use proper error handling with try/except blocks",
+      "Never commit secrets or API keys"
+    ],
+    "fileLocations": {
+      "source": "src/job_agent/",
+      "tests": "tests/",
+      "data": "data/",
+      "docs": "docs/",
+      "templates": "resume/",
+      "outputs": "outputs/"
+    },
+    "commands": {
+      "install": "pip install -e .",
+      "test": "pytest tests/ -v",
+      "lint": "ruff check src/",
+      "generate-resumes": "python -m job_agent generate-resumes",
+      "discover-jobs": "python -m job_agent discover-jobs --search-url <url> --analyze",
+      "analyze-job": "python -m job_agent analyze-job --url <url>",
+      "list-applications": "python -m job_agent list-applications",
+      "tracker-summary": "python -m job_agent tracker-summary"
+    },
+    "workflows": [
+      "For new features: write tests first, then implementation",
+      "For bug fixes: reproduce with test, then fix",
+      "For refactoring: ensure tests pass before and after"
+    ]
+  },
+  "globals": {
+    "projectName": "job-agent",
+    "language": "Python",
+    "testing": "pytest"
+  }
+}
