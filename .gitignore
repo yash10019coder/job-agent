@@ -35,6 +35,10 @@ data/applications*.json
 # MCP & Claude
 .claude-flow/
 .claude/
+.agents/
+.continue/
+.windsurf/
+skills-lock.json
 
 # OS
 .DS_Store
