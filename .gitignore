@@ -12,6 +12,8 @@ dist/
 # Virtual env
 .venv/
 venv/
+ENV/
+env/
 
 # IDE
 .vscode/
@@ -19,31 +21,41 @@ venv/
 *.swp
 *.swo
 
-# Environment
+# Environment (NEVER commit secrets)
 .env
 .env.local
+.env.*.local
 
-# Outputs (generated)
+# Outputs (generated resumes, logs)
 outputs/
 *.pdf
 *.aux
 *.log
 
-# Applications
+# Application data (personal)
 data/applications*.json
+data/job_urls.txt
+data/swarm_memory.json
 
-# MCP & Claude
+# MCP & Agent configs
 .claude-flow/
 .claude/
 .agents/
 .continue/
 .windsurf/
+.cline/
+.gemini/
+.antigravity/
 skills-lock.json
+
+# Sessions
+sessions/
+*.session
 
 # OS
 .DS_Store
 Thumbs.db
 
-# Tests (optional - keep for CI)
+# Tests cache
 .pytest_cache/
 .pytest-*/

@@ -8,29 +8,6 @@
     "location": "India"
   },
   "lane_profiles": {
-    "cxx": {
-      "lane": "cxx",
-      "title": "Software Engineer",
-      "headline": "Software Engineer | C++, Java Spring Boot, Cloud, AWS, Backend Systems",
-      "summary": "Results-driven Software Engineer with hands-on experience building secure remote-management and peer-to-peer capabilities for Samsung Tizen devices. Strong expertise in C++, Java Spring Boot, AWS, microservices, asynchronous workflows, multithreading, and cloud-native architectures.",
-      "role_order": [
-        "samsung",
-        "rupeek"
-      ],
-      "preferred_projects": [
-        "cloud-microservices-api"
-      ],
-      "preferred_achievements": [
-        "codeforces",
-        "samsung-swc"
-      ],
-      "skills_priority": [
-        "Languages",
-        "Backend / APIs",
-        "Cloud / DevOps",
-        "Systems / Platform"
-      ]
-    },
     "fullstack_backend": {
       "lane": "fullstack_backend",
       "title": "Full-Stack / Backend Developer",
@@ -40,9 +17,11 @@
         "samsung",
         "rupeek"
       ],
+      "preferred_bullets": [],
       "preferred_projects": [
         "ev-mapper",
-        "ai-meeting"
+        "ai-meeting",
+        "cloud-microservices-api"
       ],
       "preferred_achievements": [
         "samsung-swc",
@@ -50,8 +29,8 @@
       ],
       "skills_priority": [
         "Languages",
-        "Backend / APIs",
-        "Cloud / DevOps",
+        "Backend",
+        "Cloud",
         "Frameworks"
       ]
     }
@@ -68,7 +47,6 @@
     {
       "name": "Languages",
       "items": [
-        "C++",
         "Java",
         "Python",
         "JavaScript",
@@ -127,8 +105,6 @@
     {
       "name": "Systems",
       "items": [
-        "Tizen",
-        "D-Bus",
         "WebRTC",
         "Multithreading",
         "Async I/O"
@@ -148,94 +124,97 @@
         "Java",
         "Spring Boot",
         "AWS",
-        "Node.js",
-        "C++",
-        "Tizen"
+        "Node.js"
       ],
       "bullets": [
         {
           "id": "samsung-cloud-tv",
-          "text": "Led Cloud TV Device (CTD) feature development, migrating Node.js services to Java Spring Boot to scale device connections by 40%. Engineered custom API Rate-Limiting middleware preventing DoS attacks and maintaining sub-200ms response time under peak traffic. Conducted load testing and implemented horizontal auto-scaling for the CTD module.",
+          "text": "Led Cloud TV Device feature development, migrating Node.js to Java Spring Boot to scale device connections by 40%. Engineered API Rate-Limiting middleware preventing DoS attacks with sub-200ms response time. Implemented horizontal auto-scaling for CTD module.",
           "lane_tags": [
-            "fullstack_backend",
-            "cxx"
+            "fullstack_backend"
           ],
           "skills": [
             "Java",
             "Spring Boot",
             "AWS",
-            "Node.js",
-            "API Design",
-            "Rate Limiting",
-            "Auto-scaling",
-            "Load Testing"
+            "API Design"
           ],
           "metrics": [
-            "40% increase in device connections",
-            "200ms API response time"
+            "40% more connections",
+            "200ms response"
           ],
           "evidence_strength": "high",
           "project_or_role_source": "Samsung Cloud TV Device"
         },
         {
           "id": "samsung-notification",
-          "text": "Architected real-time notification service broadcasting device state changes across workspaces, achieving 100% reduction in API calls during updates. Implemented multithreading and concurrency control for parallel message processing, improving efficiency by 30%. Leveraged WebSocket for instant front-end updates without API polling.",
+          "text": "Architected real-time notification service broadcasting device state changes across workspaces, achieving 100% reduction in API calls during updates. Implemented multithreading for parallel message processing, improving efficiency by 30%.",
           "lane_tags": [
-            "fullstack_backend",
-            "cxx"
+            "fullstack_backend"
           ],
           "skills": [
             "WebSocket",
             "Multithreading",
-            "Concurrency",
             "Real-time Systems"
           ],
           "metrics": [
-            "100% reduction in API calls",
-            "30% efficiency improvement"
+            "100% API call reduction",
+            "30% efficiency"
           ],
           "evidence_strength": "high",
           "project_or_role_source": "Samsung Notification Service"
         },
         {
-          "id": "samsung-remote-management",
-          "text": "Architected remote-management service for Tizen devices in C++, enabling administrators to control, update, and monitor 10K+ deployed devices with zero security incidents. Implemented authentication and access-control middleware achieving 100% compliance with security audits.",
-          "lane_tags": [
-            "cxx"
-          ],
-          "skills": [
-            "C++",
-            "Tizen",
-            "D-Bus",
-            "Systems Design",
-            "Device Management",
-            "Security"
-          ],
-          "metrics": [
-            "10K+ devices managed",
-            "zero security incidents"
-          ],
-          "evidence_strength": "high",
-          "project_or_role_source": "Samsung Remote Management System"
-        },
-        {
           "id": "samsung-webrtc",
-          "text": "Delivered WebRTC peer-to-peer file-sharing for smart TV browsers, reducing external bandwidth dependency by 80%. Designed Node.js signaling service with native-app integration, optimizing transfer performance by 3x.",
+          "text": "Delivered WebRTC peer-to-peer file-sharing for smart TV browsers, reducing bandwidth dependency by 80%. Designed Node.js signaling service with native-app integration, optimizing transfer performance by 3x.",
           "lane_tags": [
-            "fullstack_backend",
-            "cxx"
+            "fullstack_backend"
           ],
           "skills": [
             "WebRTC",
-            "Node.js",
-            "Performance Optimization"
+            "Node.js"
           ],
           "metrics": [
             "80% bandwidth reduction",
-            "3x performance improvement"
+            "3x performance"
           ],
           "evidence_strength": "high",
           "project_or_role_source": "Samsung WebRTC File Sharing"
+        },
+        {
+          "id": "samsung-rate-limiting",
+          "text": "Engineered custom API Rate-Limiting middleware with token bucket and sliding window algorithms for fair resource allocation across 10K+ concurrent device connections.",
+          "lane_tags": [
+            "fullstack_backend"
+          ],
+          "skills": [
+            "Rate Limiting",
+            "Redis",
+            "Spring Boot"
+          ],
+          "metrics": [
+            "10K+ connections"
+          ],
+          "evidence_strength": "high",
+          "project_or_role_source": "Samsung Cloud TV Device"
+        },
+        {
+          "id": "samsung-scaling",
+          "text": "Conducted load testing and implemented horizontal auto-scaling, achieving 40% increase in device connections. Designed multi-region deployment reducing latency by 60%.",
+          "lane_tags": [
+            "fullstack_backend"
+          ],
+          "skills": [
+            "Auto-scaling",
+            "AWS",
+            "Kubernetes"
+          ],
+          "metrics": [
+            "40% more connections",
+            "60% latency reduction"
+          ],
+          "evidence_strength": "medium",
+          "project_or_role_source": "Samsung Cloud TV Device"
         }
       ]
     },
@@ -255,18 +234,17 @@
       "bullets": [
         {
           "id": "rupeek-gold-card",
-          "text": "Developed India's first gold-backed credit-card product workflows across frontend (React/TypeScript) and backend (Python) layers, driving 20% increase in customer engagement and processing 2M+ USD in daily transactions.",
+          "text": "Developed India first gold-backed credit-card product workflows across React/TypeScript frontend and Python backend, driving 20% engagement increase and processing 2M+ USD daily transactions.",
           "lane_tags": [
             "fullstack_backend"
           ],
           "skills": [
             "Next.js",
             "TypeScript",
-            "Python",
-            "Microservices"
+            "Python"
           ],
           "metrics": [
-            "20% engagement increase",
+            "20% engagement",
             "2M+ daily transactions"
           ],
           "evidence_strength": "high",
@@ -274,18 +252,51 @@
         },
         {
           "id": "rupeek-product-delivery",
-          "text": "Shipped customer-facing flows across Next.js, TypeScript, Python, and microservices for 50K+ monthly active users, improving coordination between UI, backend logic, and product requirements.",
+          "text": "Shipped customer-facing flows across Next.js, TypeScript, Python for 50K+ monthly active users, improving coordination between UI, backend, and product requirements.",
           "lane_tags": [
             "fullstack_backend"
           ],
           "skills": [
             "Next.js",
             "TypeScript",
-            "Python",
-            "Product Delivery"
+            "Python"
           ],
           "metrics": [
-            "50K+ monthly active users"
+            "50K+ monthly users"
+          ],
+          "evidence_strength": "medium",
+          "project_or_role_source": "Rupeek internship"
+        },
+        {
+          "id": "rupeek-microservices",
+          "text": "Designed microservices architecture for financial workflows, integrating payment gateways and third-party APIs. Reduced downtime by 40% through circuit breaker patterns.",
+          "lane_tags": [
+            "fullstack_backend"
+          ],
+          "skills": [
+            "Microservices",
+            "Python",
+            "API Integration"
+          ],
+          "metrics": [
+            "40% downtime reduction"
+          ],
+          "evidence_strength": "high",
+          "project_or_role_source": "Rupeek internship"
+        },
+        {
+          "id": "rupeek-testing",
+          "text": "Boosted code coverage by 25% writing 100+ unit and integration tests using Pytest, integrating automated checks into CI/CD pipeline.",
+          "lane_tags": [
+            "fullstack_backend"
+          ],
+          "skills": [
+            "Python",
+            "Pytest",
+            "CI/CD"
+          ],
+          "metrics": [
+            "25% code coverage"
           ],
           "evidence_strength": "medium",
           "project_or_role_source": "Rupeek internship"
@@ -310,7 +321,6 @@
           "id": "cloud-microservices-core",
           "text": "Architected scalable microservices platform on AWS Kubernetes, handling 10K+ daily requests with 99.9% uptime.",
           "lane_tags": [
-            "cxx",
             "fullstack_backend"
           ],
           "skills": [
@@ -411,7 +421,6 @@
       "title": "Codeforces Specialist",
       "detail": "Max rating 1532",
       "lane_tags": [
-        "cxx",
         "fullstack_backend"
       ],
       "link": "https://codeforces.com/profile/segment_trACk"
@@ -421,7 +430,6 @@
       "title": "Samsung SWC",
       "detail": "Cleared Advance and Professional Software Competency Tests",
       "lane_tags": [
-        "cxx",
         "fullstack_backend"
       ],
       "link": null

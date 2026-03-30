@@ -9,16 +9,17 @@ from job_agent.tailoring import analyze_job_posting, build_decision, fetch_job_p
 from job_agent.tracker import upsert_report
 
 
-def render_discovery_report_md(report: DiscoveryReport) -> str:
+def render_discovery_report_md(report: DiscoveryReport, skipped_closed: int = 0) -> str:
     lines = [
         f"# Discovery Report",
         "",
         f"- Search URL: {report.search_url}",
         f"- Fetch mode: {report.fetch_mode.value}",
         f"- Jobs discovered: {len(report.discovered_jobs)}",
-        "",
-        "## Results",
     ]
+    if skipped_closed > 0:
+        lines.append(f"- Jobs skipped (closed/inactive): {skipped_closed}")
+    lines.extend(["", "## Results"])
     for job in report.discovered_jobs:
         lines += [
             f"- {job.title or 'Unknown role'} @ {job.company or 'Unknown company'}",
@@ -39,13 +40,21 @@ def discover_jobs(
     use_agents: bool = False,
     track: bool = False,
     tracker_path: Path | None = None,
+    skip_closed: bool = True,
 ) -> DiscoveryReport:
     scraper = ScraplingClient()
     urls = scraper.discover_job_links(search_url, mode=mode, limit=limit)
     discovered: list[DiscoveredJob] = []
+    skipped_closed = 0
     for url in urls:
         try:
             job = fetch_job_posting(url, mode)
+            
+            # Skip closed/inactive jobs
+            if skip_closed and not job.is_active:
+                skipped_closed += 1
+                continue
+            
             decision = build_decision(job)
             if lane_filter and decision.chosen_lane is not lane_filter:
                 continue

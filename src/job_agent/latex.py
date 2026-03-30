@@ -85,12 +85,16 @@ def _select_role_bullets(
     lane: Lane,
     matched_keywords: set[str] | None = None,
     max_items: int = 3,
+    preferred_bullet_ids: set[str] | None = None,
 ) -> RoleEntry:
     ranked = sorted(
         role.bullets,
         key=lambda bullet: _score_bullet(bullet, lane, matched_keywords),
         reverse=True,
     )
+    # Boost preferred bullets to top
+    if preferred_bullet_ids:
+        ranked = sorted(ranked, key=lambda b: b.id not in preferred_bullet_ids)
     selected = ranked[:max_items]
     return role.model_copy(update={"bullets": selected})
 
@@ -173,11 +177,15 @@ def build_resume_variant(
     matched_keywords = _matched_keywords_from_job(job)
     selected_roles: list[RoleEntry] = []
     role_lookup = {role.id: role for role in inventory.roles}
-    role_limits = {"samsung": 4 if lane is Lane.CXX else 3, "rupeek": 1 if lane is Lane.CXX else 2}
+    role_limits = {"samsung": 3, "rupeek": 2}
     for role_id in profile.role_order:
         role = role_lookup[role_id]
         max_items = role_limits.get(role_id, 2)
-        selected_role = _select_role_bullets(role, lane, matched_keywords, max_items=max_items)
+        preferred_ids = set(profile.preferred_bullets) if profile.preferred_bullets else None
+        selected_role = _select_role_bullets(role, lane, matched_keywords, max_items=max_items, preferred_bullet_ids=preferred_ids)
+        # Filter out roles with no bullets
+        if not selected_role.bullets:
+            continue
         if decision and decision.selected_role_bullet_ids:
             allowed = set(decision.selected_role_bullet_ids)
             selected_role = selected_role.model_copy(

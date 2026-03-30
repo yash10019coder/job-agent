@@ -1,0 +1,67 @@
+# qmd collection configuration for job-agent
+# Defines mode-scoped search so each Antigravity mode only loads relevant context
+# Usage: qmd search "term" --collection architect
+#
+# To rebuild index: qmd update
+# To embed for semantic: qmd embed
+
+collections:
+  # ── ARCHITECT: system design, schemas, pipeline decisions ──────────────────
+  architect:
+    paths:
+      - docs/AGENT-MANIFEST.md
+      - docs/dual-agent-workflow.md
+      - docs/notebooklm-integration.md
+      - CLAUDE.md
+      - README.md
+      - .agents/rules/architect.md
+    description: "Architecture docs, manifests, agent workflows"
+
+  # ── BUILDER: source code, data models, config files ───────────────────────
+  builder:
+    paths:
+      - src/
+      - pyproject.toml
+      - .agents/rules/builder.md
+      - .clinerules
+    description: "Source code and implementation config"
+
+  # ── QA: tests, resume outputs, tracking data ───────────────────────────────
+  qa:
+    paths:
+      - tests/
+      - data/resume_inventory.json
+      - data/email_templates.json
+      - .agents/rules/qa.md
+    description: "Tests, resume data, QA rules"
+
+  # ── MEMORY: agent state, task tracking ────────────────────────────────────
+  memory:
+    paths:
+      - data/swarm_memory.json
+      - TASKS.md
+    description: "Agent handoff state and task queue"
+
+# Global index (all collections combined)
+# Default search with no --collection flag hits everything
+index:
+  paths:
+    - src/
+    - docs/
+    - .agents/rules/
+    - data/resume_inventory.json
+    - data/swarm_memory.json
+    - TASKS.md
+    - CLAUDE.md
+    - README.md
+    - pyproject.toml
+    - .clinerules
+  exclude:
+    - .venv/
+    - __pycache__/
+    - outputs/
+    - "*.pdf"
+    - "*.aux"
+    - "*.log"
+    - data/applications*.json
+    - tools/tectonic/

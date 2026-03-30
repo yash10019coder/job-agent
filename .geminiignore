@@ -1,0 +1,67 @@
+# .geminiignore — Antigravity context exclusions
+# Prevents Antigravity from re-reading known/noisy context on every session.
+# Philosophy: Index only what changes. Skip generated, binary, and cached files.
+
+# ── Python runtime ──────────────────────────────────────────────────────────
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+*.egg-info/
+*.egg
+.eggs/
+build/
+dist/
+
+# ── Virtual environments ─────────────────────────────────────────────────────
+.venv/
+venv/
+
+# ── Generated outputs (QA reads these via preview, not indexing) ─────────────
+outputs/
+*.pdf
+*.aux
+*.log
+*.synctex.gz
+
+# ── Protected data (never reindex, read directly when needed) ────────────────
+data/applications*.json
+
+# ── Agent configs (each agent has its own — don't bleed across) ─────────────
+.claude-flow/
+.claude.json
+.cline/
+.continue/
+.windsurf/
+skills-lock.json
+
+# ── Session state (ephemeral, not useful across sessions) ────────────────────
+sessions/
+*.session
+outputs/linkedin_session.json
+
+# ── Test cache ───────────────────────────────────────────────────────────────
+.pytest_cache/
+.pytest-*/
+tests/
+
+# ── Binary tools ─────────────────────────────────────────────────────────────
+tools/tectonic/
+*.exe
+*.so
+*.dll
+
+# ── OS/IDE noise ─────────────────────────────────────────────────────────────
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+
+# ── Redundant docs (single source kept, duplicates deleted) ──────────────────
+# docs/ is intentionally INDEXED (agents need the architecture manifests)
+# Exception: these are deprecated/superseded:
+docs/antigravity-rules.md
+docs/ruflo-setup.md
+
+# ── Git internals ────────────────────────────────────────────────────────────
+.git/

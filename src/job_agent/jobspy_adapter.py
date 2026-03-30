@@ -111,13 +111,20 @@ def search_jobs(
     )
     output_dir.mkdir(parents=True, exist_ok=True)
     discovered: list[DiscoveredJob] = []
+    skipped_closed = 0
     for result in results:
         job = _job_posting_from_search_result(result)
-        if not job.raw_description.strip():
-            try:
-                job = fetch_job_posting(result.url, FetchMode.AUTO)
-            except Exception:
-                pass
+        # Force live fetch to accurately parse `is_active` status from the DOM
+        try:
+            job = fetch_job_posting(result.url, FetchMode.AUTO)
+        except Exception:
+            pass
+        
+        # Skip closed/inactive jobs
+        if not job.is_active:
+            skipped_closed += 1
+            continue
+        
         decision = build_decision(job)
         if lane_filter and decision.chosen_lane is not lane_filter:
             continue

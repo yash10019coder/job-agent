@@ -258,7 +258,7 @@ def build_decision(job: JobPosting) -> TailoringDecision:
     
     if lane:
         profile = inventory.lane_profiles[lane]
-        role_limits = {"samsung": 4 if lane is Lane.CXX else 3, "rupeek": 1 if lane is Lane.CXX else 2}
+        role_limits = {"samsung": 3, "rupeek": 2}
         matched_skill_set = {keyword.lower() for keyword in all_jd_keywords}
         roles = {role.id: role for role in inventory.roles}
         for role_id in profile.role_order:
@@ -278,7 +278,7 @@ def build_decision(job: JobPosting) -> TailoringDecision:
             metric_gaps.extend(
                 bullet.text for bullet in chosen_bullets if not bullet.metrics and lane.value in bullet.lane_tags
             )
-        selected_projects = profile.preferred_projects[: 1 if lane is Lane.CXX else 2]
+        selected_projects = profile.preferred_projects[:2]
         selected_achievements = profile.preferred_achievements[:2]
     
     return TailoringDecision(

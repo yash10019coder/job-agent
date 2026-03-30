@@ -8,7 +8,6 @@ from pydantic import BaseModel, Field, HttpUrl
 
 
 class Lane(str, Enum):
-    CXX = "cxx"
     FULLSTACK_BACKEND = "fullstack_backend"
 
 
@@ -46,6 +45,7 @@ class LaneProfile(BaseModel):
     headline: str
     summary: str
     role_order: list[str]
+    preferred_bullets: list[str] = Field(default_factory=list)
     preferred_projects: list[str]
     preferred_achievements: list[str]
     skills_priority: list[str]
@@ -132,6 +132,7 @@ class JobPosting(BaseModel):
     company: str | None = None
     location: str | None = None
     raw_description: str
+    is_active: bool = True  # True if job is still accepting applications
     required_skills: list[str] = Field(default_factory=list)
     preferred_skills: list[str] = Field(default_factory=list)
     keywords: list[str] = Field(default_factory=list)

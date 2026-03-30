@@ -1,6 +1,38 @@
-# job-agent Tasks (YOLO Mode - 2026-03-25)
+# job-agent Tasks
 
-## 🏆 MAJOR ACCOMPLISHMENTS
+## Sprint 2026-03-W13 (Current)
+
+### Backlog
+- [ ] Analyze DoorDash job from LinkedIn search | Owner: Claude | Est: 15min
+- [ ] Apply to Microsoft LinkedIn (91.6 ATS) | Owner: Claude | Est: 30min
+- [ ] Apply to Microsoft Careers (90.8 ATS) | Owner: Claude | Est: 30min
+- [ ] Apply to Nutanix (83.2 ATS) | Owner: Claude | Est: 30min
+- [ ] Apply to Cisco (80.0 ATS) | Owner: Claude | Est: 30min
+- [ ] Set up Gemini CLI for bulk scoring | Owner: Cline | Est: 1h
+- [ ] Set up pilot-mcp for browser layer | Owner: Cline | Est: 1h
+- [ ] Configure Telegram notification bot | Owner: Cline | Est: 30min
+
+### In Progress
+- [ ] Apply to Microsoft LinkedIn (91.6 ATS) | Owner: Claude | Est: 30min
+
+### Done
+- [x] MCP servers restored (qmd, obsidian-brain, github, filesystem)
+- [x] Agent skill files created (coordinator, cline, gemini, pilot)
+- [x] CLAUDE.md rewritten with project-specific config
+- [x] Multi-agent architecture setup
+- [x] pilot-mcp added to .mcp.json (needs restart)
+- [x] TASKS.md restructured with scrum format
+
+### Discussions
+> **Claude (2026-03-26):** Consider adding Naukri.com adapter - huge Indian market. Worth prioritizing over DoorDash?
+> 
+> **Claude (2026-03-26):** Gemini CLI setup blocked - need API key configured. Flagging Omkar.
+>
+> **Claude (2026-03-26):** Suggestion: Separate Claude Code sessions per agent to avoid context bleeding (learned from showmyspace issues)
+
+---
+
+## Historical Context
 
 ### ATS Boost: 87.8 → 91.6 (+3.8 points!)
 With semantic skill aliasing and enhanced resume content
@@ -19,53 +51,15 @@ Updated Samsung role with detailed bullets:
 
 ---
 
-## 📊 FULL CANDIDATE COMPARISON (All Jobs × Both Resumes)
+## Job Analysis Results
 
-### Job Analysis Results
-
-| Job | ATS Score | Lane | Key Matches | Missing |
-|-----|-----------|------|-------------|---------|
-| **Microsoft (LinkedIn)** | **91.6** 🏆 | Fullstack | C++, Java, JS, Python, Spring Boot, Node.js, React, Microservices | Backend |
-| **Microsoft (Careers)** | **90.8** | Fullstack | Java, Spring Boot, AWS, WebSocket, REST APIs | - |
-| **Nutanix** | **83.2** | Fullstack | Cloud, Frontend, Kubernetes, Python | Linux |
-| **Cisco** | **80.0** | Both | Java, Python, Cloud | Networking |
-| **PayPal** | **45.0** | C++ | JavaScript | Async, REST |
-
-### ATS Score Breakdown (Microsoft LinkedIn)
-
-| Component | Score |
-|-----------|-------|
-| Required Match | 91% |
-| Preferred Match | 100% |
-| Keyword Coverage | 66.7% |
-| Lane Fit | 70% (Fullstack) |
-| Content Quality | 50% |
-
-### Resume Fit by Lane
-
-| Lane | Best Jobs | ATS Range |
-|------|-----------|-----------|
-| **Fullstack** | Microsoft 91.6, Microsoft 90.8, Nutanix 83.2, Cisco 80.0 | 80-92 |
-| **C++** | Cisco 80.0, PayPal 45.0 | 45-80 |
-
-### Priority Applications
-
-1. **Microsoft (LinkedIn)** - Apply NOW (91.6 ATS, BEST MATCH)
-2. **Microsoft (Careers)** - Apply NOW (90.8 ATS)
-3. **Nutanix** - Apply (83.2 ATS, good fullstack match)
-4. **Cisco** - Apply (80.0 ATS, strong Java/Python)
-5. **PayPal** - Review (45.0 ATS, needs async/REST)
-
----
-
-## 📋 Job Sources
-
-### Active Jobs Analyzed
-- ✅ **Microsoft LinkedIn** - ATS 91.6 (NEW BEST)
-- ✅ **Microsoft Careers** - ATS 90.8 
-- ✅ **Nutanix** - ATS 83.2 (Fullstack)
-- ✅ **Cisco** - ATS 80.0 (Java/Python)
-- ⚠️ **PayPal** - ATS 45.0 (needs async/REST)
+| Job | ATS Score | Lane | Status |
+|-----|-----------|------|--------|
+| **Microsoft (LinkedIn)** | **91.6** 🏆 | Fullstack | ⏳ Pending |
+| **Microsoft (Careers)** | **90.8** | Fullstack | ⏳ Pending |
+| **Nutanix** | **83.2** | Fullstack | ⏳ Pending |
+| **Cisco** | **80.0** | Both | ⏳ Pending |
+| **PayPal** | **45.0** | Fullstack | ⚠️ Low match |
 
 ### Stale/Problematic Links
 - ❌ Cisco #2 (410 Gone)
@@ -81,20 +75,10 @@ Updated Samsung role with detailed bullets:
 
 ---
 
-## 🎯 Recommended Actions
-
-1. **Apply to Microsoft LinkedIn immediately** - 91.6 ATS (best match)
-2. **Apply to Microsoft Careers** - 90.8 ATS
-3. **Apply to Nutanix** - 83.2 ATS
-4. **Apply to Cisco** - 80.0 ATS
-5. **Review PayPal** - 45.0 ATS, add async/REST emphasis
-
----
-
 ## 🧪 Testing Commands
 
 ```powershell
-# Generate resumes (both lanes)
+# Generate resume (fullstack_backend)
 .venv\Scripts\python.exe -m job_agent generate-resumes --output-dir outputs/resumes
 
 # Analyze job
@@ -108,4 +92,16 @@ Updated Samsung role with detailed bullets:
 ```
 
 ---
-*Last updated: 2026-03-25 21:00 by Cline (YOLO mode)*
+
+## Multi-Agent System
+
+| Agent | Skill | Status |
+|-------|-------|--------|
+| Claude Code | `skills/job-agent-coordinator/` | ✅ Active |
+| Cline | `skills/job-agent-cline/` | ✅ Configured |
+| Gemini CLI | `skills/job-agent-gemini/` | ⏳ Setup pending |
+| pilot-mcp | `skills/job-agent-pilot/` | ⏳ Setup pending |
+
+---
+
+*Last updated: 2026-03-26 by Claude Code (multi-agent setup)*

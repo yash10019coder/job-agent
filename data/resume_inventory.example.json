@@ -1,0 +1,99 @@
+{
+  "contact": {
+    "name": "Your Name",
+    "email": "your.email@example.com",
+    "phone": "+1-555-123-4567",
+    "linkedin": "https://www.linkedin.com/in/yourname",
+    "github": "https://github.com/yourusername",
+    "location": "City, Country"
+  },
+  "lane_profiles": {
+    "fullstack_backend": {
+      "lane": "fullstack_backend",
+      "title": "Full-Stack / Backend Developer",
+      "headline": "Full-Stack / Backend Developer | Your Key Skills",
+      "summary": "Brief professional summary highlighting your experience.",
+      "role_order": ["company1", "company2"],
+      "preferred_projects": ["project-id-1", "project-id-2"],
+      "skills_priority": ["Languages", "Backend", "Cloud"]
+    }
+  },
+  "education": {
+    "school": "Your University Name",
+    "degree": "Bachelor of Technology in Computer Science",
+    "location": "City, Country",
+    "start": "Jan 2020",
+    "end": "May 2024",
+    "cgpa": "8.5/10"
+  },
+  "skills": [
+    {
+      "name": "Languages",
+      "items": ["Java", "Python", "JavaScript", "SQL"],
+      "priority": "high"
+    },
+    {
+      "name": "Backend",
+      "items": ["Spring Boot", "REST APIs", "Node.js", "PostgreSQL"],
+      "priority": "high"
+    },
+    {
+      "name": "Cloud",
+      "items": ["AWS", "Docker", "Kubernetes", "CI/CD"],
+      "priority": "high"
+    },
+    {
+      "name": "Frameworks",
+      "items": ["React", "Next.js"],
+      "priority": "medium"
+    }
+  ],
+  "roles": [
+    {
+      "id": "company1",
+      "company": "Company Name",
+      "title": "Software Engineer",
+      "location": "City, Country",
+      "start": "Jun 2024",
+      "end": "Present",
+      "tech_stack": ["Java", "Spring Boot", "AWS"],
+      "bullets": [
+        {
+          "id": "bullet-1",
+          "text": "Description of your achievement with metrics.",
+          "lane_tags": ["fullstack_backend"],
+          "skills": ["Java", "Spring Boot"],
+          "metrics": ["30% improvement"],
+          "evidence_strength": "high"
+        }
+      ]
+    }
+  ],
+  "projects": [
+    {
+      "id": "project-id-1",
+      "name": "Project Name",
+      "url": "https://github.com/username/project",
+      "tech_stack": ["Python", "React", "PostgreSQL"],
+      "bullets": [
+        {
+          "id": "proj-bullet-1",
+          "text": "What you built and its impact.",
+          "lane_tags": ["fullstack_backend"],
+          "skills": ["Python", "React"],
+          "metrics": [],
+          "evidence_strength": "high"
+        }
+      ]
+    }
+  ],
+  "achievements": [
+    {
+      "id": "ach-1",
+      "title": "Achievement Title",
+      "detail": "Achievement details",
+      "lane_tags": ["fullstack_backend"],
+      "link": null
+    }
+  ]
+}

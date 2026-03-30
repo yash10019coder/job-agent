@@ -23,6 +23,10 @@ from job_agent.tracker import (
     update_application_status,
     upsert_report,
 )
+from job_agent.auto_apply import AutoApplyAgent, auto_apply_batch, get_rate_limit_summary
+from job_agent.browser_applier import BrowserApplyAgent
+from job_agent.rate_limiter import RateLimiter
+import asyncio
 
 
 def _generate_resumes(args: argparse.Namespace) -> int:
@@ -171,6 +175,108 @@ def _export_applications(args: argparse.Namespace) -> int:
     return 0
 
 
+def _auto_apply(args: argparse.Namespace) -> int:
+    """Apply to a single job"""
+    job_data = {"title": args.title or "Unknown", "company": args.company or "Unknown"}
+    agent = AutoApplyAgent(args.resume, args.email)
+    result = asyncio.run(agent.apply(args.url, job_data))
+    print(json.dumps({
+        "success": result.success,
+        "platform": result.platform.value,
+        "message": result.message,
+        "apply_url": result.url
+    }, indent=2))
+    return 0 if result.success else 1
+
+
+def _auto_apply_batch(args: argparse.Namespace) -> int:
+    """Apply to multiple jobs from JSON file"""
+    jobs_path = Path(args.jobs_file)
+    jobs = json.loads(jobs_path.read_text())
+    results = asyncio.run(auto_apply_batch(jobs, args.resume, args.email, args.min_ats))
+    print(json.dumps({
+        "total": len(results),
+        "successful": sum(1 for r in results if r.success),
+        "results": [{"platform": r.platform.value, "success": r.success, "url": r.url} for r in results]
+    }, indent=2))
+    return 0
+
+
+def _browser_apply(args: argparse.Namespace) -> int:
+    """Browser-based apply (LinkedIn)"""
+    async def run():
+        async with BrowserApplyAgent() as agent:
+            return await agent.apply_linkedin(args.url, args.resume)
+    result = asyncio.run(run())
+    # Convert dataclass to dict for JSON serialization
+    result_dict = {
+        "success": result.success,
+        "platform": result.platform,
+        "url": result.url,
+        "message": result.message,
+        "form_filled": result.form_filled,
+        "fields_skipped": result.fields_skipped or [],
+        "guardrail_triggered": result.guardrail_triggered
+    }
+    print(json.dumps(result_dict, indent=2))
+    return 0 if result.success else 1
+
+
+def _rate_limit_status(args: argparse.Namespace) -> int:
+    """Show current rate limit status for all platforms"""
+    summary = get_rate_limit_summary()
+    print(json.dumps(summary, indent=2))
+    
+    # Also print human-readable status
+    limiter = RateLimiter()
+    print("\n=== Rate Limit Status ===")
+    for platform in ['linkedin', 'greenhouse', 'lever', 'workday', 'ashby', 'indeed']:
+        status = limiter.get_status(f"https://jobs.{platform}.com/test")
+        print(str(status))
+    return 0
+
+
+def _rate_limit_check(args: argparse.Namespace) -> int:
+    """Check if can apply to a specific URL"""
+    limiter = RateLimiter()
+    can_apply, reason = limiter.can_apply(args.url)
+    status = limiter.get_status(args.url)
+    
+    print(json.dumps({
+        "url": args.url,
+        "can_apply": can_apply,
+        "reason": reason,
+        "platform": status.platform,
+        "daily_count": status.daily_count,
+        "daily_max": status.daily_max,
+        "hourly_count": status.hourly_count,
+        "hourly_max": status.hourly_max,
+        "next_available": status.next_available,
+        "guardrail_triggered": not can_apply
+    }, indent=2))
+    return 0 if can_apply else 1
+
+
+def _login_linkedin(args: argparse.Namespace) -> int:
+    """Login to LinkedIn and save session"""
+    from job_agent.stealth import login_linkedin_interactive
+    import asyncio
+    
+    if args.password:
+        # Automated login
+        success = asyncio.run(login_linkedin(args.email, args.password, args.session_path))
+    else:
+        # Interactive login
+        success = asyncio.run(login_linkedin_interactive(args.session_path))
+    
+    if success:
+        print(f"✅ LinkedIn session saved to {args.session_path}")
+        print("You can now use browser-apply for auto-apply.")
+    else:
+        print("❌ Login failed")
+    return 0 if success else 1
+
+
 
 
 def build_parser() -> argparse.ArgumentParser:
@@ -265,6 +371,42 @@ def build_parser() -> argparse.ArgumentParser:
     export_t.add_argument("--tracker-path", default="outputs/tracker/applications.json")
     export_t.add_argument("--output-path", default="outputs/tracker/applications.csv")
     export_t.set_defaults(func=_export_applications)
+
+    # --- Auto-Apply ---
+    apply = subparsers.add_parser("auto-apply", help="Apply to a single job (platform auto-detected).")
+    apply.add_argument("--url", required=True, help="Job URL")
+    apply.add_argument("--resume", required=True, help="Path to resume PDF")
+    apply.add_argument("--email", required=True, help="Your email address")
+    apply.add_argument("--title", default="", help="Job title (auto-detected if not provided)")
+    apply.add_argument("--company", default="", help="Company name (auto-detected if not provided)")
+    apply.set_defaults(func=_auto_apply)
+
+    apply_batch = subparsers.add_parser("auto-apply-batch", help="Apply to multiple jobs from JSON file.")
+    apply_batch.add_argument("--jobs-file", required=True, help="JSON file with job array")
+    apply_batch.add_argument("--resume", required=True, help="Path to resume PDF")
+    apply_batch.add_argument("--email", required=True, help="Your email address")
+    apply_batch.add_argument("--min-ats", type=float, default=80, help="Minimum ATS score to apply")
+    apply_batch.set_defaults(func=_auto_apply_batch)
+
+    browser_apply = subparsers.add_parser("browser-apply", help="Browser-based apply (LinkedIn).")
+    browser_apply.add_argument("--url", required=True, help="LinkedIn job URL")
+    browser_apply.add_argument("--resume", required=True, help="Path to resume PDF")
+    browser_apply.set_defaults(func=_browser_apply)
+
+    # --- Rate Limiting ---
+    rate_status = subparsers.add_parser("rate-limit-status", help="Show current rate limit status for all platforms.")
+    rate_status.set_defaults(func=_rate_limit_status)
+
+    rate_check = subparsers.add_parser("rate-limit-check", help="Check if can apply to a specific URL.")
+    rate_check.add_argument("--url", required=True, help="Job URL to check")
+    rate_check.set_defaults(func=_rate_limit_check)
+
+    # --- Login ---
+    login = subparsers.add_parser("login-linkedin", help="Login to LinkedIn and save session for browser-apply.")
+    login.add_argument("--email", required=True, help="LinkedIn email")
+    login.add_argument("--password", help="LinkedIn password (or leave blank for interactive)")
+    login.add_argument("--session-path", default="outputs/linkedin_session.json", help="Session save path")
+    login.set_defaults(func=_login_linkedin)
 
     return parser
 

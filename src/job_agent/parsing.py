@@ -84,6 +84,75 @@ STOPWORDS = {
     "engineer",
 }
 
+# Patterns that indicate job is CLOSED/NO LONGER ACTIVE
+CLOSED_JOB_PATTERNS = [
+    r"no longer accepting",
+    r"position has been filled",
+    r"job closed",
+    r"applications closed",
+    r"not accepting applications",
+    r"this job is no longer available",
+    r"no longer available",
+    r"position closed",
+    r"no longer accepting applications",
+    r"closed for applications",
+    r"not accepting new applications",
+]
+
+# Patterns that indicate job IS ACTIVE (for reversal check)
+ACTIVE_JOB_PATTERNS = [
+    r"accepting applications",
+    r"apply now",
+    r"apply today",
+    r"submit your application",
+    r"easy apply",
+]
+
+
+def _is_job_active(selector: Selector) -> bool:
+    """
+    Check if job posting is still active and accepting applications.
+    Returns True if active, False if closed/expired.
+    """
+    # Get full page text for analysis
+    full_text = selector.get_all_text(separator=" ", strip=True)
+    
+    # Check for explicit closed indicators first
+    for pattern in CLOSED_JOB_PATTERNS:
+        if re.search(pattern, full_text, re.IGNORECASE):
+            # Get surrounding context to check if there's an active indicator nearby
+            matches = list(re.finditer(pattern, full_text, re.IGNORECASE))
+            for match in matches:
+                start = max(0, match.start() - 300)
+                end = min(len(full_text), match.end() + 300)
+                context = full_text[start:end].lower()
+                
+                # If there's an active pattern near the closed pattern, job might still be open
+                for active_pattern in ACTIVE_JOB_PATTERNS:
+                    if re.search(active_pattern, context, re.IGNORECASE):
+                        return True  # Active indicator found nearby, assume job is open
+                
+            return False  # Closed pattern found without nearby active indicator
+    
+    # Check for specific closed indicators in buttons/text
+    closed_button_patterns = [
+        r"job\s+(?:is\s+)?closed",
+        r"no\s+longer\s+(?:accepting|available)",
+        r"position\s+(?:has\s+been\s+)?filled",
+        r"not\s+(?:accepting|available)",
+    ]
+    
+    for pattern in closed_button_patterns:
+        if re.search(pattern, full_text, re.IGNORECASE):
+            # Check for apply buttons nearby - if they exist, job might still be open
+            apply_buttons = selector.css("button:has-text('Apply')")
+            easy_apply = selector.css("button:has-text('Easy Apply')")
+            if not apply_buttons and not easy_apply:
+                return False
+    
+    # If no explicit closed indicators, assume job is active
+    return True
+
 
 @dataclass
 class ParsedDocument:
@@ -236,20 +305,7 @@ def extract_job_signals(title: str, description: str) -> tuple[list[str], list[s
 
 def lane_scores(title: str, description: str) -> dict[Lane, float]:
     text = f"{title}\n{description}".lower()
-    cxx_terms = [
-        "c++",
-        "linux",
-        "tizen",
-        "dbus",
-        "d-bus",
-        "multithreading",
-        "thread",
-        "embedded",
-        "systems",
-        "firmware",
-        "device",
-        "webrtc",
-    ]
+    # C++ terms removed - keeping only fullstack_backend lane
     backend_terms = [
         "backend",
         "full stack",
@@ -266,10 +322,8 @@ def lane_scores(title: str, description: str) -> dict[Lane, float]:
         "mongodb",
         "distributed",
     ]
-    cxx_score = sum(2.0 if term in title.lower() else 1.0 for term in cxx_terms if term in text)
     backend_score = sum(2.0 if term in title.lower() else 1.0 for term in backend_terms if term in text)
     return {
-        Lane.CXX: round(cxx_score, 2),
         Lane.FULLSTACK_BACKEND: round(backend_score, 2),
     }
 
@@ -305,6 +359,10 @@ def parse_job(selector: Selector, url: str) -> JobPosting:
         location = json_ld.get("location") or location
         if len(json_ld.get("description", "")) > len(description):
             description = json_ld["description"]
+    
+    # Check if job is still active
+    is_active = _is_job_active(selector)
+    
     required, preferred, keywords, seniority = extract_job_signals(title, description)
     return JobPosting(
         url=url,
@@ -313,6 +371,7 @@ def parse_job(selector: Selector, url: str) -> JobPosting:
         company=company,
         location=location,
         raw_description=description,
+        is_active=is_active,
         required_skills=required,
         preferred_skills=preferred,
         keywords=keywords,

@@ -1,0 +1,12 @@
+{
+  "application_email": {
+    "subject": "Application for {title} position at {company}",
+    "body": "Dear Hiring Manager,\n\nI am writing to express my interest in the {title} position at {company}. With my background in {skills} and experience in {experience}, I believe I would be a strong fit for this role.\n\nI have attached my resume for your review. I am particularly excited about {specific} and believe my skills align well with your requirements.\n\nThank you for considering my application. I look forward to hearing from you.\n\nBest regards,\n{name}\n{email}\n{phone}",
+    "variables": ["title", "company", "skills", "experience", "specific", "name", "email", "phone"]
+  },
+  "follow_up": {
+    "subject": "Following up on {title} application at {company}",
+    "body": "Dear Hiring Manager,\n\nI wanted to follow up on my application for the {title} position at {company} submitted on {date}. I remain very interested in this opportunity and believe my background in {skills} would be valuable to your team.\n\nPlease let me know if you need any additional information.\n\nBest regards,\n{name}",
+    "variables": ["title", "company", "date", "skills", "name"]
+  }
+}

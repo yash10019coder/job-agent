@@ -1,0 +1,60 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+dist/
+*.egg-info/
+*.egg
+
+# Virtual env
+.venv/
+venv/
+ENV/
+env/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Environment (NEVER commit secrets)
+.env
+.env.local
+.env.*.local
+
+# Outputs (generated resumes, logs)
+outputs/
+*.pdf
+*.aux
+*.log
+
+# Application data (personal)
+data/applications*.json
+data/job_urls.txt
+
+# MCP & Agent configs
+.claude-flow/
+.claude/
+.agents/
+.continue/
+.windsurf/
+.cline/
+.gemini/
+.antigravity/
+skills-lock.json
+
+# Sessions
+sessions/
+*.session
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Tests cache
+.pytest_cache/
+.pytest-*/

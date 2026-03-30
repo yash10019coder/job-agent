@@ -1,7 +1,7 @@
 {
   "mcpServers": {
     "qmd": {
-      "command": "C:\\Users\\omkar\\.bun\\bin\\bun.exe",
+      "command": "node",
       "args": [
         "C:\\Users\\omkar\\.bun\\install\\global\\node_modules\\@tobilu\\qmd\\dist\\cli\\qmd.js",
         "mcp"
@@ -15,9 +15,25 @@
         "C:\\Users\\omkar\\OneDrive\\Documents\\Claude-Brain"
       ]
     },
+    "github": {
+      "command": "uvx",
+      "args": ["mcp-server-github"],
+      "env": {}
+    },
+    "filesystem": {
+      "command": "npx",
+      "args": ["-y", "@modelcontextprotocol/server-filesystem", "."]
+    },
     "claude-flow": {
-      "command": "C:\\nvm4w\\nodejs\\npx.cmd",
-      "args": ["-y", "@claude-flow/cli@latest", "mcp", "start"],
+      "command": "cmd",
+      "args": [
+        "/c",
+        "npx",
+        "-y",
+        "@claude-flow/cli@latest",
+        "mcp",
+        "start"
+      ],
       "env": {
         "npm_config_update_notifier": "false",
         "CLAUDE_FLOW_MODE": "v3",
@@ -28,14 +44,19 @@
       },
       "autoStart": false
     },
-    "github": {
-      "command": "uvx",
-      "args": ["mcp-server-github"],
-      "env": {}
-    },
-    "filesystem": {
+    "pilot": {
       "command": "npx",
-      "args": ["-y", "@modelcontextprotocol/server-filesystem", "."]
+      "args": ["-y", "pilot-mcp"],
+      "env": {
+        "PILOT_BROWSER": "chromium"
+      }
+    },
+    "notebooklm": {
+      "command": "C:\\Users\\omkar\\OneDrive\\Desktop\\job-agent\\.venv\\Scripts\\python.exe",
+      "args": ["C:\\Users\\omkar\\OneDrive\\Desktop\\job-agent\\tools\\notebooklm_mcp.py"],
+      "env": {
+        "NOTEBOOKLM_URL": "https://notebooklm.google.com"
+      }
     }
   }
 }
