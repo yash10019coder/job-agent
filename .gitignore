@@ -82,3 +82,5 @@ data/applicant_profile.json
 !tests/fixtures/*.pdf
 data/runs/
 data/batch_jobs_*.json
+data/surveys/
+data/ats_categories.json

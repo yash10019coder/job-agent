@@ -30,7 +30,7 @@ def _slug(text: str) -> str:
 _window_lock = asyncio.Lock()
 
 
-async def new_window(session: BraveSession, url: str) -> Page:
+async def blank_window(session: BraveSession) -> Page:
     """Own window per job: background tabs get throttled by the browser, which would stall the page logic."""
     assert session.browser and session.context
     async with _window_lock:  # pick out OUR new page from the context, never another job's popup
@@ -45,6 +45,11 @@ async def new_window(session: BraveSession, url: str) -> Page:
         else:
             raise RuntimeError("new window did not appear")
         page = fresh[0]
+    return page
+
+
+async def new_window(session: BraveSession, url: str) -> Page:
+    page = await blank_window(session)
     await page.goto(url, wait_until="domcontentloaded")
     await page.bring_to_front()
     try:  # single-page apps (Ashby, Rippling) render after DOMContentLoaded

@@ -165,6 +165,47 @@ def apply_batch(args: argparse.Namespace) -> int:
     return 0
 
 
+def _survey_linkedin(args: argparse.Namespace, root: Path) -> int:
+    from datetime import datetime
+    from job_agent.apply.survey import run_linkedin_phase, run_survey_into, sample_linkedin
+
+    jobs = sample_linkedin(root / "data", args.per_ats, args.limit or args.li_cap, args.seed)
+    print(f"Cohort B: {len(jobs)} LinkedIn links (one at a time, slow) ...")
+
+    async def run():
+        out_dir = root / "data" / "surveys" / (datetime.now().strftime("%Y%m%d-%H%M%S") + "-linkedin")
+        out_dir.mkdir(parents=True, exist_ok=True)
+        async with BraveSession(_config(args)) as session:
+            li = await run_linkedin_phase(session, jobs, out_dir)
+            ext = [{**j, "linkedin_url": j["url"], "url": j["external_url"]} for j in li if j.get("external_url")]
+            print(f"apply types: { {t: sum(1 for j in li if j.get('apply_type') == t) for t in {j.get('apply_type') for j in li}} }; surveying {len(ext)} external pages ...")
+            await run_survey_into(session, ext, out_dir, args.concurrency)
+        return out_dir
+
+    print(f"done: {asyncio.run(run())}")
+    return 0
+
+
+def apply_survey(args: argparse.Namespace) -> int:
+    """Read-only survey of entry pages (no model calls, no filling); output in data/surveys/<stamp>/."""
+    from job_agent.apply.survey import run_survey, sample_direct
+
+    root = Path(__file__).resolve().parents[3]
+    if args.linkedin:
+        return _survey_linkedin(args, root)
+    jobs = sample_direct(root / "data", args.per_ats, args.seed)
+    if args.limit:
+        jobs = jobs[: args.limit]
+    print(f"surveying {len(jobs)} pages across {len({j['ats'] for j in jobs})} ATS types ...")
+
+    async def run():
+        async with BraveSession(_config(args)) as session:
+            return await run_survey(session, jobs, root / "data" / "surveys", args.concurrency)
+
+    print(f"done: {asyncio.run(run())}")
+    return 0
+
+
 def register(subparsers) -> None:
     """Add every apply-engine subcommand to the CLI."""
     brave = subparsers.add_parser("brave-launch", help="Launch Brave (CDP) and open a new tab via Playwright.")
@@ -219,3 +260,13 @@ def register(subparsers) -> None:
     batch.add_argument("--submit", action="store_true", help="Press Submit when every guard passes (default: dry run)")
     add_brave_args(batch)
     batch.set_defaults(func=apply_batch)
+
+    survey = subparsers.add_parser("apply-survey", help="Read-only survey of job entry pages per ATS (data/surveys/).")
+    survey.add_argument("--per-ats", type=int, default=8, help="(--linkedin: use ~3)")
+    survey.add_argument("--seed", type=int, default=7)
+    survey.add_argument("--limit", type=int, default=0, help="Only the first N sampled pages (smoke test)")
+    survey.add_argument("--concurrency", type=int, default=5)
+    survey.add_argument("--linkedin", action="store_true", help="Cohort B: LinkedIn-sourced links (needs a logged-in agent profile)")
+    survey.add_argument("--li-cap", type=int, default=60, help="Max LinkedIn pages opened (kept small on purpose)")
+    add_brave_args(survey)
+    survey.set_defaults(func=apply_survey)
