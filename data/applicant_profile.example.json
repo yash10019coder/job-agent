@@ -1,0 +1,61 @@
+{
+  "_note": "TEMPLATE. Copy to data/applicant_profile.json (gitignored) and edit. Used as-is when the real file is missing. Standing facts and answer policy so applications need no manual input; values here are generic placeholders.",
+  "work_authorization": {
+    "authorized_to_work_in": [
+      "India"
+    ],
+    "needs_visa_sponsorship_outside_india": true,
+    "_rule": "Eligibility follows citizenship vs the job's country; outside India => needs sponsorship."
+  },
+  "referral_source_default": "LinkedIn",
+  "eeo": {
+    "gender": "decline",
+    "ethnicity_race": "decline",
+    "disability": "decline",
+    "veteran_status": "decline",
+    "_rule": "Sensitive questions are answered only from this block; 'decline' means choose a 'prefer not to say / decline to self-identify' option if one exists, otherwise skip."
+  },
+  "current_city": "Bengaluru, Karnataka, India",
+  "consents": {
+    "accept_privacy_and_terms": true,
+    "_note": "Privacy-policy/terms checkboxes are required to submit; set false to leave them for yourself."
+  },
+  "citizenship": "India",
+  "citizenship_basis": "set to your actual citizenship",
+  "current_city_basis": "where the current role is based",
+  "answer_policy": {
+    "notice_period": "30 days",
+    "earliest_start_date": "Within 30 days of an offer",
+    "current_ctc": "Negotiable",
+    "expected_ctc": "Negotiable / open to discuss",
+    "willing_to_relocate": "Yes",
+    "preferred_work_mode": "Flexible (hybrid, on-site or remote)",
+    "pronouns": "leave blank if optional, otherwise 'Prefer not to say'",
+    "_note": "assumed defaults; change here if you want different standing answers"
+  },
+  "identity": {
+    "first_name": "Alex",
+    "last_name": "Doe",
+    "preferred_name": "Alex",
+    "full_name": "Alex Doe"
+  },
+  "location": {
+    "country": "India",
+    "state": "Karnataka",
+    "city": "Bengaluru",
+    "phone_country_code": "+91"
+  },
+  "legal": {
+    "is_18_or_older": true,
+    "background_check_consent": true,
+    "has_non_compete_or_restrictive_agreements": false,
+    "security_clearance": "None",
+    "_note": "assumed; criminal-history / conviction questions are deliberately NOT prefilled"
+  },
+  "preferences": {
+    "english_proficiency": "Fluent",
+    "employment_type": "Full-time",
+    "travel_willingness": "Yes, occasional travel",
+    "currently_employed": true
+  }
+}

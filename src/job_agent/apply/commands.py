@@ -4,6 +4,7 @@ from __future__ import annotations
 import argparse
 import asyncio
 import json
+import sys
 from pathlib import Path
 
 from job_agent.apply.browser import BraveConfig, BraveSession
@@ -93,3 +94,99 @@ def linkedin_open_jobs(args: argparse.Namespace) -> int:
 
     print(json.dumps(asyncio.run(run()), indent=2))
     return 0
+
+
+def apply_demo(args: argparse.Namespace) -> int:
+    """POC: perceive -> resolve (Flash) -> act on a form page in Brave. Dry run: never submits."""
+    from job_agent.apply.demo import render, run_demo
+    from job_agent.apply.llm import LLM
+    from job_agent.apply.prefill import build_facts
+
+    root = Path(__file__).resolve().parents[3]
+    facts = build_facts(root / "data" / "applicant_profile.json", root / "data" / "resume_inventory.json")
+    context = json.dumps(facts, indent=1)
+    url = Path(args.fixture).resolve().as_uri() if args.fixture else args.url
+    if not url:
+        raise SystemExit("pass --url <job/application url> or --fixture <html file>")
+    llm = LLM(model=args.model or None)
+
+    async def run():
+        async with BraveSession(_config(args)) as session:
+            page = await session.new_tab(url)
+            result = await run_demo(page, llm, context, resume=args.resume or None, facts=facts, submit=args.submit)
+            print(render(result, llm))
+            if args.keep_open:
+                input("\nForm left open in Brave for inspection. Press Enter to close the tab... ")
+            await page.close()
+
+    asyncio.run(run())
+    return 0
+
+
+def apply_steps(args: argparse.Namespace) -> int:
+    """Step-by-step runner on a live job (see apply/stepper.py)."""
+    from job_agent.apply.llm import LLM
+    from job_agent.apply.prefill import build_facts
+    from job_agent.apply.stepper import STAGES, run_steps
+
+    root = Path(__file__).resolve().parents[3]
+    facts = build_facts(root / "data" / "applicant_profile.json", root / "data" / "resume_inventory.json")
+    url = Path(args.fixture).resolve().as_uri() if args.fixture else args.url
+    if not url:
+        raise SystemExit("pass --url <job/application url> or --fixture <html file>")
+    pause = (not args.no_pause) and sys.stdin.isatty()
+
+    async def run():
+        async with BraveSession(_config(args)) as session:
+            page = await session.new_tab(url)
+            await run_steps(page, LLM(model=args.model or None), facts, args.resume or None, args.until, pause, args.allow_submit)
+
+    asyncio.run(run())
+    return 0
+
+
+def register(subparsers) -> None:
+    """Add every apply-engine subcommand to the CLI."""
+    brave = subparsers.add_parser("brave-launch", help="Launch Brave (CDP) and open a new tab via Playwright.")
+    brave.add_argument("--url", default="https://www.linkedin.com/jobs/", help="URL to open in the new tab")
+    add_brave_args(brave)
+    brave.set_defaults(func=brave_launch)
+
+    li_jobs = subparsers.add_parser("linkedin-jobs", help="Ensure a LinkedIn tab is on the Jobs page (navigates if not).")
+    add_brave_args(li_jobs)
+    li_jobs.set_defaults(func=linkedin_jobs)
+
+    for name, func, helptext in (("linkedin-search", linkedin_search, "Run the title/experience search on LinkedIn Jobs."),
+                                 ("linkedin-open-jobs", linkedin_open_jobs, "Search, parse cards, open each job in a new tab.")):
+        sp = subparsers.add_parser(name, help=helptext)
+        sp.add_argument("--title", action="append", help="Role title (repeatable); default: SWE/Backend/SDE/MTS set")
+        sp.add_argument("--location", default="India")
+        sp.add_argument("--min-years", type=int, default=1)
+        sp.add_argument("--max-years", type=int, default=3)
+        if name == "linkedin-open-jobs":
+            sp.add_argument("--limit", type=int, default=5, help="Max jobs to open this run")
+            sp.add_argument("--keep-open", action="store_true", help="Leave each job tab open")
+        add_brave_args(sp)
+        sp.set_defaults(func=func)
+
+    demo = subparsers.add_parser("apply-demo", help="Agentic form fill on a page (dry run unless --submit).")
+    demo.add_argument("--url", default="")
+    demo.add_argument("--fixture", default="", help="Local HTML file to run against instead of a URL")
+    demo.add_argument("--resume", default="", help="PDF to upload into file fields")
+    demo.add_argument("--model", default="", help="Model id (default: gemini-3.5-flash-lite)")
+    demo.add_argument("--submit", action="store_true", help="Actually press Submit when every guard passes (default: dry run)")
+    demo.add_argument("--keep-open", action="store_true", help="Leave the filled form open until you press Enter")
+    add_brave_args(demo)
+    demo.set_defaults(func=apply_demo)
+
+    steps = subparsers.add_parser("apply-steps", help="Run the apply pipeline one stage at a time on a live job.")
+    steps.add_argument("--url", default="")
+    steps.add_argument("--fixture", default="", help="Local HTML file instead of a URL")
+    steps.add_argument("--resume", default="", help="PDF to upload into resume fields")
+    steps.add_argument("--model", default="", help="Model id (default: gemini-3.5-flash-lite)")
+    steps.add_argument("--until", default="guards", choices=["open", "perceive", "prefill", "resolve", "fill", "guards", "submit"],
+                       help="Last stage to run (default: guards, i.e. everything except Submit)")
+    steps.add_argument("--no-pause", action="store_true", help="Run straight through without waiting between stages")
+    steps.add_argument("--allow-submit", action="store_true", help="Enable the real Submit stage (still asks you to type 'submit')")
+    add_brave_args(steps)
+    steps.set_defaults(func=apply_steps)

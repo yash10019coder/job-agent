@@ -1,0 +1,171 @@
+"""Guarded submit: press Submit only when every guard passes, then verify what actually happened.
+
+Guards (any failure => nothing is clicked): no BLOCKED/failed/low-confidence answers, no required field empty or
+invalid, no visible captcha, rate limits and the same-company/24h rule, and never twice for the same posting.
+After the click the outcome is read from the page (confirmation text/URL, validation errors, email-code step,
+captcha) and only a detected confirmation counts as 'submitted'.
+"""
+from __future__ import annotations
+
+import asyncio
+import json
+import re
+from dataclasses import dataclass, field
+from datetime import datetime
+from pathlib import Path
+from urllib.parse import urlsplit
+
+from playwright.async_api import Page
+
+from job_agent.apply import execute
+from job_agent.apply.perceive import Perception, Settler, perceive
+from job_agent.rate_limiter import RateLimiter
+
+MIN_SUBMIT_CONFIDENCE = 0.7
+_STRONG_SUBMIT = re.compile(r"^(submit|send) (my |your )?application|^submit$|^complete application", re.I)
+_WEAK_SUBMIT = re.compile(r"^apply( now)?$|^finish$", re.I)
+_SUCCESS = re.compile(
+    r"(thank you|thanks) for (applying|your (application|interest|submission))|application (has been |was |is )?(successfully )?"
+    r"(submitted|received|sent|complete)|we('ve| have) received your application|successfully (submitted|applied)|you('ve| have) applied",
+    re.I)
+_CODE_FIELD = re.compile(r"security code|verification code|one[- ]time|\botp\b|confirm your email|enter the code", re.I)
+_CAPTCHA_JS = r"""() => [...document.querySelectorAll('iframe')].filter(f => {
+  const tag = (f.src || '') + ' ' + (f.title || '');
+  // A challenge or "I'm not a robot" widget needs a human; the invisible-reCAPTCHA badge (size=invisible) does not.
+  const needsHuman = /bframe|hcaptcha-challenge|hcaptcha\.com\/captcha|challenges\.cloudflare\.com|recaptcha\/(api2|enterprise)\/anchor\?(?!.*size=invisible)/i.test(tag);
+  const r = f.getBoundingClientRect();
+  const onScreen = r.width >= 100 && r.height >= 60 && r.bottom > 0 && r.right > 0 && r.top < innerHeight && r.left < innerWidth;
+  return needsHuman && onScreen && f.checkVisibility({ visibilityProperty: true, opacityProperty: true });
+}).length"""
+
+
+@dataclass
+class SubmitOutcome:
+    status: str  # dry_run | submitted | blocked_guard | blocked_captcha | blocked_otp | error_validation | unknown_outcome
+    detail: str = ""
+    problems: list[str] = field(default_factory=list)
+
+    @property
+    def submitted(self) -> bool:
+        return self.status == "submitted"
+
+
+def _posting_key(url: str) -> str:
+    parts = urlsplit(url)
+    return f"{parts.netloc}{parts.path}".rstrip("/").lower()
+
+
+def already_submitted(log_path: Path, url: str) -> bool:
+    if not log_path.exists():
+        return False
+    key = _posting_key(url)
+    for line in log_path.read_text(encoding="utf-8").splitlines():
+        try:
+            entry = json.loads(line)
+        except ValueError:
+            continue
+        if entry.get("status") == "submitted" and _posting_key(entry.get("url", "")) == key:
+            return True
+    return False
+
+
+def _log(log_path: Path, url: str, title: str, outcome: SubmitOutcome) -> None:
+    log_path.parent.mkdir(parents=True, exist_ok=True)
+    with log_path.open("a", encoding="utf-8") as fh:
+        fh.write(json.dumps({"ts": datetime.now().isoformat(timespec="seconds"), "url": url, "title": title,
+                             "status": outcome.status, "detail": outcome.detail, "problems": outcome.problems}) + "\n")
+
+
+async def captcha_visible(page: Page) -> bool:
+    for frame in page.frames:
+        try:
+            if await asyncio.wait_for(frame.evaluate(_CAPTCHA_JS), 2.0):
+                return True
+        except Exception:
+            continue
+    return False
+
+
+def _submit_button(perception: Perception):
+    """(button, how_many_equally_good_candidates). 'Submit application' beats a bare 'Apply' (often a scroll-to-form link)."""
+    enabled = [a for a in perception.model.actions if not a.disabled]
+    for tier in (_STRONG_SUBMIT, _WEAK_SUBMIT):
+        found = [a for a in enabled if tier.search(a.label.strip())]
+        if found:
+            return (next((a for a in found if a.primary), found[0]), len(found))
+    return None, 0
+
+
+async def check_ready(page: Page, rows: list, limiter: RateLimiter, log_path: Path, url: str) -> list[str]:
+    """Every reason NOT to submit; an empty list means all guards passed."""
+    problems = []
+    for r in rows:
+        if r.status.startswith("BLOCKED"):
+            problems.append(f"required field has no honest answer: {r.label}")
+        elif r.status == "ok":
+            if r.confidence < MIN_SUBMIT_CONFIDENCE:
+                problems.append(f"low-confidence answer: {r.label} ({r.confidence:.2f})")
+        elif not r.status.startswith(("left blank", "skipped")):   # anything else is a failed fill (required-but-empty is caught below)
+            problems.append(f"could not fill: {r.label} ({r.status})")
+    perception = await perceive(page)
+    for f in perception.model.fields:
+        if f.required and f.empty and f.kind != "checkbox_group":
+            problems.append(f"required field still empty: {f.label}")
+        if f.invalid or f.error:
+            problems.append(f"field shows an error: {f.label} ({f.error or 'invalid'})")
+    problems += [f"page alert: {a}" for a in perception.model.alerts]
+    button, count = _submit_button(perception)
+    if not button:
+        problems.append("no enabled Submit control found")
+    elif count > 1:
+        problems.append(f"{count} Submit-like controls: ambiguous")
+    if await captcha_visible(page):
+        problems.append("a captcha is showing (not solved automatically)")
+    allowed, reason = limiter.can_apply(url)
+    if not allowed:
+        problems.append(f"rate limit: {reason}")
+    if already_submitted(log_path, url):
+        problems.append("this posting was already submitted")
+    return problems
+
+
+async def _classify(page: Page, settler: Settler, before_labels: set[str]) -> SubmitOutcome:
+    await settler.settle()
+    try:
+        await page.wait_for_load_state("domcontentloaded", timeout=5000)
+    except Exception:
+        pass
+    await settler.settle()
+    if await captcha_visible(page):
+        return SubmitOutcome("blocked_captcha", "a captcha challenge appeared after Submit")
+    perception = await perceive(page)
+    body = " ".join(f"{perception.model.title} {' '.join(perception.model.headings)} {perception.model.text_digest}".split())
+    new_code = [f.label for f in perception.model.fields if _CODE_FIELD.search(f.label) and f.label not in before_labels]
+    if new_code:
+        return SubmitOutcome("blocked_otp", f"the site wants an emailed code ({new_code[0]}); email verification is not automated yet")
+    if _SUCCESS.search(body) or re.search(r"/(confirmation|thank|submitted|success|applied)\b", page.url, re.I):
+        return SubmitOutcome("submitted", "confirmation detected on the page")
+    errors = [a for a in perception.model.alerts] + [f"{f.label}: {f.error or 'invalid'}" for f in perception.model.fields if f.invalid or f.error]
+    if errors:
+        return SubmitOutcome("error_validation", "the site rejected the form", errors[:6])
+    return SubmitOutcome("unknown_outcome", "clicked Submit but found neither a confirmation nor an error; do NOT assume it was sent")
+
+
+async def guarded_submit(page: Page, rows: list, settler: Settler, url: str, limiter: RateLimiter, log_path: Path, submit: bool) -> SubmitOutcome:
+    title = await page.title()
+    problems = await check_ready(page, rows, limiter, log_path, url)
+    if problems:
+        outcome = SubmitOutcome("blocked_guard", f"{len(problems)} guard(s) failed; nothing was submitted", problems)
+    elif not submit:
+        outcome = SubmitOutcome("dry_run", "all guards passed; not submitting (--submit not given)")
+    else:
+        perception = await perceive(page)
+        button, _ = _submit_button(perception)
+        before = {f.label for f in perception.model.fields}
+        clicked = await execute.click_action(perception, button.id, button.frame)
+        outcome = await _classify(page, settler, before) if clicked.ok else SubmitOutcome("unknown_outcome", clicked.detail)
+        if outcome.submitted:
+            limiter.record_application(url, company=limiter._extract_domain(url), title=title, success=True)
+    if outcome.status != "dry_run":
+        _log(log_path, url, title, outcome)
+    return outcome
