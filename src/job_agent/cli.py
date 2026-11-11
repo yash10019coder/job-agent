@@ -401,6 +401,36 @@ def build_parser() -> argparse.ArgumentParser:
     rate_check.add_argument("--url", required=True, help="Job URL to check")
     rate_check.set_defaults(func=_rate_limit_check)
 
+    # --- Brave (generic apply engine) ---
+    from job_agent.apply import commands as apply_cmds
+
+    brave = subparsers.add_parser("brave-launch", help="Launch Brave (CDP) and open a new tab via Playwright.")
+    brave.add_argument("--url", default="https://www.linkedin.com/jobs/", help="URL to open in the new tab")
+    apply_cmds.add_brave_args(brave)
+    brave.set_defaults(func=apply_cmds.brave_launch)
+
+    li_jobs = subparsers.add_parser("linkedin-jobs", help="Ensure a LinkedIn tab is on the Jobs page (navigates if not).")
+    apply_cmds.add_brave_args(li_jobs)
+    li_jobs.set_defaults(func=apply_cmds.linkedin_jobs)
+
+    li_search = subparsers.add_parser("linkedin-search", help="Run the title/experience search on LinkedIn Jobs.")
+    li_search.add_argument("--title", action="append", help="Role title (repeatable); default: SWE/Backend/SDE/MTS set")
+    li_search.add_argument("--location", default="India")
+    li_search.add_argument("--min-years", type=int, default=1)
+    li_search.add_argument("--max-years", type=int, default=3)
+    apply_cmds.add_brave_args(li_search)
+    li_search.set_defaults(func=apply_cmds.linkedin_search)
+
+    li_open = subparsers.add_parser("linkedin-open-jobs", help="Search, parse cards, open each job in a new tab.")
+    li_open.add_argument("--title", action="append", help="Role title (repeatable)")
+    li_open.add_argument("--location", default="India")
+    li_open.add_argument("--min-years", type=int, default=1)
+    li_open.add_argument("--max-years", type=int, default=3)
+    li_open.add_argument("--limit", type=int, default=5, help="Max jobs to open this run")
+    li_open.add_argument("--keep-open", action="store_true", help="Leave each job tab open")
+    apply_cmds.add_brave_args(li_open)
+    li_open.set_defaults(func=apply_cmds.linkedin_open_jobs)
+
     # --- Login ---
     login = subparsers.add_parser("login-linkedin", help="Login to LinkedIn and save session for browser-apply.")
     login.add_argument("--email", required=True, help="LinkedIn email")
