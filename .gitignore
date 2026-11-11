@@ -80,3 +80,5 @@ data/applicant_profile.json
 
 # ...but keep the tiny test-fixture PDF that *.pdf above would otherwise hide
 !tests/fixtures/*.pdf
+data/runs/
+data/batch_jobs_*.json

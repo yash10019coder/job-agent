@@ -47,16 +47,43 @@ def closest_options(wanted: str, options: list[Option], n: int = 15) -> list[Opt
     return [labels[k] for k in dict.fromkeys([*contains, *near])][:n]
 
 
+_CURRENT_JS = "(el) => el.value !== undefined && el.value !== null && el.isContentEditable !== true ? el.value : el.innerText"
+
+
+async def _current(loc) -> str:
+    """Current text of an input, textarea or contenteditable (rich-text editors have no .value)."""
+    return (await loc.evaluate(_CURRENT_JS)).strip()
+
+
+async def set_date(page: Page, perception: Perception, field: FieldModel, value: str) -> ActionResult:
+    """Dates: type it; for read-only (calendar-popup) inputs set the value the way a picker would and
+    confirm the page kept it. A picker that reverts the value is reported as a failure, never assumed."""
+    loc = perception.locator(field.id, field.frame)
+    if not field.readonly:
+        return await fill_text(page, perception, field, value)
+    try:
+        await loc.evaluate(
+            """(el, v) => { const set = Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, 'value').set;
+              set.call(el, v); el.dispatchEvent(new Event('input', {bubbles: true})); el.dispatchEvent(new Event('change', {bubbles: true})); }""",
+            value)
+        await loc.blur()
+        actual = await _current(loc)
+    except Exception as error:
+        return ActionResult(False, f"date set failed: {str(error).splitlines()[0][:90]}")
+    same = re.sub(r"\D", "", actual) == re.sub(r"\D", "", value)
+    return ActionResult(same, "ok" if same else f"date picker did not keep the value (got {actual!r})")
+
+
 async def fill_text(page: Page, perception: Perception, field: FieldModel, value: str) -> ActionResult:
     loc = perception.locator(field.id, field.frame)
     try:
         await loc.click(timeout=3000)
         await loc.fill(value, timeout=3000)
-        if (await loc.input_value()) != value:  # React-style controlled inputs may swallow fill()
+        if (await _current(loc)) != value:  # React-style controlled inputs may swallow fill()
             await loc.fill("")
             await loc.press_sequentially(value, delay=15)
         await loc.blur()
-        actual = await loc.input_value()
+        actual = await _current(loc)
     except Exception as error:
         return ActionResult(False, f"fill failed: {error}")
     same = re.sub(r"[^a-z0-9]", "", actual.lower()) == re.sub(r"[^a-z0-9]", "", value.lower())  # inputs may reformat (phone masks)
@@ -86,6 +113,8 @@ async def set_choice(perception: Perception, field: FieldModel, wanted: str) -> 
             return ActionResult(await loc.is_checked() == want, "ok")
         except Exception as error:
             return ActionResult(False, f"checkbox failed: {error}")
+    if field.cards:
+        return await _choose_card(perception, field, wanted)
     wanted_list = [w.strip() for w in wanted.split(";") if w.strip()] if field.kind == "checkbox_group" else [wanted]
     chosen = []
     for want in wanted_list:  # checkbox groups may select several options ("A; B")
@@ -95,12 +124,30 @@ async def set_choice(perception: Perception, field: FieldModel, wanted: str) -> 
         loc = perception.locator(opt.id, field.frame)
         try:
             await loc.check(timeout=3000)
-            if not await loc.is_checked():
-                return ActionResult(False, f"{opt.label!r} did not stay checked")
-        except Exception as error:
-            return ActionResult(False, f"choice failed: {error}")
+        except Exception:
+            # Native input hidden behind a styled label: click the label (or the input itself) like a user would.
+            try:
+                await loc.evaluate("(el) => { const l = (el.labels && el.labels[0]) || el.closest('label'); (l || el).click(); }")
+            except Exception as error:
+                return ActionResult(False, f"choice failed: {str(error).splitlines()[0][:90]}")
+        if not await loc.is_checked():
+            return ActionResult(False, f"{opt.label!r} did not stay checked")
         chosen.append(opt.label)
     return ActionResult(True, f"chose {', '.join(map(repr, chosen))}")
+
+
+async def _choose_card(perception: Perception, field: FieldModel, wanted: str) -> ActionResult:
+    """Clickable cards/pills with no input: click, then confirm the card now reports itself selected."""
+    opt = match_option(wanted, field.options or [])
+    if not opt:
+        return ActionResult(False, f"no option matches {wanted!r}")
+    loc = perception.locator(opt.id, field.frame)
+    try:
+        await loc.click(timeout=3000)
+        selected = await loc.evaluate("(el) => window.__agentCardSelected ? window.__agentCardSelected(el) : false")
+    except Exception as error:
+        return ActionResult(False, f"card click failed: {str(error).splitlines()[0][:90]}")
+    return ActionResult(selected, f"chose {opt.label!r}" if selected else f"clicked {opt.label!r} but the page shows no selected state")
 
 
 async def read_combobox_options(page: Page, perception: Perception, field: FieldModel, settler: Settler, query: str = "") -> list[Option]:

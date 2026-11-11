@@ -113,6 +113,7 @@ async def check_ready(page: Page, rows: list, limiter: RateLimiter, log_path: Pa
             problems.append(f"required field still empty: {f.label}")
         if f.invalid or f.error:
             problems.append(f"field shows an error: {f.label} ({f.error or 'invalid'})")
+    problems += [f"required control not understood by the agent: {u['text']}" for u in perception.model.unparsed if u.get("required")]
     problems += [f"page alert: {a}" for a in perception.model.alerts]
     button, count = _submit_button(perception)
     if not button:

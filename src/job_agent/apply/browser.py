@@ -99,6 +99,8 @@ class BraveSession:
         self._pw = await async_playwright().start()
         self.browser = await self._pw.chromium.connect_over_cdp(self.config.cdp_url)
         self.context = self.browser.contexts[0] if self.browser.contexts else await self.browser.new_context()
+        from job_agent.apply.perceive import install_open_shadow
+        await install_open_shadow(self.context)
         return self
 
     async def __aexit__(self, *exc) -> None:

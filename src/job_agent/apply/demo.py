@@ -16,7 +16,7 @@ from playwright.async_api import Page
 
 from job_agent.apply import execute
 from job_agent.apply.llm import LLM, Decider, FlashDecider
-from job_agent.apply.perceive import FieldModel, Perception, Settler, diff, perceive
+from job_agent.apply.perceive import FieldModel, Perception, Settler, diff, explore, perceive
 from job_agent.apply.prefill import build_facts, prefill
 from job_agent.apply.submit import SubmitOutcome, guarded_submit
 from job_agent.rate_limiter import RateLimiter
@@ -184,6 +184,8 @@ async def _apply_field(page, perception, settler, field_: FieldModel, value: str
         if not opt:
             return execute.ActionResult(False, "no matching option in popup"), value
         return await execute.choose_combobox(page, perception, field_, settler, opt), opt.label
+    if field_.kind == "date":
+        return await execute.set_date(page, perception, field_, value), value
     return await execute.fill_text(page, perception, field_, value), value
 
 
@@ -192,7 +194,7 @@ async def fill_until_stable(page: Page, llm: LLM, context: str, resume: str | No
     attempted: set[str] = set()
     job_context = ""
     for round_no in range(1, MAX_ROUNDS + 1):
-        perception = await perceive(page)
+        perception = await explore(page, settler) if round_no == 1 else await perceive(page)  # first read also expands/scrolls
         todo = [f for f in perception.model.fields if f.key not in attempted and (f.empty or f.invalid)]
         if not todo:
             break

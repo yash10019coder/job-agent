@@ -145,6 +145,26 @@ def apply_steps(args: argparse.Namespace) -> int:
     return 0
 
 
+def apply_batch(args: argparse.Namespace) -> int:
+    """Run several jobs concurrently, one Brave window each; run data goes to data/runs/<timestamp>/."""
+    from job_agent.apply.batch import run_batch
+    from job_agent.apply.prefill import build_facts
+
+    root = Path(__file__).resolve().parents[3]
+    facts = build_facts(root / "data" / "applicant_profile.json", root / "data" / "resume_inventory.json")
+    jobs = json.loads(Path(args.jobs).read_text(encoding="utf-8"))
+
+    async def run():
+        async with BraveSession(_config(args)) as session:
+            return await run_batch(session, jobs, root / "data" / "runs", facts, args.resume or None,
+                                   args.model or None, submit=args.submit, concurrency=args.concurrency)
+
+    for r in asyncio.run(run()):
+        print(f"{r['ats']:12} {r['status']:18} fields={r.get('fields', '-')} ok={r.get('ok', '-')} blocked={r.get('blocked', '-')} "
+              f"failed={r.get('failed', '-')} {r['seconds']}s  {r['dir']}")
+    return 0
+
+
 def register(subparsers) -> None:
     """Add every apply-engine subcommand to the CLI."""
     brave = subparsers.add_parser("brave-launch", help="Launch Brave (CDP) and open a new tab via Playwright.")
@@ -190,3 +210,12 @@ def register(subparsers) -> None:
     steps.add_argument("--allow-submit", action="store_true", help="Enable the real Submit stage (still asks you to type 'submit')")
     add_brave_args(steps)
     steps.set_defaults(func=apply_steps)
+
+    batch = subparsers.add_parser("apply-batch", help="Run many jobs concurrently (dry run unless --submit); logs to data/runs/.")
+    batch.add_argument("--jobs", required=True, help="JSON list of {ats, company, title, url}")
+    batch.add_argument("--resume", default="", help="PDF to upload into resume fields")
+    batch.add_argument("--model", default="")
+    batch.add_argument("--concurrency", type=int, default=5)
+    batch.add_argument("--submit", action="store_true", help="Press Submit when every guard passes (default: dry run)")
+    add_brave_args(batch)
+    batch.set_defaults(func=apply_batch)

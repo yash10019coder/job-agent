@@ -94,6 +94,8 @@ def prefill(field: FieldModel, facts: dict) -> Prefill | None:
 
     if kind == "file":
         return None
+    if re.search(r"not a robot|i am (a )?human|captcha|verify you are human", label):
+        return say("", "human-verification checkbox: never ticked by the agent", blank=True)
     if re.search(r"pronunciation", label):
         return say("", "nothing to add", blank=True)
     if re.search(r"\bpronouns?\b", label):

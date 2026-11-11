@@ -3,6 +3,7 @@
 // Usage: page.evaluate(PERCEIVE_JS, {prefix: "f0-"})
 (opts) => {
   const prefix = (opts && opts.prefix) || "";
+  const frameLabel = (opts && opts.frameLabel) || "";
   document.querySelectorAll("[data-agent-id]").forEach((e) => e.removeAttribute("data-agent-id"));
 
   const clean = (s) => (s || "").replace(/\s+/g, " ").trim();
@@ -24,10 +25,21 @@
   };
   walk(document);
 
+  // "Visible to a human": rendered, non-zero size, on the page (not parked off-screen), not transparent.
+  // Honeypot inputs (bot traps) are hidden exactly this way, and filling one flags the application as spam.
   const visible = (el) => {
     const st = getComputedStyle(el);
     if (st.display === "none" || st.visibility === "hidden" || el.getAttribute("aria-hidden") === "true") return false;
-    return el.getClientRects().length > 0;
+    const rects = el.getClientRects();
+    if (rects.length === 0) return false;
+    const r = rects[0];
+    if (r.right < 0 || r.bottom + window.scrollY < 0 || r.left > document.documentElement.scrollWidth + 50) return false;
+    // Widget internals (react-select's 1-2px or transparent input behind the visible control) are real controls:
+    // the size/opacity trap checks only apply to plain inputs with no ARIA role or popup.
+    const widget = el.hasAttribute("role") || el.hasAttribute("aria-haspopup") || el.hasAttribute("aria-controls") || el.hasAttribute("aria-autocomplete");
+    if (!widget && /^(INPUT|TEXTAREA)$/.test(el.tagName) && (r.width < 1 || r.height < 1)) return false;
+    if (!widget && /^(INPUT|TEXTAREA|SELECT)$/.test(el.tagName)) for (let n = el; n && n !== document.documentElement; n = n.parentElement) if (parseFloat(getComputedStyle(n).opacity) === 0) return false;
+    return true;
   };
   const byId = (id) => document.getElementById(id);
   const textOfIds = (ids) =>
@@ -82,9 +94,12 @@
   const errorOf = (el) => {
     const em = textOfIds(el.getAttribute("aria-errormessage"));
     if (em) return em;
-    const holder = el.closest("[class*=field],[class*=form-group],[class*=question]") || el.parentElement;
-    const err = holder && holder.querySelector("[role=alert],[class*=error],[class*=invalid]");
-    return err && err !== el ? clip(err.innerText, 160) : "";
+    // Only a VISIBLE error inside this control's own wrapper counts (forms often keep hidden error templates for every field).
+    let box = el;
+    const controls = "input:not([type=hidden]),select,textarea,[role=combobox]";
+    while (box.parentElement && box.parentElement !== document.body && box.parentElement.querySelectorAll(controls).length <= 1) box = box.parentElement;
+    const err = Array.from(box.querySelectorAll("[role=alert],[class*=error],[class*=invalid]")).find((n) => n !== el && !n.contains(el) && visible(n) && clean(n.innerText));
+    return err ? clip(err.innerText, 160) : "";
   };
 
   const sectionOf = (el) => {
@@ -103,6 +118,23 @@
 
   const isRequired = (el, label) =>
     el.required === true || el.getAttribute("aria-required") === "true" || /[*✱]\s*$|\(required\)/i.test(label);
+
+  window.__agentLabelOf = labelOf;
+  // Native radios/checkboxes are often display:none behind a styled label: the label is the visible control.
+  const toggleVisible = (el) => {
+    const lab = (el.labels && el.labels[0]) || el.closest("label");
+    return !!lab && visible(lab);
+  };
+  // Read-only inputs that open a calendar: date-looking placeholder/type/label.
+  const dateLike = (el, label) =>
+    /^(date|datetime-local|month)$/.test((el.getAttribute("type") || "").toLowerCase()) ||
+    /\b(dd|mm|yyyy|yy)\b|[dmy]{2,4}[\/.-][dmy]{2,4}/i.test(el.getAttribute("placeholder") || "") ||
+    /\bdate\b|birth|\bdob\b/i.test(label);
+  // Pill/card "selected" state: ARIA first, then a selected-looking class token. Never a guess beyond that.
+  const cardSelected = (el) =>
+    el.getAttribute("aria-pressed") === "true" || el.getAttribute("aria-selected") === "true" || el.getAttribute("aria-checked") === "true" ||
+    Array.from(el.classList).some((c) => /(^|[-_])(selected|active|checked|chosen|current|on)($|[-_])/i.test(c));
+  window.__agentCardSelected = cardSelected;
 
   // ---- collect fields ------------------------------------------------------------------------
   const fields = [];
@@ -165,15 +197,19 @@
       /^(combobox|textbox|switch|checkbox|radio|spinbutton)$/.test(role) || el.getAttribute("contenteditable") === "true";
     if (!isField) continue;
     if (el.closest("[role=listbox]") && role !== "combobox") continue;
-    if (type !== "file" && !visible(el)) continue;
-    if (el.disabled || el.readOnly) continue;
+    const isToggle = type === "radio" || type === "checkbox" || role === "radio" || role === "checkbox";
+    if (type !== "file" && !visible(el) && !(isToggle && toggleVisible(el))) continue;
+    if (el.disabled) continue;
 
-    const label = labelOf(el);
+    const label = (el === document.body || el === document.documentElement) && frameLabel ? frameLabel : labelOf(el);
+    if (el.readOnly && !dateLike(el, label)) continue;
 
     if (type === "radio" || role === "radio") {
       const name = el.getAttribute("name") || "";
       const grp = el.closest("fieldset,[role=radiogroup]");
-      const key = "radio|" + (name || "") + "|" + (grp ? stamp(grp) : "");
+      // No name and no fieldset: separate questions are told apart by the text above them.
+      const anchor = name || grp ? "" : precedingText(el.closest("label") || el);
+      const key = "radio|" + (name || "") + "|" + (grp ? stamp(grp) : "") + "|" + anchor;
       const optLabel = clean((el.labels && el.labels[0] ? el.labels[0].innerText : "") || el.getAttribute("aria-label") || (el.closest("label") ? el.closest("label").innerText : "") || el.value);
       let f = seenGroups.get(key);
       if (!f) {
@@ -233,12 +269,13 @@
     }
     else if (tag === "textarea" || el.getAttribute("contenteditable") === "true") kind = "textarea";
     else if (["email", "tel", "number", "date", "url", "password"].includes(type)) kind = type;
+    else if (el.readOnly) kind = "date";
     addField({
       id: stamp(el), kind, label: fieldLabel, help: helpOf(el), required: isRequired(el, label),
       value: kind === "file" ? (el.files && el.files.length ? el.files[0].name : "") : clean(el.value !== undefined && el.value !== "" ? el.value : el.getAttribute("contenteditable") === "true" ? el.innerText : ""),
       options: null, placeholder: clip(el.getAttribute("placeholder"), 60), maxlength: el.maxLength > 0 ? el.maxLength : null,
-      pattern: el.getAttribute("pattern") || null, accept: el.getAttribute("accept") || null,
-      invalid: el.getAttribute("aria-invalid") === "true" || (el.willValidate && !el.checkValidity() && el.value !== ""),
+      pattern: el.getAttribute("pattern") || null, accept: el.getAttribute("accept") || null, readonly: el.readOnly === true,
+      invalid: el.getAttribute("aria-invalid") === "true" || !!(el.willValidate && !el.checkValidity() && el.value !== ""),
       error: errorOf(el), section: sectionOf(el),
     });
   }
@@ -258,12 +295,37 @@
     if (above) f.label = clean(above).replace(/\s*[*✱]+\s*/g, " ").trim();
   }
 
+  // ---- clickable cards / pills with no input and no role (cursor:pointer is the only signal) -----------
+  const unparsed = [];
+  const isPointer = (el) => getComputedStyle(el).cursor === "pointer";
+  const candidates = all.filter((el) =>
+    /^(DIV|SPAN|LI|P|SECTION)$/.test(el.tagName) && !el.hasAttribute("data-agent-id") && !el.closest("[data-agent-id],a,button,label,select,nav,header,footer,[role=listbox],[role=menu]") &&
+    isPointer(el) && !(el.parentElement && isPointer(el.parentElement)) && visible(el) &&
+    !el.querySelector("input,select,textarea,button,a[href],[role=button],[role=option],[role=combobox]") && ownText(el) && ownText(el).length <= 80);
+  const byParent = new Map();
+  for (const c of candidates) { const k = c.parentElement; if (!byParent.has(k)) byParent.set(k, []); byParent.get(k).push(c); }
+  for (const [parent, cards] of byParent) {
+    if (cards.length >= 2 && cards.every((c) => c.tagName === cards[0].tagName)) {
+      const q = precedingText(cards[0]) || (parent && precedingText(parent)) || "";
+      const chosen = cards.filter(cardSelected);
+      addField({ id: stamp(cards[0]), kind: "radio_group", cards: true, label: q, help: "", required: /[*✱]/.test(q), value: chosen.length ? ownText(chosen[0]) : "",
+        options: cards.map((c) => ({ id: stamp(c), label: ownText(c) })), invalid: false, error: "", section: sectionOf(cards[0]) });
+    } else {
+      for (const c of cards) unparsed.push({ text: ownText(c), required: /[*✱]/.test(precedingText(c) + ownText(c)) });
+    }
+  }
+  // Visible text boxes we did not turn into fields (e.g. sandboxed/closed widgets) still need to be reported.
+  for (const el of all) {
+    if (el.getAttribute("contenteditable") === "true" && !el.hasAttribute("data-agent-id") && visible(el) && el !== document.body)
+      unparsed.push({ text: labelOf(el) || "editable area", required: false });
+  }
+
   const headings = Array.from(document.querySelectorAll("h1,h2")).filter(visible).slice(0, 6).map((h) => clip(h.innerText, 100));
   const alerts = Array.from(document.querySelectorAll("[role=alert],[aria-live=assertive]")).filter(visible).map((a) => clip(a.innerText, 160)).filter(Boolean).slice(0, 5);
 
   return {
     url: location.href, title: document.title, headings, alerts,
-    fields: fields.map(({ index, ...f }) => f), actions,
+    fields: fields.map(({ index, ...f }) => f), actions, unparsed: unparsed.slice(0, 10),
     text_digest: clip((document.body && document.body.innerText) || "", 3000),
   };
 }

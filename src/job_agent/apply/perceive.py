@@ -47,6 +47,8 @@ class FieldModel(BaseModel):
     error: str = ""
     section: str = ""
     frame: int = 0
+    readonly: bool = False
+    cards: bool = False  # clickable cards/pills (no input element)
 
     @property
     def key(self) -> str:
@@ -80,6 +82,7 @@ class PageModel(BaseModel):
     fields: list[FieldModel] = Field(default_factory=list)
     actions: list[ActionModel] = Field(default_factory=list)
     text_digest: str = ""
+    unparsed: list[dict] = Field(default_factory=list)  # clickable/editable things we could not turn into fields
 
     def field_by_key(self, key: str) -> FieldModel | None:
         return next((f for f in self.fields if f.key == key), None)
@@ -130,15 +133,69 @@ class Perception:
         return self.frames[frame].locator(f'[data-agent-id="{element_id}"]').first
 
 
+async def _frame_label(frame: Frame) -> str:
+    """The question text next to an <iframe> in its parent document (rich-text editors have no label inside)."""
+    try:
+        handle = await frame.frame_element()
+        return await handle.evaluate("(el) => (window.__agentLabelOf ? window.__agentLabelOf(el) : '')")
+    except Exception:
+        return ""
+
+
+OPEN_SHADOW_JS = """(() => {
+  const orig = Element.prototype.attachShadow;
+  Element.prototype.attachShadow = function (init) { return orig.call(this, Object.assign({}, init, { mode: 'open' })); };
+})();"""
+
+
+async def install_open_shadow(context) -> None:
+    """Make every shadow root created from now on readable (closed roots are otherwise invisible to page JS).
+    Applies to documents loaded after this call, so install it before navigating."""
+    await context.add_init_script(OPEN_SHADOW_JS)
+
+
+_EXPLORE_JS = """() => {
+  let opened = 0;
+  document.querySelectorAll("details:not([open])").forEach((d) => { d.open = true; opened++; });
+  const closed = Array.from(document.querySelectorAll("[aria-expanded=false]")).filter((el) =>
+    /^(BUTTON|SUMMARY)$/.test(el.tagName) || el.getAttribute("role") === "button")
+    .filter((el) => !el.hasAttribute("aria-haspopup") && el.getAttribute("role") !== "combobox" && !el.closest("nav,header,footer,[role=menu]"));
+  closed.slice(0, 12).forEach((el) => { el.click(); opened++; });
+  return opened;
+}"""
+
+
+async def explore(page: Page, settler: "Settler | None" = None, max_scrolls: int = 12) -> Perception:
+    """Reveal fields a plain read would miss: open collapsed sections and scroll so lazy fields render.
+    Re-reads until the field count stops growing, then returns to the top."""
+    settler = settler or Settler(page, quiet_ms=200, timeout_s=3.0)
+    best = await perceive(page)
+    for frame in page.frames:
+        try:
+            await asyncio.wait_for(frame.evaluate(_EXPLORE_JS), 2.0)
+        except Exception:
+            continue
+    await settler.settle()
+    for _ in range(max_scrolls):
+        moved = await page.evaluate("() => { const y = window.scrollY; window.scrollBy(0, Math.round(innerHeight * 0.8)); return window.scrollY > y; }")
+        await settler.settle()
+        if not moved:
+            break
+    await page.evaluate("() => window.scrollTo(0, 0)")
+    after = await perceive(page)
+    return after if len(after.model.fields) >= len(best.model.fields) else best
+
+
 async def perceive(page: Page) -> Perception:
     merged = PageModel(url=page.url, title=await page.title())
     frames: list[Frame] = []
     for frame in page.frames:
-        if frame.url.startswith(("about:", "chrome-extension:")) and frame != page.main_frame:
-            continue
+        if frame != page.main_frame and (frame.url.startswith("chrome-extension:") or frame.url == "about:blank"):
+            continue  # about:srcdoc is kept: rich-text editors live there
         index = len(frames)
         try:
-            raw = await asyncio.wait_for(frame.evaluate(_PERCEIVE_JS, {"prefix": f"f{index}-"}), 5.0)
+            label = await _frame_label(frame) if frame != page.main_frame else ""
+            raw = await asyncio.wait_for(frame.evaluate(_PERCEIVE_JS, {"prefix": f"f{index}-", "frameLabel": label}), 5.0)
         except Exception:
             continue  # detached/cross-origin-blocked frame
         frames.append(frame)
