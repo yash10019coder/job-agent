@@ -72,7 +72,7 @@ from dataclasses import dataclass, field  # noqa: E402
 from job_agent.apply.gates import BOT, classify_gate  # noqa: E402
 from job_agent.apply.reveal import pick_apply  # noqa: E402
 from job_agent.apply.states import Observation, PageState  # noqa: E402
-from job_agent.apply.submit import _CODE_FIELD, _SUCCESS  # noqa: E402
+from job_agent.apply.submit import _CODE_FIELD, _STRONG_SUBMIT, _SUCCESS  # noqa: E402
 
 _CLOSED = re.compile(
     r"no longer (accepting|available|open)|(position|job|posting|role|requisition|vacancy)( has been| is| was)? (now )?(filled|closed|expired|removed|no longer)|"
@@ -103,10 +103,10 @@ def classify(obs: Observation) -> Classification:
     sig = gate["signals"]
     apply_id = pick_apply(m)
 
+    if obs.captcha:  # a visible challenge is something a person can solve: it wins over bot-block wording
+        return Classification(PageState.CAPTCHA, None, 0.95, ["a captcha challenge is visible"])
     if obs.status in (403, 429) or (not form and BOT.search(head[:600])):
         return Classification(PageState.BOT_BLOCK, None, 0.9, ["bot block: status or challenge text"])
-    if obs.captcha:
-        return Classification(PageState.CAPTCHA, None, 0.95, ["a captcha challenge is visible"])
     if obs.status is not None and obs.status >= 400:
         return Classification(PageState.DEAD, None, 0.95, [f"HTTP {obs.status}"])
     if not form and _CLOSED.search(head):
@@ -129,6 +129,10 @@ def classify(obs: Observation) -> Classification:
             return Classification(PageState.ACCOUNT_CHOICE, None, 0.6, ["guest option wording"])
         if sig["login_text"]:
             return Classification(PageState.LOGIN, None, 0.55, ["login wording in main content"])
+    if not form and _REVIEW.search(" ".join([m.title, *m.headings])):
+        submit_btn = next((a for a in m.actions if not a.disabled and _STRONG_SUBMIT.search(a.label.strip())), None)
+        if submit_btn:
+            return Classification(PageState.REVIEW, submit_btn.id, 0.75, ["review heading with a Submit control and no questions"])
     if form:
         if _REVIEW.search(" ".join([m.title, *m.headings])):
             return Classification(PageState.REVIEW, None, 0.7, ["review/summary heading with form fields"])

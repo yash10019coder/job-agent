@@ -40,9 +40,11 @@ class Hop:
 
 async def _state(page: Page) -> dict:
     try:
-        return await page.evaluate(_SIGNATURE_JS)
+        state = await page.evaluate(_SIGNATURE_JS)
     except Exception:
         return {"sig": "", "dialog": False}
+    state["sig"] += "|" + "|".join(f.url for f in page.frames)  # a step that changes only inside an iframe still counts as a change
+    return state
 
 
 async def _wait_for_effect(page: Page, before: dict, before_url: str, before_pages: set, wait_s: float) -> Hop | None:

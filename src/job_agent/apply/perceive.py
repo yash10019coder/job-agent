@@ -203,6 +203,11 @@ async def perceive(page: Page) -> Perception:
         frames.append(frame)
         if index == 0:
             merged = PageModel(**{**raw, "fields": [], "actions": []})
+        if index > 0:  # an embedded form states what it is in ITS headings/alerts/text, not the host page's
+            merged.headings += [h for h in raw.get("headings", []) if h and h not in merged.headings][:6]
+            merged.alerts += [a for a in raw.get("alerts", []) if a and a not in merged.alerts][:5]
+            merged.unparsed += raw.get("unparsed", [])
+            merged.text_digest = (merged.text_digest + " " + raw.get("text_digest", "")[:800])[:3000]
         for f in raw["fields"]:
             merged.fields.append(FieldModel(**{**f, "frame": index}))
         for a in raw["actions"]:

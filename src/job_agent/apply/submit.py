@@ -97,8 +97,8 @@ def _submit_button(perception: Perception):
     return None, 0
 
 
-async def check_ready(page: Page, rows: list, limiter: RateLimiter, log_path: Path, url: str) -> list[str]:
-    """Every reason NOT to submit; an empty list means all guards passed."""
+async def _step_problems(page: Page, rows: list):
+    """Reasons this step is not ready to move on (answers + what the page itself shows). Returns (problems, perception)."""
     problems = []
     for r in rows:
         if r.status.startswith("BLOCKED"):
@@ -116,13 +116,24 @@ async def check_ready(page: Page, rows: list, limiter: RateLimiter, log_path: Pa
             problems.append(f"field shows an error: {f.label} ({f.error or 'invalid'})")
     problems += [f"required control not understood by the agent: {u['text']}" for u in perception.model.unparsed if u.get("required")]
     problems += [f"page alert: {a}" for a in perception.model.alerts]
+    if await captcha_visible(page):
+        problems.append("a captcha is showing (not solved automatically)")
+    return problems, perception
+
+
+async def check_step_ready(page: Page, rows: list) -> list[str]:
+    """Per-step guards: may we click Next/Continue? (Final-only guards live in check_ready.)"""
+    return (await _step_problems(page, rows))[0]
+
+
+async def check_ready(page: Page, rows: list, limiter: RateLimiter, log_path: Path, url: str) -> list[str]:
+    """Every reason NOT to submit; an empty list means all guards passed."""
+    problems, perception = await _step_problems(page, rows)
     button, count = _submit_button(perception)
     if not button:
         problems.append("no enabled Submit control found")
     elif count > 1:
         problems.append(f"{count} Submit-like controls: ambiguous")
-    if await captcha_visible(page):
-        problems.append("a captcha is showing (not solved automatically)")
     allowed, reason = limiter.can_apply(url)
     if not allowed:
         problems.append(f"rate limit: {reason}")
