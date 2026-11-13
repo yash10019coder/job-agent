@@ -15,15 +15,20 @@ CAPTCHA_HOSTS = re.compile(r"recaptcha|hcaptcha|challenges\.cloudflare\.com|func
 
 def classify_gate(model, frame_hosts: list[str], status: int | None = None, captcha_visible: bool = False) -> dict:
     kinds = {f.kind for f in model.fields}
+    main = {"main", "dialog"}
+    main_fields = [f for f in model.fields if f.region in main]
+    main_actions = [a.label for a in model.actions if a.region in main]
     labels = " | ".join(f.label for f in model.fields)
     actions = [a.label for a in model.actions]
     text = " ".join([model.title, " ".join(model.headings), model.text_digest[:1500], labels, " | ".join(actions)])
-    form_like = len(model.fields) >= 3 and any(f.kind == "email" or re.search(r"email|first name|full name", f.label, re.I) for f in model.fields)
+    # login/signup/SSO are judged from MAIN content only: a "Login" link in the site header is not a gate
+    gate_text = " ".join([model.title, " ".join(model.headings), " | ".join(main_actions), " | ".join(f.label for f in main_fields)])
+    form_like = len(main_fields) >= 3 and any(f.kind == "email" or re.search(r"email|first name|full name", f.label, re.I) for f in main_fields)
     signals = {
         "password_field": "password" in kinds,
-        "login_text": bool(LOGIN.search(text)),
-        "signup_text": bool(SIGNUP.search(text)),
-        "sso": sorted({m.group(2).lower() for a in actions for m in [SSO.search(a)] if m}),
+        "login_text": bool(LOGIN.search(gate_text)),
+        "signup_text": bool(SIGNUP.search(gate_text)),
+        "sso": sorted({m.group(2).lower() for a in main_actions for m in [SSO.search(a)] if m}),
         "guest_option": bool(GUEST.search(text)),
         "email_code": bool(CODE.search(text)),
         "captcha_frame": any(CAPTCHA_HOSTS.search(h) for h in frame_hosts),

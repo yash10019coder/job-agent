@@ -1,0 +1,607 @@
+{
+ "name": "stripe_newsletter",
+ "url": "https://stripe.com/careers/listing/head-of-key-accounts",
+ "status": 200,
+ "frame_hosts": [],
+ "from_url": null,
+ "expect_application_form": false,
+ "expect_listing": false,
+ "model": {
+  "url": "https://stripe.com/careers/listing/head-of-key-accounts-customer-success/8300616?gh_jid=8300616",
+  "title": "Stripe Careers | Head of Key Accounts, Customer Success",
+  "headings": [
+   "Head of Key Accounts, Customer Success",
+   "Who we are",
+   "In-office expectations",
+   "Pay and benefits",
+   "We look forward to hearing from you."
+  ],
+  "alerts": [],
+  "fields": [
+   {
+    "id": "f0-n98",
+    "kind": "email",
+    "label": "Enter work email",
+    "help": "",
+    "required": false,
+    "value": "",
+    "options": null,
+    "async_options": false,
+    "placeholder": "Enter work email",
+    "maxlength": null,
+    "pattern": null,
+    "accept": null,
+    "invalid": false,
+    "error": "",
+    "section": "",
+    "frame": 0,
+    "readonly": false,
+    "cards": false
+   }
+  ],
+  "actions": [
+   {
+    "id": "f0-n1",
+    "kind": "link",
+    "label": "Stripe homepage",
+    "primary": false,
+    "disabled": false,
+    "frame": 0
+   },
+   {
+    "id": "f0-n2",
+    "kind": "link",
+    "label": "Stripe careers",
+    "primary": false,
+    "disabled": false,
+    "frame": 0
+   },
+   {
+    "id": "f0-n3",
+    "kind": "link",
+    "label": "Opportunity",
+    "primary": false,
+    "disabled": false,
+    "frame": 0
+   },
+   {
+    "id": "f0-n4",
+    "kind": "link",
+    "label": "Compatibility",
+    "primary": false,
+    "disabled": false,
+    "frame": 0
+   },
+   {
+    "id": "f0-n5",
+    "kind": "link",
+    "label": "Emerging talent",
+    "primary": false,
+    "disabled": false,
+    "frame": 0
+   },
+   {
+    "id": "f0-n6",
+    "kind": "link",
+    "label": "Open roles",
+    "primary": false,
+    "disabled": false,
+    "frame": 0
+   },
+   {
+    "id": "f0-n7",
+    "kind": "link",
+    "label": "Roles at Stripe",
+    "primary": false,
+    "disabled": false,
+    "frame": 0
+   },
+   {
+    "id": "f0-n8",
+    "kind": "link",
+    "label": "Apply now",
+    "primary": true,
+    "disabled": false,
+    "frame": 0
+   },
+   {
+    "id": "f0-n9",
+    "kind": "link",
+    "label": "here",
+    "primary": false,
+    "disabled": false,
+    "frame": 0
+   },
+   {
+    "id": "f0-n10",
+    "kind": "link",
+    "label": "Apply for this role",
+    "primary": true,
+    "disabled": false,
+    "frame": 0
+   },
+   {
+    "id": "f0-n11",
+    "kind": "link",
+    "label": "Pricing",
+    "primary": false,
+    "disabled": false,
+    "frame": 0
+   },
+   {
+    "id": "f0-n12",
+    "kind": "link",
+    "label": "Atlas",
+    "primary": false,
+    "disabled": false,
+    "frame": 0
+   },
+   {
+    "id": "f0-n13",
+    "kind": "link",
+    "label": "Authorization Boost",
+    "primary": false,
+    "disabled": false,
+    "frame": 0
+   },
+   {
+    "id": "f0-n14",
+    "kind": "link",
+    "label": "Billing",
+    "primary": false,
+    "disabled": false,
+    "frame": 0
+   },
+   {
+    "id": "f0-n15",
+    "kind": "link",
+    "label": "Capital",
+    "primary": false,
+    "disabled": false,
+    "frame": 0
+   },
+   {
+    "id": "f0-n16",
+    "kind": "link",
+    "label": "Capital for platforms",
+    "primary": false,
+    "disabled": false,
+    "frame": 0
+   },
+   {
+    "id": "f0-n17",
+    "kind": "link",
+    "label": "Checkout",
+    "primary": false,
+    "disabled": false,
+    "frame": 0
+   },
+   {
+    "id": "f0-n18",
+    "kind": "link",
+    "label": "Climate",
+    "primary": false,
+    "disabled": false,
+    "frame": 0
+   },
+   {
+    "id": "f0-n19",
+    "kind": "link",
+    "label": "Connect",
+    "primary": false,
+    "disabled": false,
+    "frame": 0
+   },
+   {
+    "id": "f0-n20",
+    "kind": "link",
+    "label": "Crypto",
+    "primary": false,
+    "disabled": false,
+    "frame": 0
+   },
+   {
+    "id": "f0-n21",
+    "kind": "link",
+    "label": "Crypto Onramp",
+    "primary": false,
+    "disabled": false,
+    "frame": 0
+   },
+   {
+    "id": "f0-n22",
+    "kind": "link",
+    "label": "Data Pipeline",
+    "primary": false,
+    "disabled": false,
+    "frame": 0
+   },
+   {
+    "id": "f0-n23",
+    "kind": "link",
+    "label": "Elements",
+    "primary": false,
+    "disabled": false,
+    "frame": 0
+   },
+   {
+    "id": "f0-n24",
+    "kind": "link",
+    "label": "Financial Connections",
+    "primary": false,
+    "disabled": false,
+    "frame": 0
+   },
+   {
+    "id": "f0-n25",
+    "kind": "link",
+    "label": "Global Payouts",
+    "primary": false,
+    "disabled": false,
+    "frame": 0
+   },
+   {
+    "id": "f0-n26",
+    "kind": "link",
+    "label": "Identity",
+    "primary": false,
+    "disabled": false,
+    "frame": 0
+   },
+   {
+    "id": "f0-n27",
+    "kind": "link",
+    "label": "Invoicing",
+    "primary": false,
+    "disabled": false,
+    "frame": 0
+   },
+   {
+    "id": "f0-n28",
+    "kind": "link",
+    "label": "Issuing",
+    "primary": false,
+    "disabled": false,
+    "frame": 0
+   },
+   {
+    "id": "f0-n29",
+    "kind": "link",
+    "label": "Link",
+    "primary": false,
+    "disabled": false,
+    "frame": 0
+   },
+   {
+    "id": "f0-n30",
+    "kind": "link",
+    "label": "Managed Payments",
+    "primary": false,
+    "disabled": false,
+    "frame": 0
+   },
+   {
+    "id": "f0-n31",
+    "kind": "link",
+    "label": "Payment links",
+    "primary": false,
+    "disabled": false,
+    "frame": 0
+   },
+   {
+    "id": "f0-n32",
+    "kind": "link",
+    "label": "Payment methods",
+    "primary": false,
+    "disabled": false,
+    "frame": 0
+   },
+   {
+    "id": "f0-n33",
+    "kind": "link",
+    "label": "Payments",
+    "primary": false,
+    "disabled": false,
+    "frame": 0
+   },
+   {
+    "id": "f0-n34",
+    "kind": "link",
+    "label": "Radar",
+    "primary": false,
+    "disabled": false,
+    "frame": 0
+   },
+   {
+    "id": "f0-n35",
+    "kind": "link",
+    "label": "Revenue Recognition",
+    "primary": false,
+    "disabled": false,
+    "frame": 0
+   },
+   {
+    "id": "f0-n36",
+    "kind": "link",
+    "label": "Stripe Sigma",
+    "primary": false,
+    "disabled": false,
+    "frame": 0
+   },
+   {
+    "id": "f0-n37",
+    "kind": "link",
+    "label": "Subscriptions",
+    "primary": false,
+    "disabled": false,
+    "frame": 0
+   },
+   {
+    "id": "f0-n38",
+    "kind": "link",
+    "label": "Tax",
+    "primary": false,
+    "disabled": false,
+    "frame": 0
+   },
+   {
+    "id": "f0-n39",
+    "kind": "link",
+    "label": "Terminal",
+    "primary": false,
+    "disabled": false,
+    "frame": 0
+   },
+   {
+    "id": "f0-n40",
+    "kind": "link",
+    "label": "Treasury",
+    "primary": false,
+    "disabled": false,
+    "frame": 0
+   },
+   {
+    "id": "f0-n41",
+    "kind": "link",
+    "label": "Treasury for platforms",
+    "primary": false,
+    "disabled": false,
+    "frame": 0
+   },
+   {
+    "id": "f0-n42",
+    "kind": "link",
+    "label": "Usage-based billing",
+    "primary": false,
+    "disabled": false,
+    "frame": 0
+   },
+   {
+    "id": "f0-n43",
+    "kind": "link",
+    "label": "Enterprises",
+    "primary": false,
+    "disabled": false,
+    "frame": 0
+   },
+   {
+    "id": "f0-n44",
+    "kind": "link",
+    "label": "Startups",
+    "primary": false,
+    "disabled": false,
+    "frame": 0
+   },
+   {
+    "id": "f0-n45",
+    "kind": "link",
+    "label": "Agentic commerce",
+    "primary": false,
+    "disabled": false,
+    "frame": 0
+   },
+   {
+    "id": "f0-n46",
+    "kind": "link",
+    "label": "Crypto",
+    "primary": false,
+    "disabled": false,
+    "frame": 0
+   },
+   {
+    "id": "f0-n47",
+    "kind": "link",
+    "label": "Ecommerce",
+    "primary": false,
+    "disabled": false,
+    "frame": 0
+   },
+   {
+    "id": "f0-n48",
+    "kind": "link",
+    "label": "Embedded finance",
+    "primary": false,
+    "disabled": false,
+    "frame": 0
+   },
+   {
+    "id": "f0-n49",
+    "kind": "link",
+    "label": "Finance automation",
+    "primary": false,
+    "disabled": false,
+    "frame": 0
+   },
+   {
+    "id": "f0-n50",
+    "kind": "link",
+    "label": "Global businesses",
+    "primary": false,
+    "disabled": false,
+    "frame": 0
+   },
+   {
+    "id": "f0-n51",
+    "kind": "link",
+    "label": "In-app payments",
+    "primary": false,
+    "disabled": false,
+    "frame": 0
+   },
+   {
+    "id": "f0-n52",
+    "kind": "link",
+    "label": "Marketplaces",
+    "primary": false,
+    "disabled": false,
+    "frame": 0
+   },
+   {
+    "id": "f0-n53",
+    "kind": "link",
+    "label": "Money management",
+    "primary": false,
+    "disabled": false,
+    "frame": 0
+   },
+   {
+    "id": "f0-n54",
+    "kind": "link",
+    "label": "Platforms",
+    "primary": false,
+    "disabled": false,
+    "frame": 0
+   },
+   {
+    "id": "f0-n55",
+    "kind": "link",
+    "label": "SaaS",
+    "primary": false,
+    "disabled": false,
+    "frame": 0
+   },
+   {
+    "id": "f0-n56",
+    "kind": "link",
+    "label": "AI companies",
+    "primary": false,
+    "disabled": false,
+    "frame": 0
+   },
+   {
+    "id": "f0-n57",
+    "kind": "link",
+    "label": "Creator economy",
+    "primary": false,
+    "disabled": false,
+    "frame": 0
+   },
+   {
+    "id": "f0-n58",
+    "kind": "link",
+    "label": "Fintech",
+    "primary": false,
+    "disabled": false,
+    "frame": 0
+   },
+   {
+    "id": "f0-n59",
+    "kind": "link",
+    "label": "Gaming",
+    "primary": false,
+    "disabled": false,
+    "frame": 0
+   },
+   {
+    "id": "f0-n60",
+    "kind": "link",
+    "label": "Hospitality, travel, and leisure",
+    "primary": false,
+    "disabled": false,
+    "frame": 0
+   },
+   {
+    "id": "f0-n61",
+    "kind": "link",
+    "label": "Insurance",
+    "primary": false,
+    "disabled": false,
+    "frame": 0
+   },
+   {
+    "id": "f0-n62",
+    "kind": "link",
+    "label": "Media and entertainment",
+    "primary": false,
+    "disabled": false,
+    "frame": 0
+   },
+   {
+    "id": "f0-n63",
+    "kind": "link",
+    "label": "Nonprofits",
+    "primary": false,
+    "disabled": false,
+    "frame": 0
+   },
+   {
+    "id": "f0-n64",
+    "kind": "link",
+    "label": "Professional services",
+    "primary": false,
+    "disabled": false,
+    "frame": 0
+   },
+   {
+    "id": "f0-n65",
+    "kind": "link",
+    "label": "Public sector",
+    "primary": false,
+    "disabled": false,
+    "frame": 0
+   },
+   {
+    "id": "f0-n66",
+    "kind": "link",
+    "label": "Retail",
+    "primary": false,
+    "disabled": false,
+    "frame": 0
+   },
+   {
+    "id": "f0-n67",
+    "kind": "link",
+    "label": "Documentation",
+    "primary": false,
+    "disabled": false,
+    "frame": 0
+   },
+   {
+    "id": "f0-n68",
+    "kind": "link",
+    "label": "API reference",
+    "primary": false,
+    "disabled": false,
+    "frame": 0
+   },
+   {
+    "id": "f0-n69",
+    "kind": "link",
+    "label": "API status",
+    "primary": false,
+    "disabled": false,
+    "frame": 0
+   },
+   {
+    "id": "f0-n70",
+    "kind": "link",
+    "label": "API changelog",
+    "primary": false,
+    "disabled": false,
+    "frame": 0
+   }
+  ],
+  "text_digest": "Opportunity Compatibility Emerging talent Open roles Roles at Stripe / Role details Head of Key Accounts, Customer Success Who we are About Stripe Stripe is a financial infrastructure platform for businesses. Millions of companies\u2014from the world\u2019s largest enterprises to the most ambitious startups\u2014use Stripe to accept payments, grow their revenue, and accelerate new business opportunities. Our mission is to increase the GDP of the internet, and we have a staggering amount of work ahead. That means you have an unprecedented opportunity to put the global economy within everyone\u2019s reach while doing the most important work of your career. About the team The Key Accounts Customer Success team is ",
+  "unparsed": []
+ }
+}

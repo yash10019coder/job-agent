@@ -1,0 +1,339 @@
+{
+ "name": "gsk_newsletter",
+ "url": "https://jobs.gsk.com/gb/en/job/450140",
+ "status": 200,
+ "frame_hosts": [],
+ "from_url": null,
+ "expect_application_form": false,
+ "expect_listing": false,
+ "model": {
+  "url": "https://jobs.gsk.com/gb/en/job/450140/Senior-Principal-Architect-Security-Architecture-Solution-Engineering-OT-Security?utm_source=indeed&utm_medium=phenom-feeds",
+  "title": "Senior Principal Architect - Security Architecture & Solution Engineering - OT Security in Bengaluru, India | Digital and Technology at GSK",
+  "headings": [
+   "Senior Principal Architect - Security Architecture & Solution Engineering - OT Security",
+   "Description",
+   "Get notified for similar jobs",
+   "Similar jobs",
+   "Share the opportunity"
+  ],
+  "alerts": [],
+  "fields": [
+   {
+    "id": "f0-n15",
+    "kind": "email",
+    "label": "Email address",
+    "help": "",
+    "required": true,
+    "value": "",
+    "options": null,
+    "async_options": false,
+    "placeholder": "name@email.com",
+    "maxlength": null,
+    "pattern": null,
+    "accept": null,
+    "invalid": false,
+    "error": "",
+    "section": "Get notified for similar jobs",
+    "frame": 0,
+    "readonly": false,
+    "cards": false
+   },
+   {
+    "id": "f0-n16",
+    "kind": "checkbox",
+    "label": "If you subscribe to job alerts, you will receive email notifications when new roles matching your preferences become available. You may opt-out at any time by clicking the \u201cunsubscribe\u201d link in any job alert email. For information about how we collect, use and protect your personal data and your privacy rights, please review our Candidate Privacy Notice.",
+    "help": "",
+    "required": true,
+    "value": "",
+    "options": null,
+    "async_options": false,
+    "placeholder": "",
+    "maxlength": null,
+    "pattern": null,
+    "accept": null,
+    "invalid": false,
+    "error": "",
+    "section": "Get notified for similar jobs",
+    "frame": 0,
+    "readonly": false,
+    "cards": false
+   }
+  ],
+  "actions": [
+   {
+    "id": "f0-n1",
+    "kind": "link",
+    "label": "Skip to main content",
+    "primary": false,
+    "disabled": false,
+    "frame": 0
+   },
+   {
+    "id": "f0-n2",
+    "kind": "link",
+    "label": "Candidate account",
+    "primary": false,
+    "disabled": false,
+    "frame": 0
+   },
+   {
+    "id": "f0-n3",
+    "kind": "button",
+    "label": "English (UK)",
+    "primary": false,
+    "disabled": false,
+    "frame": 0
+   },
+   {
+    "id": "f0-n4",
+    "kind": "link",
+    "label": "Saved jobs (0)",
+    "primary": false,
+    "disabled": false,
+    "frame": 0
+   },
+   {
+    "id": "f0-n5",
+    "kind": "link",
+    "label": "Apply now",
+    "primary": true,
+    "disabled": false,
+    "frame": 0
+   },
+   {
+    "id": "f0-n6",
+    "kind": "button",
+    "label": "Save job",
+    "primary": false,
+    "disabled": false,
+    "frame": 0
+   },
+   {
+    "id": "f0-n7",
+    "kind": "button",
+    "label": "Why us",
+    "primary": false,
+    "disabled": false,
+    "frame": 0
+   },
+   {
+    "id": "f0-n8",
+    "kind": "button",
+    "label": "What we do",
+    "primary": false,
+    "disabled": false,
+    "frame": 0
+   },
+   {
+    "id": "f0-n9",
+    "kind": "button",
+    "label": "How we do it",
+    "primary": false,
+    "disabled": false,
+    "frame": 0
+   },
+   {
+    "id": "f0-n10",
+    "kind": "button",
+    "label": "What we offer",
+    "primary": false,
+    "disabled": false,
+    "frame": 0
+   },
+   {
+    "id": "f0-n11",
+    "kind": "link",
+    "label": "IN.recruitment-adjustments@gsk.com",
+    "primary": false,
+    "disabled": false,
+    "frame": 0
+   },
+   {
+    "id": "f0-n12",
+    "kind": "link",
+    "label": "askus@gsk.com",
+    "primary": false,
+    "disabled": false,
+    "frame": 0
+   },
+   {
+    "id": "f0-n13",
+    "kind": "link",
+    "label": "Apply now",
+    "primary": true,
+    "disabled": false,
+    "frame": 0
+   },
+   {
+    "id": "f0-n14",
+    "kind": "button",
+    "label": "Save job",
+    "primary": false,
+    "disabled": false,
+    "frame": 0
+   },
+   {
+    "id": "f0-n17",
+    "kind": "link",
+    "label": "Candidate Privacy Notice",
+    "primary": false,
+    "disabled": false,
+    "frame": 0
+   },
+   {
+    "id": "f0-n18",
+    "kind": "button",
+    "label": "Submit",
+    "primary": true,
+    "disabled": false,
+    "frame": 0
+   },
+   {
+    "id": "f0-n19",
+    "kind": "button",
+    "label": "Manage alerts",
+    "primary": false,
+    "disabled": false,
+    "frame": 0
+   },
+   {
+    "id": "f0-n20",
+    "kind": "link",
+    "label": "Director - Security Architecture & Solution Engineering - OT Security",
+    "primary": false,
+    "disabled": false,
+    "frame": 0
+   },
+   {
+    "id": "f0-n21",
+    "kind": "link",
+    "label": "Apply now",
+    "primary": true,
+    "disabled": false,
+    "frame": 0
+   },
+   {
+    "id": "f0-n22",
+    "kind": "button",
+    "label": "Save Director - Security Architecture & Solution Engineering - OT Security to j\u2026",
+    "primary": false,
+    "disabled": false,
+    "frame": 0
+   },
+   {
+    "id": "f0-n23",
+    "kind": "link",
+    "label": "Lead Analyst, Design Assurance & Product Management - Application Security",
+    "primary": false,
+    "disabled": false,
+    "frame": 0
+   },
+   {
+    "id": "f0-n24",
+    "kind": "link",
+    "label": "Apply now",
+    "primary": true,
+    "disabled": false,
+    "frame": 0
+   },
+   {
+    "id": "f0-n25",
+    "kind": "button",
+    "label": "Save Lead Analyst, Design Assurance & Product Management - Application Security\u2026",
+    "primary": false,
+    "disabled": false,
+    "frame": 0
+   },
+   {
+    "id": "f0-n26",
+    "kind": "link",
+    "label": "Principal - AI ML and Cloud Security",
+    "primary": false,
+    "disabled": false,
+    "frame": 0
+   },
+   {
+    "id": "f0-n27",
+    "kind": "link",
+    "label": "Apply now",
+    "primary": true,
+    "disabled": false,
+    "frame": 0
+   },
+   {
+    "id": "f0-n28",
+    "kind": "button",
+    "label": "Save Principal - AI ML and Cloud Security to job cart",
+    "primary": false,
+    "disabled": false,
+    "frame": 0
+   },
+   {
+    "id": "f0-n29",
+    "kind": "button",
+    "label": "Show more",
+    "primary": false,
+    "disabled": false,
+    "frame": 0
+   },
+   {
+    "id": "f0-n30",
+    "kind": "button",
+    "label": "Share via linkedin",
+    "primary": false,
+    "disabled": false,
+    "frame": 0
+   },
+   {
+    "id": "f0-n31",
+    "kind": "button",
+    "label": "Share via Facebook",
+    "primary": false,
+    "disabled": false,
+    "frame": 0
+   },
+   {
+    "id": "f0-n32",
+    "kind": "button",
+    "label": "Share via email",
+    "primary": false,
+    "disabled": false,
+    "frame": 0
+   },
+   {
+    "id": "f0-n33",
+    "kind": "link",
+    "label": "jobs.gsk.com cookie settings",
+    "primary": false,
+    "disabled": false,
+    "frame": 0
+   },
+   {
+    "id": "f0-n34",
+    "kind": "link",
+    "label": "Cookie Policy",
+    "primary": false,
+    "disabled": false,
+    "frame": 0
+   },
+   {
+    "id": "f0-n35",
+    "kind": "link",
+    "label": "Customise",
+    "primary": false,
+    "disabled": false,
+    "frame": 0
+   },
+   {
+    "id": "f0-n36",
+    "kind": "button",
+    "label": "Accept all",
+    "primary": false,
+    "disabled": false,
+    "frame": 0
+   }
+  ],
+  "text_digest": "Skip to main content Candidate account English (UK) Saved jobs (0) - Senior Principal Architect - Security Architecture & Solution Engineering - OT Security Location: Bengaluru, India Category: Digital and Technology Job ID: 450140 Full time Posted: Posted: 09 Nov 2026 Hybrid (Remote & On-site) Apply now Save job Why us What we do How we do it What we offer Start a career with purpose At GSK, we unite science, technology, and talent to get ahead of disease together. Our goal is to improve the lives of billions of people across the world. By bringing together outstanding people in an inclusive environment, we can make an impact on a global scale. Description GSK remains committed to achieving",
+  "unparsed": []
+ }
+}
