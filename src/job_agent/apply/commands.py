@@ -251,6 +251,26 @@ def apply_survey(args: argparse.Namespace) -> int:
     return 0
 
 
+def apply_run(args: argparse.Namespace) -> int:
+    """Run the generic application loop on many jobs (dry run only; one Brave window each); data/runs/<timestamp>/."""
+    from job_agent.apply.batch import run_batch
+    from job_agent.apply.prefill import build_facts
+
+    root = Path(__file__).resolve().parents[3]
+    facts = build_facts(root / "data" / "applicant_profile.json", root / "data" / "resume_inventory.json")
+    jobs = json.loads(Path(args.jobs).read_text(encoding="utf-8"))
+
+    async def run():
+        async with BraveSession(_config(args)) as session:
+            return await run_batch(session, jobs, root / "data" / "runs", facts, args.resume or None, args.model or None,
+                                   submit=False, concurrency=args.concurrency, engine="controller")
+
+    for r in asyncio.run(run()):
+        print(f"{(r.get('ats') or '-')[:12]:12} {r['status']:22} steps={r.get('steps', '-')} fields={r.get('fields', '-')} {r['seconds']}s  "
+              f"{' > '.join(r.get('states', []))[:70]}  {r['dir']}")
+    return 0
+
+
 def register(subparsers) -> None:
     """Add every apply-engine subcommand to the CLI."""
     brave = subparsers.add_parser("brave-launch", help="Launch Brave (CDP) and open a new tab via Playwright.")
@@ -324,3 +344,11 @@ def register(subparsers) -> None:
     reveal.add_argument("--concurrency", type=int, default=4)
     add_brave_args(reveal)
     reveal.set_defaults(func=apply_reveal)
+
+    run = subparsers.add_parser("apply-run", help="Generic application loop on many jobs (dry run only); logs to data/runs/.")
+    run.add_argument("--jobs", required=True, help="JSON list of {url, company?, title?, ats?}")
+    run.add_argument("--resume", default="", help="PDF to upload into resume fields")
+    run.add_argument("--model", default="")
+    run.add_argument("--concurrency", type=int, default=3)
+    add_brave_args(run)
+    run.set_defaults(func=apply_run)
