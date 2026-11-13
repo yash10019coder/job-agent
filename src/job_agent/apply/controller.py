@@ -60,7 +60,7 @@ async def observe(page: Page, status: _Status, from_url: str | None) -> tuple[Ob
 
 def _controls(model) -> tuple[list, list]:
     """(next-like controls, submit-like controls) among enabled actions."""
-    enabled = [a for a in model.actions if not a.disabled and a.region in {"main", "dialog"}]
+    enabled = [a for a in model.actions if not a.disabled and a.region in {"main", "dialog", "footer"}]  # sticky footers hold Next/Submit
     submit = [a for a in enabled if _STRONG_SUBMIT.search(a.label.strip())] or [a for a in enabled if _WEAK_SUBMIT.search(a.label.strip())]
     nxt = [a for a in enabled if _NEXT.match(a.label.strip()) and a not in submit]
     return nxt, submit
@@ -94,7 +94,7 @@ async def run_application(page: Page, llm: LLM, facts: dict, resume: str | None,
             return done(Outcome.STUCK, "the page was closed")
         obs, _ = await observe(page, status, start_url if res.steps == 1 or page.url != start_url else None)
         for _ in range(4):  # single-page apps render after the load event: give a blank page a few chances before judging it
-            blank = not obs.model.fields and not obs.model.actions and len(obs.model.text_digest.strip()) < 60
+            blank = not obs.model.fields and not obs.model.actions  # nothing to act on yet: still rendering
             if not blank or obs.status in (403, 404, 410, 429) or (obs.status or 0) >= 500:
                 break
             await Settler(page).settle()

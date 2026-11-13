@@ -169,3 +169,25 @@ def test_model_cannot_call_an_almost_empty_page_closed_or_a_listing():
     for claimed in ("closed", "listing", "dead"):
         got = asyncio.run(classify_page(obs(blank), StubLLM({"state": claimed, "advance_id": "", "confidence": 0.9})))
         assert got.state == PageState.UNKNOWN, claimed
+
+
+def test_a_real_apply_button_beats_a_stray_apply_link():
+    from job_agent.apply.reveal import pick_apply
+    m = page("Job", ["Job"])
+    ActionModel = type(page("x", actions=["a"]).actions[0])
+    m.actions += [ActionModel(id="link1", kind="link", label="Apply", region="main"), ActionModel(id="btn1", kind="button", label="Apply", region="main")]
+    assert pick_apply(m) == "btn1"
+
+
+def test_resume_input_is_found_by_label_accent_or_position():
+    from job_agent.apply.demo import resume_field_keys
+    from job_agent.apply.perceive import FieldModel
+
+    def chosen(*labels):
+        model = PageModel(url="u", fields=[FieldModel(id=f"f{i}", kind="file", label=lb) for i, lb in enumerate(labels)])
+        keys = resume_field_keys(model)
+        return [f.label for f in model.fields if f.key in keys]
+    assert chosen("Cover letter", "R\u00e9sum\u00e9*") == ["R\u00e9sum\u00e9*"]
+    assert chosen("Main attachment", "Cover Letter") == ["Main attachment"]
+    assert chosen("Drop or select (.doc / .docx / .pdf)", "Cover letter") == ["Drop or select (.doc / .docx / .pdf)"]
+    assert chosen("Cover letter", "Portfolio") == []

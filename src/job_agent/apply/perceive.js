@@ -184,7 +184,7 @@
   };
   window.__agentFieldText = fieldText;
 
-  const PLACEHOLDER = /^(select|choose|please select|search|type to search|pick)\b[^a-z0-9]*$|^[-—–.]*$/i;
+  const PLACEHOLDER = /^(select|choose|please select|search|type to search|pick)\b[^a-z0-9]*$|^[-—–.]*$|make (a )?selection|select an? (option|value)|choose an? (option|value)/i;
   const comboValue = (el, label) => {
     if (el.value) return clean(el.value);
     let text = fieldText(el);

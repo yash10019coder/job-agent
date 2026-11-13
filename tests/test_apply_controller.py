@@ -116,3 +116,10 @@ def test_choice_dialog_is_answered_with_apply_manually():
 def test_a_page_that_renders_late_is_waited_for_not_judged_blank():
     res, _, _, _ = run("late_render.html")
     assert res.outcome == Outcome.DRY_RUN_READY, (res.outcome, res.detail)
+
+
+def test_an_optional_box_that_rejects_our_answer_is_left_blank_not_a_blocker():
+    """Breezy-style numeric 'Desired salary': our policy answer is text; an optional field must not stop the run."""
+    res, _, _, _ = run("optional_number.html")
+    assert res.outcome == Outcome.DRY_RUN_READY, (res.outcome, res.detail)
+    assert any(r.label.startswith("Desired salary") and r.status.startswith("left blank") for r in res.rows)

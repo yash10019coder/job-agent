@@ -34,13 +34,11 @@ def pick_apply(model) -> str | None:
     for a in enabled:
         if a.region == "dialog" and (_DIALOG_CHOICE.match(a.label.strip()) or APPLY.match(a.label.strip())):
             return a.id
-    for region in ("main", "dialog"):
-        for a in enabled:
-            if a.region == region and APPLY.match(a.label.strip()):
-                return a.id
-    for a in enabled:
-        if APPLY.match(a.label.strip()):
-            return a.id
+    for region in ("main", "dialog", None):  # a real button beats a stray link in the description (seen: an 'Apply' link to a video)
+        for kind in ("button", "link"):
+            for a in enabled:
+                if (region is None or a.region == region) and a.kind == kind and APPLY.match(a.label.strip()):
+                    return a.id
     return None
 
 

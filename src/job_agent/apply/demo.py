@@ -9,6 +9,7 @@ from __future__ import annotations
 
 import json
 import re
+import unicodedata
 from dataclasses import dataclass, field
 from pathlib import Path
 
@@ -46,6 +47,27 @@ class DemoResult:
     events: list[str] = field(default_factory=list)
     stopped_before: str | None = None
     submit: SubmitOutcome | None = None
+
+
+_RESUME_WORDS = re.compile(r"\b(resume|cv|curriculum)\b", re.I)
+_NOT_RESUME = re.compile(r"cover|letter|portfolio|transcript|certificate|writing sample|work sample|reference|photo|id\b|passport", re.I)
+
+
+def _plain(text: str) -> str:
+    """Lower-case, accents removed ('Résumé' -> 'resume')."""
+    return "".join(c for c in unicodedata.normalize("NFKD", text) if not unicodedata.combining(c))
+
+
+def resume_field_keys(model) -> set[str]:
+    """Which file inputs take the resume: the ones labelled resume/CV (accent-insensitive); if none says so, the first
+    file input that is not obviously something else (cover letter, portfolio...). Upload widgets are often labelled
+    only 'Drop or select (.pdf)' or 'Main attachment'."""
+    files = [f for f in model.fields if f.kind == "file"]
+    explicit = [f for f in files if _RESUME_WORDS.search(_plain(f.label))]
+    if explicit:
+        return {explicit[0].key}
+    others = [f for f in files if not _NOT_RESUME.search(_plain(f.label))]
+    return {others[0].key} if others else set()
 
 
 def build_context(profile_path: Path, inventory_path: Path) -> str:
@@ -223,7 +245,7 @@ async def fill_until_stable(page: Page, llm: LLM, context: str, resume: str | No
                 continue
             cur = matches[occurrence[id(f)]]
             if cur.kind == "file":
-                if resume and re.search(r"\b(resume|cv|curriculum)\b", cur.label, re.I):
+                if resume and cur.key in resume_field_keys(fresh.model):
                     res = await execute.upload(page, fresh, cur, resume, settler)
                     result.rows.append(Row(cur.label, cur.kind, Path(resume).name, 1.0, "profile", "ok" if res.ok else res.detail))
                 else:
@@ -252,7 +274,14 @@ async def fill_until_stable(page: Page, llm: LLM, context: str, resume: str | No
                     cur = next((g for g in fresh.model.fields if g.key == f.key), cur)
                     ans = alt
                     res, final_value = await _apply_field(page, fresh, settler, cur, alt["value"], decider, context)
-            result.rows.append(Row(f.label, f.kind, final_value, ans["confidence"], ans["source"], "ok" if res.ok else res.detail,
+            status = "ok" if res.ok else res.detail
+            if not res.ok and not cur.required and cur.kind in {"text", "textarea", "number", "tel", "email", "date", "url"}:
+                try:  # an optional box that will not take our answer is left empty (and logged), not a reason to stop
+                    await fresh.locator(cur.id, cur.frame).fill("", timeout=2000)
+                except Exception:
+                    pass
+                status = f"left blank (optional; could not set: {res.detail[:70]})"
+            result.rows.append(Row(f.label, f.kind, final_value, ans["confidence"], ans["source"], status,
                                    ans.get("basis", "") if ans["source"] in {"derived", "policy"} else ""))
             if f.is_trigger:
                 await settler.settle()

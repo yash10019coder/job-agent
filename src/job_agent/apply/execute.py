@@ -192,7 +192,8 @@ async def fill_text(page: Page, perception: Perception, field: FieldModel, value
         got, want = re.sub(r"\D", "", actual), re.sub(r"\D", "", value)
         same = len(got) >= 8 and want.endswith(got)
     if not same and not actual.strip() and field.kind == "text":
-        return await pick_suggestion(page, perception, field, value)  # emptied on blur: a typeahead that needs a clicked result
+        picked = await pick_suggestion(page, perception, field, value)  # emptied on blur: a typeahead that needs a clicked result
+        return picked if picked.ok else ActionResult(False, f"value not accepted (got ''); {picked.detail}")
     return ActionResult(same, "ok" if same else f"value not accepted (got {actual!r})")
 
 
