@@ -191,3 +191,10 @@ def test_resume_input_is_found_by_label_accent_or_position():
     assert chosen("Main attachment", "Cover Letter") == ["Main attachment"]
     assert chosen("Drop or select (.doc / .docx / .pdf)", "Cover letter") == ["Drop or select (.doc / .docx / .pdf)"]
     assert chosen("Cover letter", "Portfolio") == []
+
+
+def test_confirm_your_email_box_is_not_an_emailed_code_prompt():
+    form = page("Easy apply", ["Apply"], fields=[("text", "First name"), ("text", "Last name"), ("email", "Email"), ("email", "Confirm your email")])
+    assert classify(obs(form)).state == PageState.FORM_STEP
+    code = page("Verify", ["Verify your email"], fields=[("text", "Verification code")])
+    assert classify(obs(code)).state == PageState.EMAIL_CODE

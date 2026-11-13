@@ -183,6 +183,11 @@ async def run_application(page: Page, llm: LLM, facts: dict, resume: str | None,
                     return done(Outcome.ERROR_VALIDATION_LOOP, "; ".join(out.problems)[:300])
                 continue
             return done(Outcome.STUCK, out.detail)
+        if not nxt and not final:
+            disabled = [a.label for a in perception.model.actions if a.disabled and (_NEXT.match(a.label.strip()) or _STRONG_SUBMIT.search(a.label.strip()) or _WEAK_SUBMIT.search(a.label.strip()))]
+            if disabled:
+                empty = [f.label for f in perception.model.fields if f.required and f.empty][:4]
+                return done(Outcome.BLOCKED, f"'{disabled[0]}' is disabled: a required field is probably still unfilled ({', '.join(empty) or 'unknown which'})")
         if len(nxt) != 1:
             return done(Outcome.NEEDS_HUMAN, f"{'no' if not nxt else 'several'} Next/Submit controls on this step: not guessing")
         before = perception.model

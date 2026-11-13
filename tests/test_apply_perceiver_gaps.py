@@ -77,3 +77,19 @@ def test_inputs_inside_web_components_get_labels_from_the_host_or_autocomplete()
         return (await perceive(page)).model
     m = run_on_fixture(go)
     assert [f.label for f in m.fields] == ["Given name", "Email address", "Last name", "Phone"]
+
+
+def test_a_div_combobox_with_a_make_a_selection_placeholder_is_empty_and_can_be_chosen():
+    from job_agent.apply import demo
+    from job_agent.apply.perceive import Settler
+
+    async def go(page):
+        await page.goto((ROOT / "tests/fixtures/div_combobox.html").resolve().as_uri())
+        p = await perceive(page)
+        field = next(f for f in p.model.fields if f.kind == "combobox")
+        before = field.value
+        res, _ = await demo._apply_field(page, p, Settler(page), field, "India +91", None, "")
+        return before, res, await page.inner_text("#cb")
+    before, res, shown = run_on_fixture(go)
+    assert before == "" and res.ok, (before, res)
+    assert shown == "India +91"

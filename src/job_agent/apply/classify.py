@@ -77,6 +77,7 @@ from job_agent.apply.submit import _CODE_FIELD, _STRONG_SUBMIT, _SUCCESS  # noqa
 _CLOSED = re.compile(
     r"no longer (accepting|available|open)|(position|job|posting|role|requisition|vacancy)( has been| is| was)? (now )?(filled|closed|expired|removed|no longer)|"
     r"job (filled|closed|expired)|not (currently )?accepting (new )?applications|has been (filled|closed)|page not found|no longer exists|couldn.t find (that|this) (job|page|position)", re.I)
+_CODE_LABEL = re.compile(r"verification code|security code|confirmation code|one[- ]time|\botp\b|enter the code|pass ?code|6[- ]digit", re.I)
 _REVIEW = re.compile(r"\b(review( and submit| your application| & submit)?|application summary|confirm (your )?(application|details))\b", re.I)
 
 
@@ -115,7 +116,7 @@ def classify(obs: Observation) -> Classification:
         return Classification(PageState.LISTING, None, 0.85, ["board/listing page (filters, 'N jobs', or a job URL that landed on the board)"])
     if not form and (_SUCCESS.search(head) or re.search(r"/(confirmation|thank|submitted|success|applied)\b", obs.url, re.I)):
         return Classification(PageState.CONFIRMATION, None, 0.8, ["confirmation wording (the controller still requires a post-submit transition)"])
-    if any(_CODE_FIELD.search(f.label) for f in m.fields if f.region in _MAIN) or (not form and len(m.fields) <= 3 and _CODE_FIELD.search(head)):
+    if any(_CODE_LABEL.search(f.label) for f in m.fields if f.region in _MAIN and f.kind != "email") or (not form and len(m.fields) <= 3 and _CODE_FIELD.search(head)):
         return Classification(PageState.EMAIL_CODE, None, 0.85, ["a verification-code field or prompt"])
     if not form and not apply_id:
         if sig["password_field"]:

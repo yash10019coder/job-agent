@@ -188,7 +188,7 @@ async def fill_text(page: Page, perception: Perception, field: FieldModel, value
     except Exception as error:
         return ActionResult(False, f"fill failed: {error}")
     same = re.sub(r"[^a-z0-9]", "", actual.lower()) == re.sub(r"[^a-z0-9]", "", value.lower())  # inputs may reformat (phone masks)
-    if not same and field.kind == "tel":  # the country code may live in a separate box, so the number is stored without it
+    if not same and (field.kind == "tel" or re.search(r"phone|mobile|cell", field.label, re.I)):  # the country code may live in a separate box
         got, want = re.sub(r"\D", "", actual), re.sub(r"\D", "", value)
         same = len(got) >= 8 and want.endswith(got)
     if not same and not actual.strip() and field.kind == "text":
@@ -261,10 +261,11 @@ async def read_combobox_options(page: Page, perception: Perception, field: Field
     """Open a combobox (optionally typing a filter) and read the options of the popup it controls."""
     loc = perception.locator(field.id, field.frame)
     await loc.click(timeout=3000)
-    if query:
+    editable = await loc.evaluate("(el) => /^(INPUT|TEXTAREA)$/.test(el.tagName) || el.isContentEditable")  # a div combobox cannot be typed into
+    if query and editable:
         await loc.fill("")
         await loc.press_sequentially(query, delay=20)
-    else:  # make sure a previously typed filter is cleared so the full list shows
+    elif editable:  # make sure a previously typed filter is cleared so the full list shows
         try:
             if await loc.input_value():
                 await loc.fill("")
