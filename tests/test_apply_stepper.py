@@ -42,3 +42,10 @@ def test_until_stops_early(capsys):
     run_all("prefill")
     out = capsys.readouterr().out
     assert "STEP 3/7: prefill" in out and "STEP 4/7" not in out
+
+
+def test_non_interactive_submit_is_refused_without_matching_confirm_url():
+    from job_agent.apply.stepper import _same_posting
+    assert _same_posting("https://x.io/jobs/1/?utm=a", "https://x.io/jobs/1")
+    assert not _same_posting("", "https://x.io/jobs/1")
+    assert not _same_posting("https://x.io/jobs/2", "https://x.io/jobs/1")

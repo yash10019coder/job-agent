@@ -16,6 +16,7 @@ from pathlib import Path
 from urllib.parse import urlparse
 
 from job_agent.apply.batch import blank_window
+from job_agent.apply.fingerprint import COLLECT_JS, HTML_MARKERS, identify
 from job_agent.apply.browser import BraveSession
 from job_agent.apply.perceive import Settler, perceive
 from job_agent.apply.submit import captcha_visible
@@ -80,6 +81,8 @@ async def survey_one(session: BraveSession, job: dict, idx: int, out_dir: Path, 
             page.on("framenavigated", lambda fr: hops.append(fr.url) if fr == page.main_frame and (not hops or hops[-1] != fr.url) else None)
             popups: list[str] = []
             page.on("popup", lambda p: popups.append(p.url))
+            req_hosts: list[str] = []
+            page.on("request", lambda rq: req_hosts.append(urlparse(rq.url).netloc.lower()))
             try:
                 resp = await page.goto(job["url"], wait_until="domcontentloaded", timeout=30000)
                 rec["status"] = resp.status if resp else None
@@ -91,6 +94,12 @@ async def survey_one(session: BraveSession, job: dict, idx: int, out_dir: Path, 
                 pass
             await Settler(page).settle()
             model = (await perceive(page)).model
+            try:
+                collected = await page.evaluate(COLLECT_JS, HTML_MARKERS)
+            except Exception:
+                collected = {}
+            rec["fingerprint"] = identify(page.url, req_hosts, collected)
+            rec["request_hosts"] = [h for h, _ in __import__("collections").Counter(req_hosts).most_common(15)]
             frame_hosts = sorted({urlparse(f.url).netloc for f in page.frames if f.url.startswith("http") and f != page.main_frame})
             apply_actions = [a.label for a in model.actions if APPLY_WORDS.search(a.label)]
             rec.update(

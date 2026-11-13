@@ -64,3 +64,26 @@ def test_missing_personal_profile_falls_back_to_the_committed_template():
     shutil.copy(ROOT / "data/applicant_profile.example.json", folder)          # only the template exists, like a fresh clone
     facts = build_facts(folder / "applicant_profile.json", ROOT / "data/resume_inventory.json")
     assert facts["identity"]["first_name"] == "Alex" and facts["eeo"]["gender"] == "decline"   # sanitized example, no personal data
+
+
+def test_overrides_hide_roles_fix_dates_and_set_unemployed_policy():
+    import json as _json
+    import tempfile
+    from pathlib import Path as _P
+    tmp_path = _P(tempfile.mkdtemp())
+    inv = {"contact": {}, "education": {}, "skills": [{"name": "L", "items": ["Go"]}], "roles": [
+        {"title": "SDE - Backend", "company": "Acme", "start": "Jan 2024", "end": "Present", "location": "X", "tech_stack": ["Go"]},
+        {"title": "Android Engineer", "company": "Acme", "start": "Jan 2022", "end": "Dec 2023", "location": "X", "tech_stack": ["Kotlin"]}]}
+    profile = {"facts_overrides": {"hide_roles_matching": "android", "role_display_overrides": [{"match": "acme", "end": "Jul 2026"}],
+                                   "years_by_technology_min": {"Python": 3.0}, "skills": {"L": ["Python"]}},
+               "answer_policy": {"reason_for_leaving": "Personal reasons", "notice_period": "Immediate"}}
+    (tmp_path / "p.json").write_text(_json.dumps(profile))
+    (tmp_path / "i.json").write_text(_json.dumps(inv))
+    from job_agent.apply.prefill import build_facts, prefill
+    from job_agent.apply.perceive import FieldModel
+    facts = build_facts(tmp_path / "p.json", tmp_path / "i.json")
+    assert len(facts["roles"]) == 1 and "Jul 2026" in facts["roles"][0] and "Android" not in facts["roles"][0]
+    assert "Kotlin" not in facts["experience"]["years_by_technology"] and facts["experience"]["years_by_technology"]["Python"] == 3.0
+    assert facts["skills"] == {"L": ["Python"]}
+    why = prefill(FieldModel(id="a", kind="textarea", label="Reason for leaving your last job", required=True), facts)
+    assert why and why.value == "Personal reasons"

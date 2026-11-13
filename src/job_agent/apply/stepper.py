@@ -129,13 +129,22 @@ async def stage_guards(c: Ctx) -> None:
     print("ALL GUARDS PASSED: safe to submit" if not problems else f"{len(problems)} guard(s) failed:\n" + "\n".join(f"  - {p}" for p in problems))
 
 
-async def stage_submit(c: Ctx, allowed: bool) -> None:
+def _same_posting(a: str, b: str) -> bool:
+    key = lambda u: (u.split("?")[0].split("#")[0].rstrip("/").lower())  # noqa: E731
+    return bool(a) and key(a) == key(b)
+
+
+async def stage_submit(c: Ctx, allowed: bool, confirm_url: str | None = None) -> None:
+    """Real submit needs a human decision: type 'submit' in an interactive terminal, or (non-interactive) pass
+    --confirm-url with the exact posting URL. Without either, nothing is sent."""
     if not allowed:
         return print("skipped: pass --allow-submit to enable the real Submit step")
     if sys.stdin.isatty():
         typed = await asyncio.to_thread(input, "Type 'submit' to press Submit on THIS live application (anything else cancels): ")
         if typed.strip().lower() != "submit":
             return print("cancelled")
+    elif not _same_posting(confirm_url or "", c.page.url):
+        return print("REFUSED: no interactive terminal to type 'submit' in, and --confirm-url did not match this page's URL. Nothing was sent.")
     out = await guarded_submit(c.page, c.result.rows, c.settler, c.page.url, _limiter(),
                                ROOT / "outputs" / "apply" / "submissions.jsonl", submit=True)
     print(f"{out.status.upper()}: {out.detail}")
@@ -143,14 +152,14 @@ async def stage_submit(c: Ctx, allowed: bool) -> None:
         print(f"  - {p}")
 
 
-async def run_steps(page: Page, llm: LLM, facts: dict, resume: str | None, until: str, pause: bool, allow_submit: bool) -> None:
+async def run_steps(page: Page, llm: LLM, facts: dict, resume: str | None, until: str, pause: bool, allow_submit: bool, confirm_url: str | None = None) -> None:
     page.set_default_timeout(8000)
     c = Ctx(page, llm, facts, json.dumps(facts, indent=1), resume, Settler(page))
     stop = STAGES.index(until)
     for i, name in enumerate(STAGES[: stop + 1], 1):
         print(f"\n━━ STEP {i}/{len(STAGES)}: {name} " + "━" * 50)
         if name == "submit":
-            await stage_submit(c, allow_submit)
+            await stage_submit(c, allow_submit, confirm_url)
         else:
             await {"open": stage_open, "perceive": stage_perceive, "prefill": stage_prefill,
                    "resolve": stage_resolve, "fill": stage_fill, "guards": stage_guards}[name](c)

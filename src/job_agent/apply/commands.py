@@ -139,7 +139,7 @@ def apply_steps(args: argparse.Namespace) -> int:
     async def run():
         async with BraveSession(_config(args)) as session:
             page = await session.new_tab(url)
-            await run_steps(page, LLM(model=args.model or None), facts, args.resume or None, args.until, pause, args.allow_submit)
+            await run_steps(page, LLM(model=args.model or None), facts, args.resume or None, args.until, pause, args.allow_submit, args.confirm_url or None)
 
     asyncio.run(run())
     return 0
@@ -186,6 +186,48 @@ def _survey_linkedin(args: argparse.Namespace, root: Path) -> int:
     return 0
 
 
+def _unclassified(dirs: list[str]) -> list[dict]:
+    """Rows from earlier surveys whose final URL host does not name a known vendor (custom domains etc.)."""
+    from urllib.parse import urlparse
+    from job_agent.apply.fingerprint import _match
+
+    out, seen = [], set()
+    for d in dirs:
+        for line in (Path(d) / "index.jsonl").read_text(encoding="utf-8").splitlines():
+            r = json.loads(line)
+            final = r.get("final_url") or r["url"]
+            if _match(urlparse(final).netloc.lower()) or r["url"] in seen:
+                continue
+            seen.add(r["url"])
+            out.append({k: r.get(k) for k in ("ats", "file", "company", "title", "url")})
+    return out
+
+
+def apply_reveal(args: argparse.Namespace) -> int:
+    """Click Apply on already-surveyed pages (no filling, no login) to learn where the application really lives."""
+    from datetime import datetime
+    from job_agent.apply.reveal import run_reveal
+
+    root = Path(__file__).resolve().parents[3]
+    rows = []
+    for line in (Path(args.from_survey) / "index.jsonl").read_text(encoding="utf-8").splitlines():
+        r = json.loads(line)
+        fp = r.get("fingerprint") or {}
+        rows.append({"url": r["url"], "ats": r.get("ats"), "landing_vendor": fp.get("vendor"), "landing_conf": fp.get("confidence")})
+    if args.limit:
+        rows = rows[: args.limit]
+    out_dir = root / "data" / "surveys" / (datetime.now().strftime("%Y%m%d-%H%M%S") + "-reveal")
+    print(f"revealing {len(rows)} pages -> {out_dir}")
+
+    async def run():
+        async with BraveSession(_config(args)) as session:
+            await run_reveal(session, rows, out_dir, args.concurrency)
+
+    asyncio.run(run())
+    print("done")
+    return 0
+
+
 def apply_survey(args: argparse.Namespace) -> int:
     """Read-only survey of entry pages (no model calls, no filling); output in data/surveys/<stamp>/."""
     from job_agent.apply.survey import run_survey, sample_direct
@@ -193,7 +235,10 @@ def apply_survey(args: argparse.Namespace) -> int:
     root = Path(__file__).resolve().parents[3]
     if args.linkedin:
         return _survey_linkedin(args, root)
-    jobs = sample_direct(root / "data", args.per_ats, args.seed)
+    if args.refingerprint:
+        jobs = _unclassified(args.refingerprint)
+    else:
+        jobs = sample_direct(root / "data", args.per_ats, args.seed)
     if args.limit:
         jobs = jobs[: args.limit]
     print(f"surveying {len(jobs)} pages across {len({j['ats'] for j in jobs})} ATS types ...")
@@ -248,6 +293,7 @@ def register(subparsers) -> None:
     steps.add_argument("--until", default="guards", choices=["open", "perceive", "prefill", "resolve", "fill", "guards", "submit"],
                        help="Last stage to run (default: guards, i.e. everything except Submit)")
     steps.add_argument("--no-pause", action="store_true", help="Run straight through without waiting between stages")
+    steps.add_argument("--confirm-url", default="", help="Non-interactive submit confirmation: must equal the posting URL (otherwise submit is refused)")
     steps.add_argument("--allow-submit", action="store_true", help="Enable the real Submit stage (still asks you to type 'submit')")
     add_brave_args(steps)
     steps.set_defaults(func=apply_steps)
@@ -266,7 +312,15 @@ def register(subparsers) -> None:
     survey.add_argument("--seed", type=int, default=7)
     survey.add_argument("--limit", type=int, default=0, help="Only the first N sampled pages (smoke test)")
     survey.add_argument("--concurrency", type=int, default=5)
+    survey.add_argument("--refingerprint", nargs="+", metavar="DIR", help="Re-survey the unclassified pages of these survey dirs, with fingerprints")
     survey.add_argument("--linkedin", action="store_true", help="Cohort B: LinkedIn-sourced links (needs a logged-in agent profile)")
     survey.add_argument("--li-cap", type=int, default=60, help="Max LinkedIn pages opened (kept small on purpose)")
     add_brave_args(survey)
     survey.set_defaults(func=apply_survey)
+
+    reveal = subparsers.add_parser("apply-reveal", help="Click Apply on surveyed pages (no fill/login) to find where the application lives.")
+    reveal.add_argument("--from-survey", required=True, help="Survey dir with index.jsonl (needs fingerprints)")
+    reveal.add_argument("--limit", type=int, default=0)
+    reveal.add_argument("--concurrency", type=int, default=4)
+    add_brave_args(reveal)
+    reveal.set_defaults(func=apply_reveal)

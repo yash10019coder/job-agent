@@ -33,8 +33,9 @@ def _union_months(intervals: list[tuple[int, int]]) -> int:
     return total
 
 
-def compute_experience(inv: dict, today: date | None = None) -> dict:
-    """Years of experience per technology and overall, from role dates (overlaps counted once)."""
+def compute_experience(inv: dict, today: date | None = None, hide_roles: str = "") -> dict:
+    """Years of experience per technology and overall, from role dates (overlaps counted once).
+    `hide_roles` (regex on the title) drops roles from the per-technology years only; totals still count them."""
     today = today or date.today()
     by_tech: dict[str, list[tuple[int, int]]] = {}
     professional, everything = [], []
@@ -45,6 +46,8 @@ def compute_experience(inv: dict, today: date | None = None) -> dict:
         everything.append((start, stop))
         if not re.search(r"open source|gsoc|contributor", role["title"] + " " + role["company"], re.I):
             professional.append((start, stop))
+        if hide_roles and re.search(hide_roles, role["title"], re.I):
+            continue
         for tech in role.get("tech_stack", []):
             by_tech.setdefault(tech, []).append((start, stop))
     years = lambda iv: round(_union_months(iv) / 12, 1)  # noqa: E731
@@ -61,13 +64,24 @@ def build_facts(profile_path: Path, inventory_path: Path) -> dict:
         profile_path = profile_path.with_name("applicant_profile.example.json")
     profile = json.loads(profile_path.read_text(encoding="utf-8"))
     inv = json.loads(inventory_path.read_text(encoding="utf-8"))
-    roles = [f"{r['title']} at {r['company']} ({r['start']} - {r['end']}), {r['location']}" for r in inv["roles"]]
+    ov = profile.get("facts_overrides", {})  # your presentation choices; the inventory file itself is never edited
+    hide = ov.get("hide_roles_matching", "")
+    shown = [r for r in inv["roles"] if not (hide and re.search(hide, r["title"], re.I))]
+    def shown_dates(r: dict) -> tuple[str, str]:  # display only: the resume's dates, e.g. an ended job that the inventory still says "Present"
+        fix = next((o for o in ov.get("role_display_overrides", []) if re.search(o["match"], r["company"], re.I)), {})
+        return fix.get("start", r["start"]), fix.get("end", r["end"])
+    roles = [f"{r['title']} at {r['company']} ({shown_dates(r)[0]} - {shown_dates(r)[1]}), {r['location']}" for r in shown]
+    experience = compute_experience(inv, hide_roles=hide)
+    tech = experience["years_by_technology"]
+    for name, years in ov.get("years_by_technology_min", {}).items():
+        tech[name] = max(tech.get(name, 0), years)
+    experience["years_by_technology"] = dict(sorted(tech.items(), key=lambda kv: -kv[1]))
+    skills = ov.get("skills") or {c["name"]: c["items"] for c in inv["skills"]}
     return {
-        "contact": inv["contact"], "education": inv["education"], "roles": roles,
-        "skills": {c["name"]: c["items"] for c in inv["skills"]},
-        "current_role": {"title": inv["roles"][0]["title"], "company": inv["roles"][0]["company"]},
-        "experience": compute_experience(inv),
-        **{k: v for k, v in profile.items() if not k.startswith("_")},
+        "contact": inv["contact"], "education": inv["education"], "roles": roles, "skills": skills,
+        "current_role": {"title": shown[0]["title"], "company": shown[0]["company"]},
+        "experience": experience,
+        **{k: v for k, v in profile.items() if not k.startswith("_") and k != "facts_overrides"},
     }
 
 
@@ -130,6 +144,8 @@ def prefill(field: FieldModel, facts: dict) -> Prefill | None:
         return say(facts.get("current_role", {}).get("company"), "current_role.company")
     if re.search(r"current (job )?title|^job title$|most recent (job )?title", label):
         return say(facts.get("current_role", {}).get("title"), "current_role.title")
+    if re.search(r"reason(s)? for (leaving|leaving your|resign|your departure)|why (did|are) you (leave|leaving|left)|why .*\bleft\b", label):
+        return say(policy.get("reason_for_leaving"), "answer_policy.reason_for_leaving")
     if re.search(r"notice period", label):
         return say(policy.get("notice_period"), "answer_policy.notice_period")
     if re.search(r"(earliest )?(start|joining) date|when can you (start|join)|availability to start", label):
