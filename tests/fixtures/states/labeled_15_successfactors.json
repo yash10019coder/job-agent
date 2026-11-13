@@ -1,0 +1,398 @@
+{
+ "name": "labeled_15_successfactors",
+ "url": "https://careers.usbank.com/global/en/job/UBNAGLOBAL20260034066EXTERNALENGLOBAL/HR-Delivery-Leader?utm_source=indeed&utm_medium=phenom-feeds",
+ "status": 200,
+ "frame_hosts": [],
+ "from_url": "https://jobs.grundfos.com/job/Chennai-Master-data-specialist-TN-600097/1455993533/?feedId=441133&utm_source=Indeed",
+ "expect_state": "job_page",
+ "labels": {
+  "1 Entry type": "Company page + Apply leads to the ATS",
+  "2 Gate (account)": "login+signup",
+  "3 Extra checks": "email code",
+  "4 Form fields visible": "no - need more clicks",
+  "5 Steps": "cannot tell yet",
+  "6 Vendor": "successfactors"
+ },
+ "expect_application_form": false,
+ "expect_listing": false,
+ "model": {
+  "url": "https://careers.usbank.com/global/en/job/UBNAGLOBAL20260034066EXTERNALENGLOBAL/HR-Delivery-Leader?utm_source=indeed&utm_medium=phenom-feeds",
+  "title": "HR Delivery Leader in Chennai, Tamil N\u0101du, India | Banking Operations at U.S. Bank",
+  "headings": [
+   "Job Description",
+   "OPERATING MODEL AND DECISION AUTHORITY",
+   "SERVICE MANDATE",
+   "A. Global HR services delivered from India",
+   "B. India-local HR operations",
+   "KEY RESPONSIBILITIES"
+  ],
+  "alerts": [
+   "Get to know U.S. Bancorp India Are you motivated by solving complex problems and ready to take the next step in your career? Whether you bring banking experien\u2026",
+   "Benefits The wellbeing of you and your family matters. That\u2019s why your benefits are designed to support your health, financial security, career growth and life\u2026",
+   "Disability accommodations If there's anything we can do to accommodate a disability during any portion of the application or hiring process, please refer to ou\u2026",
+   "The information you provide to the chatbot will be collected to improve your experience. Please read our privacy policy to see how we are storing and protectin\u2026"
+  ],
+  "fields": [
+   {
+    "id": "f0-n3",
+    "kind": "combobox",
+    "label": "Search job title, location or military code",
+    "help": "",
+    "required": false,
+    "value": "Job Categories",
+    "options": null,
+    "async_options": true,
+    "placeholder": "",
+    "maxlength": null,
+    "pattern": null,
+    "accept": null,
+    "invalid": false,
+    "error": "",
+    "section": "",
+    "frame": 0,
+    "readonly": false,
+    "cards": false
+   },
+   {
+    "id": "f0-n15",
+    "kind": "checkbox",
+    "label": "Save job",
+    "help": "",
+    "required": false,
+    "value": "",
+    "options": null,
+    "async_options": false,
+    "placeholder": "",
+    "maxlength": null,
+    "pattern": null,
+    "accept": null,
+    "invalid": false,
+    "error": "",
+    "section": "HR Delivery Leader Job Id 2026-0034066 Location Chennai, Tamil N\u0101du, India Post\u2026",
+    "frame": 0,
+    "readonly": false,
+    "cards": false
+   },
+   {
+    "id": "f0-n18",
+    "kind": "checkbox",
+    "label": "Save Job HR Delivery Leader",
+    "help": "",
+    "required": false,
+    "value": "",
+    "options": null,
+    "async_options": false,
+    "placeholder": "",
+    "maxlength": null,
+    "pattern": null,
+    "accept": null,
+    "invalid": false,
+    "error": "",
+    "section": "",
+    "frame": 0,
+    "readonly": false,
+    "cards": false
+   },
+   {
+    "id": "f0-n37",
+    "kind": "text",
+    "label": "Chatbot User Input Box With Send Button",
+    "help": "",
+    "required": false,
+    "value": "",
+    "options": null,
+    "async_options": false,
+    "placeholder": "Ask anything",
+    "maxlength": null,
+    "pattern": null,
+    "accept": null,
+    "invalid": false,
+    "error": "",
+    "section": "",
+    "frame": 0,
+    "readonly": false,
+    "cards": false
+   }
+  ],
+  "actions": [
+   {
+    "id": "f0-n1",
+    "kind": "link",
+    "label": "Skip to main content",
+    "primary": false,
+    "disabled": false,
+    "frame": 0
+   },
+   {
+    "id": "f0-n2",
+    "kind": "link",
+    "label": "header logo",
+    "primary": false,
+    "disabled": false,
+    "frame": 0
+   },
+   {
+    "id": "f0-n4",
+    "kind": "button",
+    "label": "Search",
+    "primary": true,
+    "disabled": false,
+    "frame": 0
+   },
+   {
+    "id": "f0-n5",
+    "kind": "link",
+    "label": "Candidate login",
+    "primary": false,
+    "disabled": false,
+    "frame": 0
+   },
+   {
+    "id": "f0-n6",
+    "kind": "link",
+    "label": "Saved jobs (0)",
+    "primary": false,
+    "disabled": false,
+    "frame": 0
+   },
+   {
+    "id": "f0-n7",
+    "kind": "link",
+    "label": "Careers home",
+    "primary": false,
+    "disabled": false,
+    "frame": 0
+   },
+   {
+    "id": "f0-n8",
+    "kind": "button",
+    "label": "About us",
+    "primary": false,
+    "disabled": false,
+    "frame": 0
+   },
+   {
+    "id": "f0-n9",
+    "kind": "link",
+    "label": "Benefits",
+    "primary": false,
+    "disabled": false,
+    "frame": 0
+   },
+   {
+    "id": "f0-n10",
+    "kind": "link",
+    "label": "Inclusion and belonging",
+    "primary": false,
+    "disabled": false,
+    "frame": 0
+   },
+   {
+    "id": "f0-n11",
+    "kind": "link",
+    "label": "Students",
+    "primary": false,
+    "disabled": false,
+    "frame": 0
+   },
+   {
+    "id": "f0-n12",
+    "kind": "link",
+    "label": "Veterans",
+    "primary": false,
+    "disabled": false,
+    "frame": 0
+   },
+   {
+    "id": "f0-n13",
+    "kind": "link",
+    "label": "Events",
+    "primary": false,
+    "disabled": false,
+    "frame": 0
+   },
+   {
+    "id": "f0-n14",
+    "kind": "link",
+    "label": "Accessibility",
+    "primary": false,
+    "disabled": false,
+    "frame": 0
+   },
+   {
+    "id": "f0-n16",
+    "kind": "link",
+    "label": "Apply now",
+    "primary": true,
+    "disabled": false,
+    "frame": 0
+   },
+   {
+    "id": "f0-n17",
+    "kind": "link",
+    "label": "disability accommodations for applicants",
+    "primary": false,
+    "disabled": false,
+    "frame": 0
+   },
+   {
+    "id": "f0-n19",
+    "kind": "link",
+    "label": "Apply now",
+    "primary": true,
+    "disabled": false,
+    "frame": 0
+   },
+   {
+    "id": "f0-n20",
+    "kind": "link",
+    "label": "Learn more",
+    "primary": false,
+    "disabled": false,
+    "frame": 0
+   },
+   {
+    "id": "f0-n21",
+    "kind": "link",
+    "label": "Learn more",
+    "primary": false,
+    "disabled": false,
+    "frame": 0
+   },
+   {
+    "id": "f0-n22",
+    "kind": "link",
+    "label": "eVerify",
+    "primary": false,
+    "disabled": false,
+    "frame": 0
+   },
+   {
+    "id": "f0-n23",
+    "kind": "link",
+    "label": "How we hire",
+    "primary": false,
+    "disabled": false,
+    "frame": 0
+   },
+   {
+    "id": "f0-n24",
+    "kind": "link",
+    "label": "Privacy",
+    "primary": false,
+    "disabled": false,
+    "frame": 0
+   },
+   {
+    "id": "f0-n25",
+    "kind": "link",
+    "label": "linkedin",
+    "primary": false,
+    "disabled": false,
+    "frame": 0
+   },
+   {
+    "id": "f0-n26",
+    "kind": "link",
+    "label": "glassdoor",
+    "primary": false,
+    "disabled": false,
+    "frame": 0
+   },
+   {
+    "id": "f0-n27",
+    "kind": "link",
+    "label": "twitter",
+    "primary": false,
+    "disabled": false,
+    "frame": 0
+   },
+   {
+    "id": "f0-n28",
+    "kind": "link",
+    "label": "facebook",
+    "primary": false,
+    "disabled": false,
+    "frame": 0
+   },
+   {
+    "id": "f0-n29",
+    "kind": "link",
+    "label": "instagram",
+    "primary": false,
+    "disabled": false,
+    "frame": 0
+   },
+   {
+    "id": "f0-n30",
+    "kind": "link",
+    "label": "youtube",
+    "primary": false,
+    "disabled": false,
+    "frame": 0
+   },
+   {
+    "id": "f0-n31",
+    "kind": "button",
+    "label": "Clear Conversation",
+    "primary": false,
+    "disabled": false,
+    "frame": 0
+   },
+   {
+    "id": "f0-n32",
+    "kind": "button",
+    "label": "Mute/Unmute Chatbot Sounds",
+    "primary": false,
+    "disabled": false,
+    "frame": 0
+   },
+   {
+    "id": "f0-n33",
+    "kind": "button",
+    "label": "Close Chatbot Window",
+    "primary": false,
+    "disabled": false,
+    "frame": 0
+   },
+   {
+    "id": "f0-n34",
+    "kind": "button",
+    "label": "I'm interested",
+    "primary": false,
+    "disabled": false,
+    "frame": 0
+   },
+   {
+    "id": "f0-n35",
+    "kind": "button",
+    "label": "Similar Jobs",
+    "primary": false,
+    "disabled": false,
+    "frame": 0
+   },
+   {
+    "id": "f0-n36",
+    "kind": "button",
+    "label": "More Options",
+    "primary": false,
+    "disabled": false,
+    "frame": 0
+   },
+   {
+    "id": "f0-n38",
+    "kind": "button",
+    "label": "send",
+    "primary": false,
+    "disabled": true,
+    "frame": 0
+   }
+  ],
+  "text_digest": "Skip to main content Search job title, location or military code Candidate login Saved jobs (0) Careers home About us Benefits Inclusion and belonging Students Veterans Events Accessibility HR Delivery Leader Job Id 2026-0034066 Location Chennai, Tamil N\u0101du, India Posting Start Date 11/10/2026 Anticipated Posting End Date 11/24/2026 Job Type Full time Job available in 2 categories. Banking OperationsExecutive Save job Apply now At U.S. Bancorp India, we\u2019re on a journey to do our best. We believe it takes all of us to bring our shared ambition to life, and each person is unique in their potential. A career with U.S. Bancorp India gives you a wide, ever-growing range of opportunities to discover what makes you thrive at every stage of your career. Try new things, learn new skills and discover what you excel at\u2014all from Day One. Job Description OPERATING MODEL AND DECISION AUTHORITY U.S. ow",
+  "unparsed": []
+ },
+ "acceptable": [
+  "job_page"
+ ],
+ "label_source": "page_text_reviewed"
+}

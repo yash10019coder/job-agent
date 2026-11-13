@@ -335,5 +335,10 @@
   ],
   "text_digest": "Skip to main content Candidate account English (UK) Saved jobs (0) - Senior Principal Architect - Security Architecture & Solution Engineering - OT Security Location: Bengaluru, India Category: Digital and Technology Job ID: 450140 Full time Posted: Posted: 09 Nov 2026 Hybrid (Remote & On-site) Apply now Save job Why us What we do How we do it What we offer Start a career with purpose At GSK, we unite science, technology, and talent to get ahead of disease together. Our goal is to improve the lives of billions of people across the world. By bringing together outstanding people in an inclusive environment, we can make an impact on a global scale. Description GSK remains committed to achieving",
   "unparsed": []
- }
+ },
+ "expect_state": "job_page",
+ "acceptable": [
+  "job_page"
+ ],
+ "label_source": "page_text_reviewed"
 }

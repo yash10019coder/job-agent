@@ -1,0 +1,59 @@
+{
+ "name": "labeled_07_other",
+ "url": "https://app.hirenimble.com/login?source=Indeed&return_to=%2Fapplicant-profile%2F119314%2F",
+ "status": 200,
+ "frame_hosts": [],
+ "from_url": "https://app.hirenimble.com/jobview/119314/?source=Indeed",
+ "expect_state": "account_choice",
+ "labels": {
+  "1 Entry type": "ATS page (link goes straight to the ATS)",
+  "2 Gate (account)": "login+signup",
+  "3 Extra checks": "email code",
+  "4 Form fields visible": "no - need more clicks",
+  "5 Steps": "cannot tell yet",
+  "6 Vendor": "other"
+ },
+ "expect_application_form": false,
+ "expect_listing": false,
+ "model": {
+  "url": "https://app.hirenimble.com/login?source=Indeed&return_to=%2Fapplicant-profile%2F119314%2F",
+  "title": "Sign in \u2013 Nimble",
+  "headings": [
+   "Sign in to Nimble"
+  ],
+  "alerts": [],
+  "fields": [],
+  "actions": [
+   {
+    "id": "f0-n1",
+    "kind": "link",
+    "label": "JOB SEEKERS Apply to jobs Browse K-12 openings and track your applications.",
+    "primary": false,
+    "disabled": false,
+    "frame": 0
+   },
+   {
+    "id": "f0-n2",
+    "kind": "link",
+    "label": "PRINCIPALS, HR, AND DISTRICT STAFF Review applicants and manage postings Sign i\u2026",
+    "primary": false,
+    "disabled": false,
+    "frame": 0
+   },
+   {
+    "id": "f0-n3",
+    "kind": "link",
+    "label": "See how districts get started",
+    "primary": false,
+    "disabled": false,
+    "frame": 0
+   }
+  ],
+  "text_digest": "Sign in to Nimble What do you want to do? JOB SEEKERS Apply to jobs Browse K-12 openings and track your applications. PRINCIPALS, HR, AND DISTRICT STAFF Review applicants and manage postings Sign in to your district's hiring tools. New to hiring on Nimble? Your district creates your admin account \u2014 there is no admin sign\u2011up. See how districts get started \u00a9 2026 Nimble. All rights reserved.",
+  "unparsed": []
+ },
+ "acceptable": [
+  "account_choice"
+ ],
+ "label_source": "page_text_reviewed"
+}

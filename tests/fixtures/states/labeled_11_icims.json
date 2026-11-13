@@ -1,0 +1,166 @@
+{
+ "name": "labeled_11_icims",
+ "url": "https://careers-mastec.icims.com/jobs/71913/login?_sp=76458bfa-91dc-4fca-bc06-64f389431b1a.1794391236099&_jsqid=undefined&utm_source=indeed_integration&iis=Job+Board&iisn=Indeed&mobile=false&width=1150&height=500&bga=true&needsRedirect=false&jan1offset=330&jun1offset=330",
+ "status": 200,
+ "frame_hosts": [],
+ "from_url": "https://careers.mastec.com/jobs/71913/job?utm_source=indeed_integration&iis=Job%20Board&iisn=Indeed&indeed-apply-token=73a2d2b2a8d6d5c0a62696875eaebd669103652d3f0c2cd5445d3e66b1592b0f",
+ "expect_state": "login",
+ "labels": {
+  "1 Entry type": "Company page + Apply leads to the ATS",
+  "2 Gate (account)": "login+signup",
+  "3 Extra checks": "email code",
+  "4 Form fields visible": "no - need more clicks",
+  "5 Steps": "multi-step",
+  "6 Vendor": "icims"
+ },
+ "expect_application_form": false,
+ "expect_listing": false,
+ "model": {
+  "url": "https://careers-mastec.icims.com/jobs/71913/login?_sp=76458bfa-91dc-4fca-bc06-64f389431b1a.1794391236099&_jsqid=undefined&utm_source=indeed_integration&iis=Job+Board&iisn=Indeed&mobile=false&width=1150&height=500&bga=true&needsRedirect=false&jan1offset=330&jun1offset=330",
+  "title": "Login",
+  "headings": [],
+  "alerts": [],
+  "fields": [
+   {
+    "id": "f1-n2",
+    "kind": "email",
+    "label": "Email",
+    "help": "",
+    "required": false,
+    "value": "",
+    "options": null,
+    "async_options": false,
+    "placeholder": "",
+    "maxlength": null,
+    "pattern": null,
+    "accept": null,
+    "invalid": false,
+    "error": "",
+    "section": "Enter Your Information",
+    "frame": 1,
+    "readonly": false,
+    "cards": false
+   }
+  ],
+  "actions": [
+   {
+    "id": "f0-n1",
+    "kind": "link",
+    "label": "Returning Candidates",
+    "primary": false,
+    "disabled": false,
+    "frame": 0
+   },
+   {
+    "id": "f0-n2",
+    "kind": "link",
+    "label": "Current Employees",
+    "primary": false,
+    "disabled": false,
+    "frame": 0
+   },
+   {
+    "id": "f0-n3",
+    "kind": "link",
+    "label": "Return to MasTec",
+    "primary": false,
+    "disabled": false,
+    "frame": 0
+   },
+   {
+    "id": "f1-n1",
+    "kind": "link",
+    "label": "Welcome page",
+    "primary": false,
+    "disabled": false,
+    "frame": 1
+   },
+   {
+    "id": "f1-n3",
+    "kind": "button",
+    "label": "Next",
+    "primary": true,
+    "disabled": false,
+    "frame": 1
+   },
+   {
+    "id": "f1-n4",
+    "kind": "link",
+    "label": "Application FAQs",
+    "primary": false,
+    "disabled": false,
+    "frame": 1
+   },
+   {
+    "id": "f1-n5",
+    "kind": "link",
+    "label": "www.icims.com",
+    "primary": false,
+    "disabled": false,
+    "frame": 1
+   },
+   {
+    "id": "f1-n6",
+    "kind": "button",
+    "label": "Close hCaptcha attribution notice",
+    "primary": false,
+    "disabled": false,
+    "frame": 1
+   },
+   {
+    "id": "f1-n7",
+    "kind": "link",
+    "label": "Privacy",
+    "primary": false,
+    "disabled": false,
+    "frame": 1
+   },
+   {
+    "id": "f1-n8",
+    "kind": "link",
+    "label": "Terms",
+    "primary": false,
+    "disabled": false,
+    "frame": 1
+   },
+   {
+    "id": "f2-n1",
+    "kind": "button",
+    "label": "Verify",
+    "primary": false,
+    "disabled": false,
+    "frame": 2
+   },
+   {
+    "id": "f2-n2",
+    "kind": "button",
+    "label": "EN",
+    "primary": false,
+    "disabled": false,
+    "frame": 2
+   },
+   {
+    "id": "f2-n3",
+    "kind": "button",
+    "label": "About hCaptcha & Accessibility Options",
+    "primary": false,
+    "disabled": false,
+    "frame": 2
+   },
+   {
+    "id": "f2-n4",
+    "kind": "button",
+    "label": "Refresh Challenge.",
+    "primary": false,
+    "disabled": false,
+    "frame": 2
+   }
+  ],
+  "text_digest": "Skip Branding Skip to Main Content Returning Candidates Current Employees Return to MasTec",
+  "unparsed": []
+ },
+ "acceptable": [
+  "login"
+ ],
+ "label_source": "page_text_reviewed"
+}

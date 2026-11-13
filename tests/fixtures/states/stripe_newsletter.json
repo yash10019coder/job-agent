@@ -603,5 +603,10 @@
   ],
   "text_digest": "Opportunity Compatibility Emerging talent Open roles Roles at Stripe / Role details Head of Key Accounts, Customer Success Who we are About Stripe Stripe is a financial infrastructure platform for businesses. Millions of companies\u2014from the world\u2019s largest enterprises to the most ambitious startups\u2014use Stripe to accept payments, grow their revenue, and accelerate new business opportunities. Our mission is to increase the GDP of the internet, and we have a staggering amount of work ahead. That means you have an unprecedented opportunity to put the global economy within everyone\u2019s reach while doing the most important work of your career. About the team The Key Accounts Customer Success team is ",
   "unparsed": []
- }
+ },
+ "expect_state": "job_page",
+ "acceptable": [
+  "job_page"
+ ],
+ "label_source": "page_text_reviewed"
 }

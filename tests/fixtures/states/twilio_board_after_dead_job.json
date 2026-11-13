@@ -477,5 +477,10 @@
    }
   ],
   "text_digest": "Current openings at Twilio 114 jobs Search Department Office"
- }
+ },
+ "expect_state": "listing",
+ "acceptable": [
+  "listing"
+ ],
+ "label_source": "page_text_reviewed"
 }

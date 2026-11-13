@@ -1065,5 +1065,10 @@
   ],
   "text_digest": "Products Solutions Resources Customers Pricing Sign in See a demo Get started Careers Software Engineer, Internship - 2027 Software Engineer, Internship - 2027 S\u00e3o Paulo, S\u00e3o Paulo, Brazil Why join us Brex is the intelligent finance platform that enables companies to spend smarter and move faster in more than 200 markets. By combining global corporate cards and banking with intuitive spend management, bill pay, and travel software, Brex enables founders and finance teams to accelerate operations, gain real-time visibility, and control spend effortlessly. Brex\u2019s AI-native automation and world-class service eliminate manual expense and accounting tasks for customers so they can focus on what m",
   "unparsed": []
- }
+ },
+ "expect_state": "form_step",
+ "acceptable": [
+  "form_step"
+ ],
+ "label_source": "page_text_reviewed"
 }

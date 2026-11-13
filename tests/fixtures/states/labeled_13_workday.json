@@ -1,0 +1,162 @@
+{
+ "name": "labeled_13_workday",
+ "url": "https://ryder.wd5.myworkdayjobs.com/RyderCareers/job/USA---Remote-TX/Logistics-Manager---SET-Travel---DTS_R188708?source=Indeed",
+ "status": 200,
+ "frame_hosts": [],
+ "from_url": "https://rr.jobsyn.org/EF21FAA63C434535BC77836AB4B66DB91554",
+ "expect_state": "job_page",
+ "labels": {
+  "1 Entry type": "Company page + Apply leads to the ATS",
+  "2 Gate (account)": "login+signup",
+  "3 Extra checks": "email code",
+  "4 Form fields visible": "no - need more clicks",
+  "5 Steps": "multi-step",
+  "6 Vendor": "workday"
+ },
+ "expect_application_form": false,
+ "expect_listing": false,
+ "model": {
+  "url": "https://ryder.wd5.myworkdayjobs.com/RyderCareers/job/USA---Remote-TX/Logistics-Manager---SET-Travel---DTS_R188708?source=Indeed",
+  "title": "Logistics Manager - SET Travel - DTS - Logo",
+  "headings": [
+   "",
+   "Logistics Manager - SET Travel - DTS",
+   "The Startup Operation members (SET Ops) acts as a setup consultant and handles all aspects of new D\u2026",
+   "",
+   "Travel is extensive for this role and is expected to be around 75-80%. You will be assigned to a ne\u2026",
+   ""
+  ],
+  "alerts": [
+   "Logistics Manager - SET Travel - DTS page is loaded"
+  ],
+  "fields": [],
+  "actions": [
+   {
+    "id": "f0-n1",
+    "kind": "button",
+    "label": "English",
+    "primary": false,
+    "disabled": false,
+    "frame": 0
+   },
+   {
+    "id": "f0-n2",
+    "kind": "button",
+    "label": "Sign In",
+    "primary": false,
+    "disabled": false,
+    "frame": 0
+   },
+   {
+    "id": "f0-n3",
+    "kind": "button",
+    "label": "Search for Jobs",
+    "primary": false,
+    "disabled": false,
+    "frame": 0
+   },
+   {
+    "id": "f0-n4",
+    "kind": "link",
+    "label": "Apply",
+    "primary": true,
+    "disabled": false,
+    "frame": 0
+   },
+   {
+    "id": "f0-n5",
+    "kind": "link",
+    "label": "here",
+    "primary": false,
+    "disabled": false,
+    "frame": 0
+   },
+   {
+    "id": "f0-n6",
+    "kind": "link",
+    "label": "click here",
+    "primary": false,
+    "disabled": false,
+    "frame": 0
+   },
+   {
+    "id": "f0-n7",
+    "kind": "link",
+    "label": "www.ryder.com/careers",
+    "primary": false,
+    "disabled": false,
+    "frame": 0
+   },
+   {
+    "id": "f0-n8",
+    "kind": "link",
+    "label": "careers@ryder.com",
+    "primary": false,
+    "disabled": false,
+    "frame": 0
+   },
+   {
+    "id": "f0-n9",
+    "kind": "link",
+    "label": "here",
+    "primary": false,
+    "disabled": false,
+    "frame": 0
+   },
+   {
+    "id": "f0-n10",
+    "kind": "link",
+    "label": "here",
+    "primary": false,
+    "disabled": false,
+    "frame": 0
+   },
+   {
+    "id": "f0-n11",
+    "kind": "button",
+    "label": "Read More",
+    "primary": false,
+    "disabled": false,
+    "frame": 0
+   },
+   {
+    "id": "f0-n12",
+    "kind": "link",
+    "label": "EEO is the Law",
+    "primary": false,
+    "disabled": false,
+    "frame": 0
+   },
+   {
+    "id": "f0-n13",
+    "kind": "link",
+    "label": "Ryder Pay Transparency Policy.",
+    "primary": false,
+    "disabled": false,
+    "frame": 0
+   },
+   {
+    "id": "f0-n14",
+    "kind": "link",
+    "label": "Philadelphia Fair Criminal Records Screening Standards",
+    "primary": false,
+    "disabled": false,
+    "frame": 0
+   },
+   {
+    "id": "f0-n15",
+    "kind": "link",
+    "label": "Washington State Fair Chance Act",
+    "primary": false,
+    "disabled": false,
+    "frame": 0
+   }
+  ],
+  "text_digest": "Skip to main content English Sign In Search for Jobs Logistics Manager - SET Travel - DTS page is loaded Logistics Manager - SET Travel - DTS Apply locations USA - Remote TX USA - Nationwide Remote USA time type Full time posted on Posted 2 Days Ago job requisition id R188708 Job Seekers can review the Job Applicant Privacy Policy by clicking here. Job Description: The Startup Operation members (SET Ops) acts as a setup consultant and handles all aspects of new Dedicated Transportation Solutions business startups along with ongoing support of Field Operations. This includes both driver and manager training for basic system operations and often includes aiding and functioning in the expected role. As such, the ability to prioritize work-tasks and manage the day-to-day task items are requirements of this position. Additionally, the team engages and takes part in the writing of process docu",
+  "unparsed": []
+ },
+ "acceptable": [
+  "job_page"
+ ],
+ "label_source": "page_text_reviewed"
+}

@@ -640,5 +640,10 @@
   ],
   "text_digest": "Explore Locations See all jobs Life At Toast Your Settings Staff Software Engineer, IQ Grow Engineering Staff Software Engineer, IQ Grow R15517 Dublin, County Dublin, Ireland Toast creates technology to help restaurants and local businesses succeed in a digital world, helping business owners operate, increase sales, engage customers, and keep employees happy. At Toast, the IQ Grow team is on a mission to scale new, high-impact go-to-market initiatives. By combining the cutting-edge innovation of AI agentic solutions with human-in-the-loop workflows and touchpoints, we are redefining how restaurants connect with their guests. Our goal is to deliver a truly personalized marketing experience th",
   "unparsed": []
- }
+ },
+ "expect_state": "form_step",
+ "acceptable": [
+  "form_step"
+ ],
+ "label_source": "page_text_reviewed"
 }
