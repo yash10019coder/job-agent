@@ -74,6 +74,57 @@ async def set_date(page: Page, perception: Perception, field: FieldModel, value:
     return ActionResult(same, "ok" if same else f"date picker did not keep the value (got {actual!r})")
 
 
+_SUGGEST_JS = """(el) => {
+  // Clickable result rows that appeared under the input (typeahead lists carry no ARIA roles on many sites).
+  const b = el.getBoundingClientRect();
+  const seen = window.__agentPreSuggest || new WeakSet();
+  return Array.from(document.querySelectorAll('li,div,a,span,button,p')).filter((e) => {
+    if (e === el || e.contains(el) || e.children.length > 2 || seen.has(e)) return false;
+    const r = e.getBoundingClientRect(), st = getComputedStyle(e);
+    const text = (e.innerText || '').trim();
+    return r.width > 30 && r.height > 8 && text && text.length <= 120 && st.display !== 'none' && st.visibility !== 'hidden' &&
+      r.top >= b.bottom - 6 && r.top < b.bottom + 420 && Math.abs(r.left - b.left) < 140 && st.cursor === 'pointer';
+  }).map((e, i) => { e.setAttribute('data-agent-sugg', String(i)); return { i, text: (e.innerText || '').trim() }; });
+}"""
+_MARK_PRE_JS = """() => { const s = new WeakSet(); document.querySelectorAll('li,div,a,span,button,p').forEach((e) => s.add(e)); window.__agentPreSuggest = s; }"""
+
+
+def _overlap(want: str, cand: str) -> float:
+    a, b = set(_norm(want).split()), set(_norm(cand).split())
+    a |= {t[:3] for t in a}  # "india" ~ "ind" (country codes in result rows)
+    return len(a & (b | {t[:3] for t in b})) / max(1, len(set(_norm(want).split())))
+
+
+async def pick_suggestion(page: Page, perception: Perception, field: FieldModel, value: str) -> ActionResult:
+    """Typeahead inputs that clear themselves unless a result is clicked: type, wait for the result rows that
+    appear, click the best match, confirm the input keeps a value. Only rows that appeared after typing count."""
+    loc = perception.locator(field.id, field.frame)
+    frame = perception.frames[field.frame]
+    query = re.split(r"[,/(]", value)[0].strip() or value
+    try:
+        await loc.click(timeout=3000)
+        await loc.fill("")
+        await frame.evaluate(_MARK_PRE_JS)
+        await loc.press_sequentially(query, delay=80)
+        rows: list[dict] = []
+        for _ in range(40):  # up to ~4s for the search request + render
+            await page.wait_for_timeout(100)
+            rows = await loc.evaluate(_SUGGEST_JS)
+            if rows:
+                break
+        if not rows:
+            return ActionResult(False, "no suggestion list appeared after typing")
+        best = max(rows, key=lambda r: _overlap(value, r["text"]))
+        if _overlap(value, best["text"]) < 0.5 or _norm(best["text"]).split()[:1] != _norm(query).split()[:1]:
+            return ActionResult(False, f"no suggestion matches {value!r} (saw {[r['text'][:30] for r in rows[:3]]})")
+        await frame.locator(f'[data-agent-sugg="{best["i"]}"]').first.click(timeout=3000)
+        await loc.blur()
+        kept = await _current(loc)
+    except Exception as error:
+        return ActionResult(False, f"suggestion pick failed: {str(error).splitlines()[0][:90]}")
+    return ActionResult(bool(kept), f"picked suggestion {best['text']!r}" if kept else "picked a suggestion but the input is empty again")
+
+
 async def fill_text(page: Page, perception: Perception, field: FieldModel, value: str) -> ActionResult:
     loc = perception.locator(field.id, field.frame)
     try:
@@ -83,10 +134,13 @@ async def fill_text(page: Page, perception: Perception, field: FieldModel, value
             await loc.fill("")
             await loc.press_sequentially(value, delay=15)
         await loc.blur()
+        await page.wait_for_timeout(300)  # blur handlers may clear a value that was not picked from a suggestion list
         actual = await _current(loc)
     except Exception as error:
         return ActionResult(False, f"fill failed: {error}")
     same = re.sub(r"[^a-z0-9]", "", actual.lower()) == re.sub(r"[^a-z0-9]", "", value.lower())  # inputs may reformat (phone masks)
+    if not same and not actual.strip() and field.kind in {"text"} and field.required:
+        return await pick_suggestion(page, perception, field, value)  # emptied on blur: a typeahead that needs a clicked result
     return ActionResult(same, "ok" if same else f"value not accepted (got {actual!r})")
 
 

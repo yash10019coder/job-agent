@@ -54,6 +54,7 @@ document.getElementById('submit').addEventListener('click', () => {
   if (missing) { const a=document.createElement('div'); a.setAttribute('role','alert'); a.className='err';
     a.textContent = Q.get('reject') ? 'Invalid email address' : 'Please complete all required fields'; document.getElementById('top').appendChild(a); return; }
   if (Q.get('otp')) { document.body.innerHTML = '<h1>Verify your email</h1><p>We sent a code to your email.</p><label for="code">Security code</label><input id="code" name="code">'; return; }
+  if (Q.get('latecaptcha')) { setTimeout(() => { const f=document.createElement('iframe'); f.src='about:blank#hcaptcha-challenge'; f.style='position:fixed;top:20px;left:20px;width:300px;height:400px'; document.body.appendChild(f); }, 1500); return; }
   if (Q.get('silent')) { document.body.innerHTML = '<p>Working...</p>'; return; }
   document.body.innerHTML = '<h1>Thank you for applying</h1><p>Your application has been submitted.</p>';
 });

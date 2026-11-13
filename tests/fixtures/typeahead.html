@@ -1,0 +1,12 @@
+<!doctype html><html><body>
+<label for="loc">Current location</label><input id="loc" name="location" required>
+<div id="dd" style="display:none;position:absolute"></div>
+<input type="hidden" id="picked" name="selectedLocation">
+<script>
+const inp=document.getElementById('loc'), dd=document.getElementById('dd'), picked=document.getElementById('picked');
+const DB=['Moom, Barnala, Punjab, IND','Mumbai, Maharashtra, IND','Mumbai, Kuala Lumpur, MYS','Munich, Bavaria, DEU'];
+let t; inp.addEventListener('input',()=>{ picked.value=''; clearTimeout(t); t=setTimeout(()=>{ const q=inp.value.toLowerCase();
+  dd.innerHTML=''; DB.filter(x=>x.toLowerCase().startsWith(q.slice(0,3))).forEach(x=>{const d=document.createElement('div'); d.textContent=x; d.style.cursor='pointer'; d.onmousedown=()=>{inp.value=x; picked.value=x; dd.style.display='none';}; dd.appendChild(d);});
+  const r=inp.getBoundingClientRect(); dd.style.left=r.left+'px'; dd.style.top=(r.bottom+2)+'px'; dd.style.display='block'; },400); });
+inp.addEventListener('blur',()=>{ setTimeout(()=>{ if(!picked.value) inp.value=''; dd.style.display='none'; },150); });
+</script></body></html>

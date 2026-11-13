@@ -10,6 +10,7 @@ from __future__ import annotations
 import asyncio
 import json
 import re
+import time
 from dataclasses import dataclass, field
 from datetime import datetime
 from pathlib import Path
@@ -130,26 +131,37 @@ async def check_ready(page: Page, rows: list, limiter: RateLimiter, log_path: Pa
     return problems
 
 
+CLASSIFY_WAIT_S = 10.0  # a captcha challenge or confirmation can appear well after the click
+
+
 async def _classify(page: Page, settler: Settler, before_labels: set[str]) -> SubmitOutcome:
+    """Watch the page after Submit until something conclusive shows (captcha, email code, confirmation, errors)
+    or the wait runs out. A single early look missed an hCaptcha challenge that pops up a second or two later."""
     await settler.settle()
     try:
         await page.wait_for_load_state("domcontentloaded", timeout=5000)
     except Exception:
         pass
-    await settler.settle()
-    if await captcha_visible(page):
-        return SubmitOutcome("blocked_captcha", "a captcha challenge appeared after Submit")
-    perception = await perceive(page)
-    body = " ".join(f"{perception.model.title} {' '.join(perception.model.headings)} {perception.model.text_digest}".split())
-    new_code = [f.label for f in perception.model.fields if _CODE_FIELD.search(f.label) and f.label not in before_labels]
-    if new_code:
-        return SubmitOutcome("blocked_otp", f"the site wants an emailed code ({new_code[0]}); email verification is not automated yet")
-    if _SUCCESS.search(body) or re.search(r"/(confirmation|thank|submitted|success|applied)\b", page.url, re.I):
-        return SubmitOutcome("submitted", "confirmation detected on the page")
-    errors = [a for a in perception.model.alerts] + [f"{f.label}: {f.error or 'invalid'}" for f in perception.model.fields if f.invalid or f.error]
-    if errors:
-        return SubmitOutcome("error_validation", "the site rejected the form", errors[:6])
-    return SubmitOutcome("unknown_outcome", "clicked Submit but found neither a confirmation nor an error; do NOT assume it was sent")
+    deadline = time.monotonic() + CLASSIFY_WAIT_S
+    while True:
+        if await captcha_visible(page):
+            return SubmitOutcome("blocked_captcha", "a captcha challenge appeared after Submit; solve it in the open window (nothing is assumed sent)")
+        perception = await perceive(page)
+        body = " ".join(f"{perception.model.title} {' '.join(perception.model.headings)} {perception.model.text_digest}".split())
+        new_code = [f.label for f in perception.model.fields if _CODE_FIELD.search(f.label) and f.label not in before_labels]
+        if new_code:
+            return SubmitOutcome("blocked_otp", f"the site wants an emailed code ({new_code[0]}); email verification is not automated yet")
+        if _SUCCESS.search(body) or re.search(r"/(confirmation|thank|submitted|success|applied)\b", page.url, re.I):
+            return SubmitOutcome("submitted", "confirmation detected on the page")
+        errors = [a for a in perception.model.alerts] + [f"{f.label}: {f.error or 'invalid'}" for f in perception.model.fields if f.invalid or f.error]
+        if errors:
+            return SubmitOutcome("error_validation", "the site rejected the form", errors[:6])
+        if time.monotonic() >= deadline:
+            break
+        await asyncio.sleep(0.5)
+    widget = any(re.search(r"hcaptcha|recaptcha|turnstile", f.url, re.I) for f in page.frames if f != page.main_frame)
+    note = "; a captcha widget is on the page but no challenge was visible, check the tab" if widget else ""
+    return SubmitOutcome("unknown_outcome", "clicked Submit but found neither a confirmation nor an error; do NOT assume it was sent" + note)
 
 
 async def guarded_submit(page: Page, rows: list, settler: Settler, url: str, limiter: RateLimiter, log_path: Path, submit: bool) -> SubmitOutcome:

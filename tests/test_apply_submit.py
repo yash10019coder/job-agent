@@ -99,3 +99,8 @@ def test_rate_limiter_no_longer_treats_all_greenhouse_companies_as_one(tmp_path)
     limiter.record_application("https://job-boards.greenhouse.io/affirm/jobs/1", "Affirm", "SWE")
     assert limiter.can_apply("https://job-boards.greenhouse.io/gitlab/jobs/2")[0] is True       # other company: allowed
     assert limiter.can_apply("https://job-boards.greenhouse.io/affirm/jobs/3")[0] is False      # same company: blocked
+
+
+def test_captcha_that_appears_after_the_click_is_reported_not_unknown(tmp_path):
+    (out, body), = go(tmp_path, "?latecaptcha=1")[0]
+    assert out.status == "blocked_captcha" and not out.submitted and "Thank you" not in body
