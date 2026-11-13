@@ -41,6 +41,15 @@
     if (!widget && /^(INPUT|TEXTAREA|SELECT)$/.test(el.tagName)) for (let n = el; n && n !== document.documentElement; n = n.parentElement) if (parseFloat(getComputedStyle(n).opacity) === 0) return false;
     return true;
   };
+  // Where on the page a control lives: a "Login" link in the header is not a gate on the form in main.
+  const regionOf = (el) => {
+    if (el.closest("[role=dialog],dialog,[aria-modal=true]")) return "dialog";
+    if (el.closest("header,[role=banner]")) return "header";
+    if (el.closest("nav,[role=navigation]")) return "nav";
+    if (el.closest("footer,[role=contentinfo]")) return "footer";
+    return "main";
+  };
+  let curEl = null;
   const byId = (id) => document.getElementById(id);
   const textOfIds = (ids) =>
     clean((ids || "").split(/\s+/).map((i) => (byId(i) ? byId(i).innerText || byId(i).textContent : "")).join(" "));
@@ -141,7 +150,7 @@
   const actions = [];
   const seenGroups = new Map();
 
-  const addField = (f) => { f.label = clean(f.label).replace(/\s*[*✱]+\s*/g, " ").trim(); f.index = fields.length; fields.push(f); return f; };
+  const addField = (f) => { f.region = curEl ? regionOf(curEl) : "main"; f.label = clean(f.label).replace(/\s*[*✱]+\s*/g, " ").trim(); f.index = fields.length; fields.push(f); return f; };
 
   const comboOptions = (el) => {
     const ctl = el.getAttribute("aria-controls") || el.getAttribute("aria-owns");
@@ -174,6 +183,7 @@
   };
 
   for (const el of all) {
+    curEl = el;
     const tag = el.tagName.toLowerCase();
     const role = (el.getAttribute("role") || "").toLowerCase();
     const type = (el.getAttribute("type") || "").toLowerCase();
@@ -185,7 +195,7 @@
       const label = clean(el.innerText || el.value || el.getAttribute("aria-label") || el.getAttribute("title"));
       if (!label) continue;
       actions.push({
-        id: stamp(el), kind: tag === "a" || role === "link" ? "link" : "button", label: clip(label, 80),
+        region: regionOf(el), id: stamp(el), kind: tag === "a" || role === "link" ? "link" : "button", label: clip(label, 80),
         primary: type === "submit" || /^(next|continue|submit|apply|save and continue|review)/i.test(label),
         disabled: el.disabled === true || el.getAttribute("aria-disabled") === "true",
       });
@@ -306,6 +316,7 @@
   for (const c of candidates) { const k = c.parentElement; if (!byParent.has(k)) byParent.set(k, []); byParent.get(k).push(c); }
   for (const [parent, cards] of byParent) {
     if (cards.length >= 2 && cards.every((c) => c.tagName === cards[0].tagName)) {
+      curEl = cards[0];
       const q = precedingText(cards[0]) || (parent && precedingText(parent)) || "";
       const chosen = cards.filter(cardSelected);
       addField({ id: stamp(cards[0]), kind: "radio_group", cards: true, label: q, help: "", required: /[*✱]/.test(q), value: chosen.length ? ownText(chosen[0]) : "",

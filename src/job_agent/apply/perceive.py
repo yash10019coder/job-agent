@@ -48,6 +48,7 @@ class FieldModel(BaseModel):
     section: str = ""
     frame: int = 0
     readonly: bool = False
+    region: str = "main"  # main|header|nav|footer|dialog
     cards: bool = False  # clickable cards/pills (no input element)
 
     @property
@@ -72,6 +73,7 @@ class ActionModel(BaseModel):
     primary: bool = False
     disabled: bool = False
     frame: int = 0
+    region: str = "main"
 
 
 class PageModel(BaseModel):

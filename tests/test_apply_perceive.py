@@ -175,3 +175,23 @@ def test_option_decider_fills_choices_the_batch_call_left_unknown():
     llm, state = run(go())
     assert "decide_option" in llm.purposes
     assert state["np"] == "Immediately" and state["src"] == "LinkedIn"      # first real option picked by the (scripted) decider
+
+
+def test_header_login_link_is_region_header():
+    async def go():
+        async with async_playwright() as pw:
+            browser = await pw.chromium.launch(executable_path=BRAVE, headless=True, args=["--no-sandbox"])
+            page = await browser.new_page()
+            await page.set_content(
+                "<header><a href='#'>Login</a></header><main><form>"
+                "<label for=a>Full name</label><input id=a><label for=b>Email</label><input id=b type=email></form>"
+                "<footer><a href='#'>Privacy</a></footer></main>"
+                "<div role=dialog><button>Accept cookies</button></div>")
+            model = (await perceive(page)).model
+            await browser.close()
+            return model
+    m = run(go())
+    assert next(a for a in m.actions if a.label == "Login").region == "header"
+    assert next(a for a in m.actions if a.label == "Privacy").region == "footer"
+    assert next(a for a in m.actions if a.label == "Accept cookies").region == "dialog"
+    assert [f.region for f in m.fields] == ["main", "main"]
