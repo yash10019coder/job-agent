@@ -69,3 +69,11 @@ def test_gap_widgets_can_be_driven():
     assert out["radio"].ok and out["checked"], out["radio"]
     assert out["card"].ok, out["card"]
     assert out["rich"].ok, out["rich"]
+
+
+def test_inputs_inside_web_components_get_labels_from_the_host_or_autocomplete():
+    async def go(page):
+        await page.goto((ROOT / "tests/fixtures/web_component_form.html").resolve().as_uri())
+        return (await perceive(page)).model
+    m = run_on_fixture(go)
+    assert [f.label for f in m.fields] == ["Given name", "Email address", "Last name", "Phone"]

@@ -94,6 +94,17 @@
     if (el.labels && el.labels.length) return clean(Array.from(el.labels).map((l) => l.innerText).join(" "));
     const wrap = el.closest("label");
     if (wrap) return clean(wrap.innerText);
+    const AC = { "given-name": "First name", "family-name": "Last name", name: "Full name", email: "Email", tel: "Phone", "street-address": "Address",
+      "address-line1": "Address", "address-level2": "City", "address-level1": "State", "postal-code": "Postal code", country: "Country", "country-name": "Country",
+      organization: "Company", "organization-title": "Job title" };
+    const ac = (el.getAttribute("autocomplete") || "").toLowerCase().split(/\s+/).pop();
+    if (AC[ac]) return AC[ac];
+    // Inputs inside web components (custom-element form kits): the label lives on the host element or in autocomplete.
+    const host = el.getRootNode && el.getRootNode().host;
+    if (host) {
+      const t = host.getAttribute("label") || host.getAttribute("aria-label") || host.getAttribute("placeholder") || host.getAttribute("title") || host.getAttribute("name");
+      if (t) return clean(t);
+    }
     const pt = precedingText(el);
     if (pt) return pt;
     return clean(el.getAttribute("placeholder") || el.getAttribute("title") || el.getAttribute("name") || "");
@@ -279,7 +290,7 @@
     }
     else if (tag === "textarea" || el.getAttribute("contenteditable") === "true") kind = "textarea";
     else if (["email", "tel", "number", "date", "url", "password"].includes(type)) kind = type;
-    else if (el.readOnly) kind = "date";
+    else if (el.readOnly || /pick (a )?date|select (a )?date|choose (a )?date|mm\/dd|dd\/mm|yyyy/i.test(el.getAttribute("placeholder") || "")) kind = "date";
     addField({
       id: stamp(el), kind, label: fieldLabel, help: helpOf(el), required: isRequired(el, label),
       value: kind === "file" ? (el.files && el.files.length ? el.files[0].name : "") : clean(el.value !== undefined && el.value !== "" ? el.value : el.getAttribute("contenteditable") === "true" ? el.innerText : ""),

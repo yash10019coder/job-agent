@@ -149,3 +149,23 @@ def test_model_fallback_can_name_the_advance_control_and_confidence_is_capped():
     llm = StubLLM({"state": "job_page", "advance_id": "f0-a2", "confidence": 0.99})
     got = asyncio.run(__import__("job_agent.apply.classify", fromlist=["classify_page"]).classify_page(obs(odd), llm))
     assert got.state == PageState.JOB_PAGE and got.advance_id == "f0-a2" and got.confidence <= 0.7 and got.source == "llm"
+
+
+def test_choice_dialog_prefers_the_option_that_needs_no_account_or_upload():
+    from job_agent.apply.reveal import pick_apply
+    m = page("Job", ["Job"], actions=["Apply"])
+    m.actions.append(type(m.actions[0])(id="f0-d1", kind="button", label="Autofill with Resume", region="dialog"))
+    m.actions.append(type(m.actions[0])(id="f0-d2", kind="button", label="Apply Manually", region="dialog"))
+    m.actions.append(type(m.actions[0])(id="f0-d3", kind="button", label="Use My Last Application", region="dialog"))
+    assert pick_apply(m) == "f0-d2"
+    only_other = page("Job", ["Job"], actions=["Apply"])
+    only_other.actions.append(type(only_other.actions[0])(id="f0-d9", kind="button", label="Use My Last Application", region="dialog"))
+    assert pick_apply(only_other) == "f0-a1"   # no safe dialog choice: fall back to the main Apply control
+
+
+def test_model_cannot_call_an_almost_empty_page_closed_or_a_listing():
+    from job_agent.apply.classify import classify_page
+    blank = page("", [], text="")
+    for claimed in ("closed", "listing", "dead"):
+        got = asyncio.run(classify_page(obs(blank), StubLLM({"state": claimed, "advance_id": "", "confidence": 0.9})))
+        assert got.state == PageState.UNKNOWN, claimed

@@ -6,6 +6,7 @@ handle yet (login, signup, SSO, emailed code, captcha) end as NEEDS_HUMAN with t
 """
 from __future__ import annotations
 
+import asyncio
 import re
 import time
 from dataclasses import dataclass, field
@@ -92,6 +93,13 @@ async def run_application(page: Page, llm: LLM, facts: dict, resume: str | None,
         if page.is_closed():
             return done(Outcome.STUCK, "the page was closed")
         obs, _ = await observe(page, status, start_url if res.steps == 1 or page.url != start_url else None)
+        for _ in range(4):  # single-page apps render after the load event: give a blank page a few chances before judging it
+            blank = not obs.model.fields and not obs.model.actions and len(obs.model.text_digest.strip()) < 60
+            if not blank or obs.status in (403, 404, 410, 429) or (obs.status or 0) >= 500:
+                break
+            await Settler(page).settle()
+            await asyncio.sleep(1.0)
+            obs, _ = await observe(page, status, start_url if page.url != start_url else None)
         c: Classification = await classify_page(obs, llm)
         prev = res.states[-1] if res.states else None
         res.states.append(c.state)

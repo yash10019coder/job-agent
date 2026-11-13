@@ -22,9 +22,24 @@ from job_agent.apply.survey import _HostPacer
 APPLY = re.compile(r"^(quick )?apply( now| today| online| for this (job|role|position)| to (this )?(job|position|role))?!?\s*[»>›]*$", re.I)
 
 
+_DIALOG_CHOICE = re.compile(r"^(apply manually|apply without (a |an )?(resume|account|signing in)|continue as (a )?guest|"
+                            r"continue without (a |an )?(account|signing in|resume)|start (your |the )?application|apply as (a )?guest)$", re.I)
+
+
 def pick_apply(model) -> str | None:
-    for a in model.actions:
-        if not a.disabled and APPLY.match(a.label.strip()):
+    """The control that starts the application. An open choice dialog ("Apply Manually" / "Autofill with Resume" /
+    "Use My Last Application") is answered first with the choice that needs no account or upload; otherwise the
+    first exact Apply control, main content before header/footer."""
+    enabled = [a for a in model.actions if not a.disabled]
+    for a in enabled:
+        if a.region == "dialog" and (_DIALOG_CHOICE.match(a.label.strip()) or APPLY.match(a.label.strip())):
+            return a.id
+    for region in ("main", "dialog"):
+        for a in enabled:
+            if a.region == region and APPLY.match(a.label.strip()):
+                return a.id
+    for a in enabled:
+        if APPLY.match(a.label.strip()):
             return a.id
     return None
 

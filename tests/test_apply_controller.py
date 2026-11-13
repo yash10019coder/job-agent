@@ -104,3 +104,15 @@ def test_emailed_code_after_submit_is_not_recorded_as_applied():
 def test_embedded_iframe_form_is_filled_like_any_other():
     res, _, _, _ = run("embedded.html")
     assert res.outcome == Outcome.DRY_RUN_READY, (res.outcome, res.detail)
+
+
+def test_choice_dialog_is_answered_with_apply_manually():
+    """Workday-style: Apply opens 'Autofill with Resume / Apply Manually / Use My Last Application'; the loop must not
+    keep re-clicking the Apply button behind it (seen live: 4 hops, stuck)."""
+    res, url, _, _ = run("workday_like.html")
+    assert res.outcome == Outcome.DRY_RUN_READY, (res.outcome, res.detail)
+
+
+def test_a_page_that_renders_late_is_waited_for_not_judged_blank():
+    res, _, _, _ = run("late_render.html")
+    assert res.outcome == Outcome.DRY_RUN_READY, (res.outcome, res.detail)

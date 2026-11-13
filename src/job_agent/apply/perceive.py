@@ -12,7 +12,7 @@ import time
 from pathlib import Path
 
 from playwright.async_api import Frame, Page
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, field_validator
 
 _PERCEIVE_JS = (Path(__file__).with_name("perceive.js")).read_text(encoding="utf-8")
 
@@ -26,8 +26,13 @@ _MUTATION_JS = """() => {
 
 class Option(BaseModel):
     id: str = ""
-    label: str
+    label: str = ""
     value: str | None = None
+
+    @field_validator("id", "label", mode="before")
+    @classmethod
+    def _none_is_empty(cls, v):  # custom widgets can render an option with no text (seen on Rippling)
+        return "" if v is None else v
 
 
 class FieldModel(BaseModel):

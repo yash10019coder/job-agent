@@ -87,3 +87,14 @@ def test_overrides_hide_roles_fix_dates_and_set_unemployed_policy():
     assert facts["skills"] == {"L": ["Python"]}
     why = prefill(FieldModel(id="a", kind="textarea", label="Reason for leaving your last job", required=True), facts)
     assert why and why.value == "Personal reasons"
+
+
+def test_conditional_question_about_another_country_is_not_applicable():
+    from job_agent.apply.perceive import FieldModel
+    from job_agent.apply.prefill import prefill
+    facts = {"location": {"country": "India", "state": "Maharashtra", "city": "Mumbai"}}
+    us = prefill(FieldModel(id="a", kind="text", label="If located in the US, in what city and state do you reside?", required=True), facts)
+    assert us and us.value == "N/A"
+    here = prefill(FieldModel(id="b", kind="text", label="If located in India, which city do you live in?", required=True), facts)
+    assert here is None or here.value != "N/A"
+

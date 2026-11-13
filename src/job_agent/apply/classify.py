@@ -169,4 +169,7 @@ async def classify_page(obs: Observation, llm=None) -> Classification:
         state, why = PageState.UNKNOWN, ["model said form but the page has no application-shaped fields: rejected"]
     if state == PageState.CONFIRMATION and not _SUCCESS.search(_head_text(m)):
         state, why = PageState.UNKNOWN, ["model said confirmation but the page has no confirmation wording: rejected"]
+    thin = not m.fields and len(m.actions) < 3 and len(m.text_digest.strip()) < 80
+    if thin and state in {PageState.DEAD, PageState.CLOSED, PageState.LISTING, PageState.BOT_BLOCK, PageState.EMAIL_ONLY}:
+        state, why = PageState.UNKNOWN, ["model said the job is unavailable but the page has almost no content (still loading?): rejected"]
     return Classification(state, out["advance_id"] or None, min(float(out["confidence"]), 0.7), why, "llm")

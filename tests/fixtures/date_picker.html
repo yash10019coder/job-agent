@@ -1,0 +1,5 @@
+<!doctype html><html><body><main><h1>Apply</h1><label for=d>When can you start?</label>
+<input id=d placeholder="Pick date..." required><script>
+const d=document.getElementById('d');
+d.addEventListener('blur',()=>{ if(!/^\d{2}\/\d{2}\/\d{4}$/.test(d.value)) d.value=''; });
+</script></main></body></html>

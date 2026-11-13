@@ -1,0 +1,7 @@
+<!doctype html><html><body><main><h1>Application</h1>
+<form-kit id=a label="Given name"></form-kit><form-kit id=b label="Email address"></form-kit>
+<input id=c autocomplete="family-name"><input id=d type=tel autocomplete="tel">
+<script>
+class FormKit extends HTMLElement{connectedCallback(){const r=this.attachShadow({mode:'open'});r.innerHTML='<input>';}}
+customElements.define('form-kit',FormKit);
+</script></main></body></html>

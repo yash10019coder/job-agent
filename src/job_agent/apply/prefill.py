@@ -108,6 +108,18 @@ def prefill(field: FieldModel, facts: dict) -> Prefill | None:
 
     if kind == "file":
         return None
+    cond = re.match(r"^if (you are |you re )?(currently )?(located|based|residing|living|a resident|resident) in (the )?(\w+( \w+){0,2})", label)
+    if cond and kind in {"text", "textarea"}:  # "If located in the US, which city?": not applicable when we are elsewhere
+        stop = {"which", "what", "where", "how", "please", "do", "are", "in", "and", "can", "did", "is", "does", "provide", "list", "state", "city"}
+        place_tokens = []
+        for token in cond.group(5).split():
+            if token in stop:
+                break
+            place_tokens.append(token)
+        place = " ".join(place_tokens)
+        ours = {_norm(loc.get(k, "")) for k in ("country", "state", "city")} | {"indian"}
+        if place and place not in ours:
+            return say("N/A", f"conditional question about {place}; you are located in {loc.get('country', 'another country')}")
     if re.search(r"not a robot|i am (a )?human|captcha|verify you are human", label):
         return say("", "human-verification checkbox: never ticked by the agent", blank=True)
     if re.search(r"pronunciation", label):
@@ -149,7 +161,7 @@ def prefill(field: FieldModel, facts: dict) -> Prefill | None:
     if re.search(r"notice period", label):
         return say(policy.get("notice_period"), "answer_policy.notice_period")
     if re.search(r"(earliest )?(start|joining) date|when can you (start|join)|availability to start", label):
-        return say(policy.get("earliest_start_date"), "answer_policy.earliest_start_date") if kind not in {"date"} else None
+        return say(policy.get("earliest_start_date"), "answer_policy.earliest_start_date")
     if kind != "number" and re.search(r"expected (ctc|salary|compensation)|salary expectation|desired (salary|compensation)", label):
         return say(policy.get("expected_ctc"), "answer_policy.expected_ctc")
     if kind != "number" and re.search(r"current (ctc|salary|compensation)", label):

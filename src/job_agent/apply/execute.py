@@ -8,6 +8,7 @@ from __future__ import annotations
 import difflib
 import re
 from dataclasses import dataclass
+from datetime import date, datetime
 
 from playwright.async_api import Page
 
@@ -55,12 +56,60 @@ async def _current(loc) -> str:
     return (await loc.evaluate(_CURRENT_JS)).strip()
 
 
+_NOW_WORDS = re.compile(r"^(immediate(ly)?|asap|now|as soon as possible|right away|today|no notice.*|within .*)$", re.I)
+
+
+def date_candidates(value: str, placeholder: str = "", today: date | None = None) -> list[str]:
+    """Texts to try in a date box: the value as a real date (a start date like 'Immediately' means today), in the box's
+    own format when the placeholder shows it, otherwise the common formats."""
+    today = today or date.today()
+    when = today
+    if not _NOW_WORDS.match(value.strip()):
+        for fmt in ("%Y-%m-%d", "%m/%d/%Y", "%d/%m/%Y", "%b %d, %Y", "%B %d, %Y"):
+            try:
+                when = datetime.strptime(value.strip(), fmt).date()
+                break
+            except ValueError:
+                continue
+        else:
+            return [value]
+    ph = placeholder.lower()
+    ordered = []
+    if "dd/mm" in ph:
+        ordered.append("%d/%m/%Y")
+    elif "mm/dd" in ph:
+        ordered.append("%m/%d/%Y")
+    elif "yyyy-mm" in ph:
+        ordered.append("%Y-%m-%d")
+    ordered += [f for f in ("%m/%d/%Y", "%Y-%m-%d", "%d/%m/%Y", "%b %d, %Y") if f not in ordered]
+    return [when.strftime(f) for f in ordered]
+
+
+async def _type_date(page: Page, loc, field: FieldModel, value: str) -> ActionResult:
+    """Type the date in each plausible format until the box keeps it (a box that rejects a format clears itself on blur)."""
+    wanted_year = None
+    for text in date_candidates(value, field.placeholder):
+        try:
+            await loc.click(timeout=3000)
+            await loc.fill("")
+            await loc.press_sequentially(text, delay=15)
+            await loc.press("Tab")
+            await page.wait_for_timeout(300)
+            actual = (await _current(loc)).strip()
+        except Exception as error:
+            return ActionResult(False, f"date entry failed: {str(error).splitlines()[0][:90]}")
+        wanted_year = re.search(r"\d{4}", text).group(0) if re.search(r"\d{4}", text) else None
+        if actual and (wanted_year is None or wanted_year in actual):
+            return ActionResult(True, f"date {actual}")
+    return ActionResult(False, "the date box did not keep any date format (probably needs its calendar widget)")
+
+
 async def set_date(page: Page, perception: Perception, field: FieldModel, value: str) -> ActionResult:
     """Dates: type it; for read-only (calendar-popup) inputs set the value the way a picker would and
     confirm the page kept it. A picker that reverts the value is reported as a failure, never assumed."""
     loc = perception.locator(field.id, field.frame)
     if not field.readonly:
-        return await fill_text(page, perception, field, value)
+        return await _type_date(page, loc, field, value)
     try:
         await loc.evaluate(
             """(el, v) => { const set = Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, 'value').set;
@@ -139,7 +188,10 @@ async def fill_text(page: Page, perception: Perception, field: FieldModel, value
     except Exception as error:
         return ActionResult(False, f"fill failed: {error}")
     same = re.sub(r"[^a-z0-9]", "", actual.lower()) == re.sub(r"[^a-z0-9]", "", value.lower())  # inputs may reformat (phone masks)
-    if not same and not actual.strip() and field.kind in {"text"} and field.required:
+    if not same and field.kind == "tel":  # the country code may live in a separate box, so the number is stored without it
+        got, want = re.sub(r"\D", "", actual), re.sub(r"\D", "", value)
+        same = len(got) >= 8 and want.endswith(got)
+    if not same and not actual.strip() and field.kind == "text":
         return await pick_suggestion(page, perception, field, value)  # emptied on blur: a typeahead that needs a clicked result
     return ActionResult(same, "ok" if same else f"value not accepted (got {actual!r})")
 

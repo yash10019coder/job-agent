@@ -47,10 +47,9 @@ async def _state(page: Page) -> dict:
     return state
 
 
-async def _wait_for_effect(page: Page, before: dict, before_url: str, before_pages: set, wait_s: float) -> Hop | None:
-    context = page.context
+async def _wait_for_effect(page: Page, before: dict, before_url: str, popups: list, wait_s: float) -> Hop | None:
     for _ in range(int(wait_s / 0.1)):
-        new = [p for p in context.pages if p not in before_pages and not p.is_closed()]
+        new = [p for p in popups if not p.is_closed()]  # only tabs opened BY this page: other jobs share the browser context
         if new:
             target = new[-1]
             try:
@@ -79,7 +78,20 @@ async def _wait_for_effect(page: Page, before: dict, before_url: str, before_pag
 
 
 async def click_and_follow(page: Page, perception: Perception, action_id: str, frame: int = 0, wait_s: float = 10.0, close_old: bool = True) -> Hop:
-    before, before_url, before_pages = await _state(page), page.url, set(page.context.pages)
+    before, before_url = await _state(page), page.url
+    popups: list[Page] = []
+
+    def on_popup(popup: Page) -> None:  # a plain function: Playwright attaches bookkeeping to handlers
+        popups.append(popup)
+
+    page.on("popup", on_popup)
+    try:
+        return await _click_and_follow(page, perception, action_id, frame, wait_s, close_old, before, before_url, popups)
+    finally:
+        page.remove_listener("popup", on_popup)
+
+
+async def _click_and_follow(page, perception, action_id, frame, wait_s, close_old, before, before_url, popups) -> Hop:
     last_error = ""
     for attempt in (1, 2):
         try:
@@ -93,7 +105,7 @@ async def click_and_follow(page: Page, perception: Perception, action_id: str, f
             if attempt == 1:
                 continue
             return Hop(page, "no_effect", before_url, page.url, f"click failed: {last_error}")
-        hop = await _wait_for_effect(page, before, before_url, before_pages, wait_s if attempt == 1 else min(wait_s, 4.0))
+        hop = await _wait_for_effect(page, before, before_url, popups, wait_s if attempt == 1 else min(wait_s, 4.0))
         if hop:
             if hop.kind == "new_tab" and close_old and not page.is_closed():
                 try:

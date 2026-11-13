@@ -60,3 +60,23 @@ def test_cookie_banner_in_the_way_is_dismissed_then_the_click_works():
 def test_a_click_that_does_nothing_is_reported_not_assumed():
     kind, _, _, _, _ = follow("apply_noeffect.html", "Apply", wait_s=1.5)
     assert kind == "no_effect"
+
+
+def test_a_tab_opened_by_another_job_is_not_mistaken_for_ours():
+    """Two jobs share one browser context. While job A waits for its (do-nothing) Apply click, job B opens a tab:
+    A must report no_effect, not 'new_tab'. (Seen live: Breezy 'followed' the JazzHR window.)"""
+    async def run():
+        async with async_playwright() as pw:
+            browser = await pw.chromium.launch(executable_path=BRAVE, headless=True, args=["--no-sandbox"])
+            context = await browser.new_context()
+            a, b = await context.new_page(), await context.new_page()
+            await a.goto((FIX / "apply_noeffect.html").resolve().as_uri())
+            await b.goto((FIX / "job_page.html").resolve().as_uri())
+            perception = await perceive(a)
+            action = next(x for x in perception.model.actions if x.label == "Apply")
+            opener = asyncio.create_task(b.evaluate("setTimeout(() => window.open('form_page.html'), 400)"))
+            hop = await click_and_follow(a, perception, action.id, action.frame, wait_s=2.0)
+            await opener
+            await browser.close()
+            return hop.kind
+    assert asyncio.run(run()) == "no_effect"
