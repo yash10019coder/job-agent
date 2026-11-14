@@ -125,7 +125,9 @@ def prefill(field: FieldModel, facts: dict) -> Prefill | None:
     if re.search(r"pronunciation", label):
         return say("", "nothing to add", blank=True)
     if re.search(r"\bpronouns?\b", label):
-        return say("Prefer not to say", "answer_policy.pronouns") if field.required else say("", "optional; policy is to leave blank", blank=True)
+        gender = str(facts.get("eeo", {}).get("gender", "")).lower()   # stated in the profile; never inferred from a name
+        pronouns = {"male": "He/him", "female": "She/her"}.get(gender)
+        return say(pronouns, "eeo.gender in the profile") if pronouns else say("Prefer not to say", "no gender stated in the profile")
     if re.search(r"(preferred|nick) name|what should we call you|name you d? ?prefer", label):
         return say(ident.get("preferred_name"), "identity.preferred_name")
     if re.search(r"^(legal )?first name|given name", label):

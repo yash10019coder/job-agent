@@ -8,6 +8,7 @@ others are applied one at a time, with a settle + diff after each), repeat until
 from __future__ import annotations
 
 import json
+import asyncio
 import re
 import unicodedata
 from dataclasses import dataclass, field
@@ -220,9 +221,26 @@ async def fill_until_stable(page: Page, llm: LLM, context: str, resume: str | No
     settler, decider = Settler(page), FlashDecider(llm)
     attempted: set[str] = set()
     job_context = ""
-    for round_no in range(1, MAX_ROUNDS + 1):
+    refills: dict[str, int] = {}
+    late_check = False
+    for round_no in range(1, MAX_ROUNDS + 2):
         perception = await explore(page, settler) if round_no == 1 else await perceive(page)  # first read also expands/scrolls
+        # Sites sometimes wipe what we typed a few seconds later (e.g. a resume upload that is parsed and re-populates the form):
+        # a field we filled successfully that is empty again is queued for one more fill (at most twice).
+        kept = {f"{r.kind}|{re.sub(r'[^a-z0-9]+', ' ', r.label.lower()).strip()}" for r in result.rows
+                if r.status == "ok" and r.answer.strip() and r.kind != "file"}
+        lost = [f for f in perception.model.fields if f.empty and f.key in kept and f.key in attempted and refills.get(f.key, 0) < 2]
+        for f in lost:
+            attempted.discard(f.key)
+            refills[f.key] = refills.get(f.key, 0) + 1
+        if lost:
+            result.events.append("  site cleared: " + ", ".join(f.label[:40] for f in lost) + " (filling again)")
         todo = [f for f in perception.model.fields if f.key not in attempted and (f.empty or f.invalid)]
+        if not todo and not late_check and round_no > 1:
+            late_check = True   # one last look after a pause: a late page-side reset shows up here
+            await asyncio.sleep(4.0)
+            await settler.settle()
+            continue
         if not todo:
             break
         result.rounds = round_no

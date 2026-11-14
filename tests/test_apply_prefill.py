@@ -33,10 +33,11 @@ def test_questions_that_need_judgement_are_left_to_the_model():
     assert ask("Have you ever been convicted of a crime?", "radio_group", True) is None              # never prefilled
 
 
-def test_optional_extras_stay_blank_and_required_pronouns_get_policy():
+def test_optional_extras_stay_blank_and_pronouns_follow_the_stated_gender():
     assert ask("Twitter").blank and ask("Portfolio").blank and ask("Name Pronunciation").blank
-    assert ask("Pronouns", "text", required=False).blank
-    assert ask("Pronouns", "combobox", required=True).value == "Prefer not to say"
+    expected = {"male": "He/him", "female": "She/her"}.get(FACTS["eeo"]["gender"].lower(), "Prefer not to say")
+    assert ask("Pronouns", "text", required=False).value == expected   # from the profile's stated gender, never inferred from a name
+    assert ask("Pronouns", "combobox", required=True).value == expected
 
 
 def test_policy_answers_and_consent():
