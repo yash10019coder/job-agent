@@ -133,7 +133,7 @@ async def run_survey(session: BraveSession, jobs: list[dict], base: Path, concur
 
 
 async def run_survey_into(session: BraveSession, jobs: list[dict], out_dir: Path, concurrency: int = 5) -> Path:
-    pacer, sem = _HostPacer(), asyncio.Semaphore(concurrency)
+    pacer, sem = _HostPacer(), asyncio.Semaphore(max(1, min(int(concurrency), 10)))
     results = await asyncio.gather(*[survey_one(session, j, i + 1, out_dir, pacer, sem) for i, j in enumerate(jobs)])
     (out_dir / "summary.json").write_text(json.dumps({"pages": len(results), "errors": sum(bool(r["error"]) for r in results)}, indent=1))
     return out_dir

@@ -136,5 +136,5 @@ async def reveal_one(session: BraveSession, row: dict, idx: int, out_dir: Path, 
 
 async def run_reveal(session: BraveSession, rows: list[dict], out_dir: Path, concurrency: int = 4) -> list[dict]:
     out_dir.mkdir(parents=True, exist_ok=True)
-    pacer, sem = _HostPacer(), asyncio.Semaphore(concurrency)
+    pacer, sem = _HostPacer(), asyncio.Semaphore(max(1, min(int(concurrency), 10)))
     return await asyncio.gather(*[reveal_one(session, r, i + 1, out_dir, pacer, sem) for i, r in enumerate(rows)])

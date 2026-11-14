@@ -19,6 +19,7 @@ from urllib.parse import urlsplit
 import httpx
 from playwright.async_api import Page
 
+from job_agent.apply.batch import clamp_parallel
 from job_agent.apply.controller import ROOT, run_application
 from job_agent.apply.fit import fit, india_in_text
 from job_agent.apply.states import Outcome
@@ -160,7 +161,7 @@ async def run_autopilot(jobs: list[dict], open_page: OpenPage, make_llm: Callabl
         alive, why = await live_check(job["url"])
         (live_queue.append(job) if alive else skip(job, f"dead link: {why}"))
 
-    sem, lock = asyncio.Semaphore(concurrency), asyncio.Lock()
+    sem, lock = asyncio.Semaphore(clamp_parallel(concurrency)), asyncio.Lock()
     reserved = _applied_today(log_path)
 
     async def work(index: int, job: dict) -> None:

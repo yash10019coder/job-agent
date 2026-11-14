@@ -29,6 +29,11 @@ def _slug(text: str) -> str:
 
 
 _window_lock = asyncio.Lock()
+MAX_PARALLEL = 10  # hard ceiling on jobs running at once, whatever a caller asks for
+
+
+def clamp_parallel(n: int, limit: int = MAX_PARALLEL) -> int:
+    return max(1, min(int(n), limit))
 
 
 async def blank_window(session: BraveSession) -> Page:
@@ -66,7 +71,7 @@ def _write(path: Path, data) -> None:
 
 
 async def run_one(session: BraveSession, job: dict, run_dir: Path, facts: dict, resume: str | None,
-                  model: str | None, submit: bool, sem: asyncio.Semaphore, engine: str = "demo") -> dict:
+                  model: str | None, submit: bool, sem: asyncio.Semaphore, engine: str = "demo", keep_open: bool = False) -> dict:
     run_dir.mkdir(parents=True, exist_ok=True)
     log = run_dir / "events.log"
 
@@ -78,25 +83,34 @@ async def run_one(session: BraveSession, job: dict, run_dir: Path, facts: dict, 
                "dir": str(run_dir), "status": "crashed"}
     started = time.monotonic()
     llm = LLM(model=model or None)
+    opened: list = []
     async with sem:
         for attempt in (1, 2):  # one retry: a window can be closed under us by the browser
             try:
                 note(f"attempt {attempt}: open {job['url']}")
                 attempt_fn = _attempt_controller if engine == "controller" else _attempt
-                summary.update(await attempt_fn(session, job, run_dir, facts, resume, llm, submit, note, started))
+                summary.update(await attempt_fn(session, job, run_dir, facts, resume, llm, submit, note, started, opened))
                 summary.pop("error", None)
                 break
             except Exception:
                 _write(run_dir / "error.txt", traceback.format_exc())
                 note("CRASHED, see error.txt")
                 summary["error"] = traceback.format_exc().strip().splitlines()[-1][:200]
+        if not keep_open:  # never leave windows piling up
+            for p in {p for p in opened if p is not None}:
+                try:
+                    if not p.is_closed():
+                        await p.close()
+                except Exception:
+                    pass
     summary.update(llm=llm.totals, seconds=round(time.monotonic() - started, 1))
     note(f"done: {summary['status']}")
-    return summary  # the window is left open so the filled form can be inspected
+    return summary
 
 
-async def _attempt(session, job, run_dir, facts, resume, llm, submit, note, started) -> dict:
+async def _attempt(session, job, run_dir, facts, resume, llm, submit, note, started, opened) -> dict:
     page = await new_window(session, job["url"])
+    opened.append(page)
     _write(run_dir / "meta.json", job)
     _write(run_dir / "page_before.json", (await perceive(page)).model.model_dump())
     note("running fill loop")
@@ -120,14 +134,16 @@ async def _attempt(session, job, run_dir, facts, resume, llm, submit, note, star
         problems=(result.submit.problems if result.submit else []), unparsed=len(after.unparsed))
 
 
-async def _attempt_controller(session, job, run_dir, facts, resume, llm, submit, note, started) -> dict:
+async def _attempt_controller(session, job, run_dir, facts, resume, llm, submit, note, started, opened) -> dict:
     """The generic loop (classify -> act -> verify) on one job; dry run unless the caller passes submit (apply-run never does)."""
     from job_agent.apply.controller import run_application
 
     page = await new_window(session, job["url"])
+    opened.append(page)
     _write(run_dir / "meta.json", job)
     note("running the application loop")
     result = await run_application(page, llm, facts, resume, run_dir, submit=submit)
+    opened.append(result.page)
     end = result.page
     unparsed = 0
     if end is not None and not end.is_closed():
@@ -147,11 +163,11 @@ async def _attempt_controller(session, job, run_dir, facts, resume, llm, submit,
 
 
 async def run_batch(session: BraveSession, jobs: list[dict], base: Path, facts: dict, resume: str | None,
-                    model: str | None, submit: bool = False, concurrency: int = 5, engine: str = "demo") -> list[dict]:
+                    model: str | None, submit: bool = False, concurrency: int = 5, engine: str = "demo", keep_open: bool = False) -> list[dict]:
     stamp = datetime.now().strftime("%Y%m%d-%H%M%S")
     batch_dir = base / stamp
-    sem = asyncio.Semaphore(concurrency)
-    tasks = [run_one(session, j, batch_dir / f"{i + 1}-{_slug(j.get('ats', 'job'))}-{_slug(j.get('company') or urlparse(j['url']).netloc)}", facts, resume, model, submit, sem, engine)
+    sem = asyncio.Semaphore(clamp_parallel(concurrency))
+    tasks = [run_one(session, j, batch_dir / f"{i + 1}-{_slug(j.get('ats', 'job'))}-{_slug(j.get('company') or urlparse(j['url']).netloc)}", facts, resume, model, submit, sem, engine, keep_open)
              for i, j in enumerate(jobs)]
     results = await asyncio.gather(*tasks)
     batch_dir.mkdir(parents=True, exist_ok=True)

@@ -157,7 +157,7 @@ def apply_batch(args: argparse.Namespace) -> int:
     async def run():
         async with BraveSession(_config(args)) as session:
             return await run_batch(session, jobs, root / "data" / "runs", facts, args.resume or None,
-                                   args.model or None, submit=args.submit, concurrency=args.concurrency)
+                                   args.model or None, submit=args.submit, concurrency=args.concurrency, keep_open=args.keep_open)
 
     for r in asyncio.run(run()):
         print(f"{r['ats']:12} {r['status']:18} fields={r.get('fields', '-')} ok={r.get('ok', '-')} blocked={r.get('blocked', '-')} "
@@ -251,6 +251,13 @@ def apply_survey(args: argparse.Namespace) -> int:
     return 0
 
 
+def _parallel(text: str) -> int:
+    n = int(text)
+    if not 1 <= n <= 10:
+        raise argparse.ArgumentTypeError("concurrency must be between 1 and 10")
+    return n
+
+
 def apply_run(args: argparse.Namespace) -> int:
     """Run the generic application loop on many jobs (dry run only; one Brave window each); data/runs/<timestamp>/."""
     from job_agent.apply.batch import run_batch
@@ -263,7 +270,7 @@ def apply_run(args: argparse.Namespace) -> int:
     async def run():
         async with BraveSession(_config(args)) as session:
             return await run_batch(session, jobs, root / "data" / "runs", facts, args.resume or None, args.model or None,
-                                   submit=False, concurrency=args.concurrency, engine="controller")
+                                   submit=False, concurrency=args.concurrency, engine="controller", keep_open=args.keep_open)
 
     for r in asyncio.run(run()):
         print(f"{(r.get('ats') or '-')[:12]:12} {r['status']:22} steps={r.get('steps', '-')} fields={r.get('fields', '-')} {r['seconds']}s  "
@@ -353,7 +360,8 @@ def register(subparsers) -> None:
     batch.add_argument("--jobs", required=True, help="JSON list of {ats, company, title, url}")
     batch.add_argument("--resume", default="", help="PDF to upload into resume fields")
     batch.add_argument("--model", default="")
-    batch.add_argument("--concurrency", type=int, default=5)
+    batch.add_argument("--keep-open", action="store_true", help="Leave each job window open for inspection (default: close it)")
+    batch.add_argument("--concurrency", type=_parallel, default=5)
     batch.add_argument("--submit", action="store_true", help="Press Submit when every guard passes (default: dry run)")
     add_brave_args(batch)
     batch.set_defaults(func=apply_batch)
@@ -362,7 +370,7 @@ def register(subparsers) -> None:
     survey.add_argument("--per-ats", type=int, default=8, help="(--linkedin: use ~3)")
     survey.add_argument("--seed", type=int, default=7)
     survey.add_argument("--limit", type=int, default=0, help="Only the first N sampled pages (smoke test)")
-    survey.add_argument("--concurrency", type=int, default=5)
+    survey.add_argument("--concurrency", type=_parallel, default=5)
     survey.add_argument("--refingerprint", nargs="+", metavar="DIR", help="Re-survey the unclassified pages of these survey dirs, with fingerprints")
     survey.add_argument("--linkedin", action="store_true", help="Cohort B: LinkedIn-sourced links (needs a logged-in agent profile)")
     survey.add_argument("--li-cap", type=int, default=60, help="Max LinkedIn pages opened (kept small on purpose)")
@@ -372,7 +380,7 @@ def register(subparsers) -> None:
     reveal = subparsers.add_parser("apply-reveal", help="Click Apply on surveyed pages (no fill/login) to find where the application lives.")
     reveal.add_argument("--from-survey", required=True, help="Survey dir with index.jsonl (needs fingerprints)")
     reveal.add_argument("--limit", type=int, default=0)
-    reveal.add_argument("--concurrency", type=int, default=4)
+    reveal.add_argument("--concurrency", type=_parallel, default=4)
     add_brave_args(reveal)
     reveal.set_defaults(func=apply_reveal)
 
@@ -380,7 +388,8 @@ def register(subparsers) -> None:
     run.add_argument("--jobs", required=True, help="JSON list of {url, company?, title?, ats?}")
     run.add_argument("--resume", default="", help="PDF to upload into resume fields")
     run.add_argument("--model", default="")
-    run.add_argument("--concurrency", type=int, default=3)
+    run.add_argument("--keep-open", action="store_true", help="Leave each job window open for inspection (default: close it)")
+    run.add_argument("--concurrency", type=_parallel, default=3)
     add_brave_args(run)
     run.set_defaults(func=apply_run)
 
@@ -389,7 +398,7 @@ def register(subparsers) -> None:
     auto.add_argument("--resume", default="", help="PDF to upload into resume fields")
     auto.add_argument("--submit", action="store_true", help="Actually submit when every guard passes (default: dry run)")
     auto.add_argument("--max-per-day", type=int, default=20)
-    auto.add_argument("--concurrency", type=int, default=2)
+    auto.add_argument("--concurrency", type=_parallel, default=2)
     auto.add_argument("--pace", type=float, default=60.0, help="Max seconds of gap between application starts (human-like pacing; half to full)")
     auto.add_argument("--limit", type=int, default=0, help="Only the first N jobs (smoke test)")
     auto.add_argument("--model", default="")

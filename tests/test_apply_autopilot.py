@@ -95,3 +95,9 @@ def test_a_vague_location_is_skipped_unless_the_job_page_says_india():
     res, _, _ = go([job("job_page.html", location="Hybrid")])
     only = res["job_page.html"]
     assert only.status == "skipped" and "not verified as India" in only.reason
+
+
+def test_parallelism_is_clamped_to_a_hard_ceiling():
+    from job_agent.apply.batch import MAX_PARALLEL, clamp_parallel
+    assert MAX_PARALLEL == 10
+    assert [clamp_parallel(n) for n in (0, 1, 3, 10, 999)] == [1, 1, 3, 10, 10]
