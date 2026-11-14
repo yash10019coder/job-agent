@@ -49,3 +49,27 @@ def test_non_interactive_submit_is_refused_without_matching_confirm_url():
     assert _same_posting("https://x.io/jobs/1/?utm=a", "https://x.io/jobs/1")
     assert not _same_posting("", "https://x.io/jobs/1")
     assert not _same_posting("https://x.io/jobs/2", "https://x.io/jobs/1")
+
+
+def test_a_job_page_with_a_footer_language_picker_is_not_mistaken_for_a_form():
+    """Seen live on Rippling: 'Display language' in the footer made the old entry points skip the Apply click."""
+    import asyncio
+    from pathlib import Path
+
+    from playwright.async_api import async_playwright
+
+    from job_agent.apply.opening import open_application
+    from test_apply_perceive import BRAVE, ROOT
+
+    async def go():
+        async with async_playwright() as pw:
+            browser = await pw.chromium.launch(executable_path=BRAVE, headless=True, args=["--no-sandbox"])
+            page = await (await browser.new_context()).new_page()
+            await page.goto((ROOT / "tests/fixtures/multistep/footer_language_decoy.html").resolve().as_uri())
+            after, note = await open_application(page, None)
+            again, note2 = await open_application(after, None)
+            await browser.close()
+            return after.url, note, note2
+    url, note, note2 = asyncio.run(go())
+    assert url.endswith("step1.html") and "clicked 'Apply now'" in note
+    assert "already shows an application form" in note2     # a second call on the real form does nothing

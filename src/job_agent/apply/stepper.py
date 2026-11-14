@@ -18,6 +18,7 @@ from playwright.async_api import Page
 from job_agent.apply import execute
 from job_agent.apply.demo import (DemoResult, Row, _trusted, fill_until_stable, pick_apply_action, resolve_batch)
 from job_agent.apply.llm import LLM
+from job_agent.apply.opening import open_application
 from job_agent.apply.perceive import Settler, perceive
 from job_agent.apply.prefill import prefill
 from job_agent.apply.submit import _submit_button, check_ready, guarded_submit
@@ -52,16 +53,10 @@ class Ctx:
 async def stage_open(c: Ctx) -> None:
     p = await perceive(c.page)
     print(f"url:     {c.page.url}\ntitle:   {p.model.title}\nfields:  {len(p.model.fields)}   actions: {len(p.model.actions)}   frames: {len(p.frames)}")
-    if p.model.fields:
-        return print("this page already shows a form")
-    print("no form on this page: asking the model which control opens the application ...")
-    action = await pick_apply_action(c.llm, p)
-    if not action:
-        return print("the model found no control that opens an application")
-    label = next(a.label for a in p.model.actions if a.id == action)
-    res = await execute.click_action(p, action)
+    c.page, note = await open_application(c.page, c.llm)
+    c.settler = Settler(c.page)
     await c.settler.settle()
-    print(f"clicked '{label}' ({res.detail}); now at {c.page.url}")
+    print(note)
 
 
 async def stage_perceive(c: Ctx) -> None:

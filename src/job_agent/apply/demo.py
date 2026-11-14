@@ -301,15 +301,11 @@ async def run_demo(page: Page, llm: LLM, context: str, resume: str | None = None
                    submit: bool = False, limiter: RateLimiter | None = None, log_path: Path | None = None) -> DemoResult:
     result = DemoResult()
     page.set_default_timeout(8000)  # fail fast on missing/replaced elements instead of Playwright's 30s default
+    from job_agent.apply.opening import open_application  # local import: opening imports this module lazily too
+
+    page, note = await open_application(page, llm)  # a job page rather than a form: open the application first
     settler = Settler(page)
-    perception = await perceive(page)
-    if not perception.model.fields:  # a job page rather than a form: open the application first
-        action = await pick_apply_action(llm, perception)
-        if action:
-            label = next(a.label for a in perception.model.actions if a.id == action)
-            res = await execute.click_action(perception, action)
-            result.events.append(f"clicked '{label}': {res.detail}")
-            await settler.settle()
+    result.events.append(note)
     await fill_until_stable(page, llm, context, resume, result, facts)
     root = Path(__file__).resolve().parents[3]
     limiter = limiter or RateLimiter(storage_path=root / "outputs" / "rate_limiter" / "history.jsonl")
