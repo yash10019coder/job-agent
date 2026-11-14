@@ -6,17 +6,26 @@ picker or a newsletter box is not a form. The control comes from the rules (pick
 """
 from __future__ import annotations
 
+import asyncio
+
 from playwright.async_api import Page
 
 from job_agent.apply.classify import is_application_form
 from job_agent.apply.navigate import click_and_follow
-from job_agent.apply.perceive import perceive
+from job_agent.apply.perceive import Settler, perceive
 from job_agent.apply.reveal import pick_apply
 
 
 async def open_application(page: Page, llm) -> tuple[Page, str]:
     """Returns (the page to continue on, what happened). The page differs from the input when Apply opened a new tab."""
+    settler = Settler(page)
     perception = await perceive(page)
+    for _ in range(5):  # single-page apps (Oracle, Workday...) render after the load event: give a blank or Apply-less page time
+        if is_application_form(perception.model) or pick_apply(perception.model):
+            break
+        await settler.settle()
+        await asyncio.sleep(2.0)
+        perception = await perceive(page)
     if is_application_form(perception.model):
         return page, "already shows an application form"
     action_id = pick_apply(perception.model)
