@@ -70,6 +70,11 @@ class FieldModel(BaseModel):
     def empty(self) -> bool:
         return not self.value.strip()
 
+    @field_validator("value", "label", "help", "placeholder", mode="before")
+    @classmethod
+    def _none_to_empty(cls, v):
+        return "" if v is None else v
+
 
 class ActionModel(BaseModel):
     id: str
