@@ -271,6 +271,37 @@ def apply_run(args: argparse.Namespace) -> int:
     return 0
 
 
+def autopilot(args: argparse.Namespace) -> int:
+    """Unattended application run: fit gate, liveness check, rate limits, generic loop, report in data/autopilot/<ts>/."""
+    from datetime import datetime
+
+    from job_agent.apply.autopilot import jobs_from_dumps, run_autopilot
+    from job_agent.apply.batch import new_window
+    from job_agent.apply.llm import LLM
+    from job_agent.apply.prefill import build_facts
+
+    root = Path(__file__).resolve().parents[3]
+    facts = build_facts(root / "data" / "applicant_profile.json", root / "data" / "resume_inventory.json")
+    jobs = json.loads(Path(args.jobs).read_text(encoding="utf-8")) if args.jobs else jobs_from_dumps(root / "data")
+    if args.limit:
+        jobs = jobs[: args.limit]
+    out_dir = root / "data" / "autopilot" / datetime.now().strftime("%Y%m%d-%H%M%S")
+    print(f"autopilot: {len(jobs)} jobs, {'LIVE: will submit' if args.submit else 'dry run'}, cap {args.max_per_day}/day -> {out_dir}")
+
+    async def run():
+        async with BraveSession(_config(args)) as session:
+            return await run_autopilot(jobs, lambda u: new_window(session, u), lambda: LLM(model=args.model or None), facts, args.resume or None,
+                                       out_dir, submit=args.submit, max_per_day=args.max_per_day, concurrency=args.concurrency,
+                                       pace_s=(args.pace / 2, args.pace))
+
+    results = asyncio.run(run())
+    counts = {}
+    for r in results:
+        counts[r.status] = counts.get(r.status, 0) + 1
+    print(f"done: {counts}; report: {out_dir / 'report.md'}")
+    return 0
+
+
 def register(subparsers) -> None:
     """Add every apply-engine subcommand to the CLI."""
     brave = subparsers.add_parser("brave-launch", help="Launch Brave (CDP) and open a new tab via Playwright.")
@@ -352,3 +383,15 @@ def register(subparsers) -> None:
     run.add_argument("--concurrency", type=int, default=3)
     add_brave_args(run)
     run.set_defaults(func=apply_run)
+
+    auto = subparsers.add_parser("autopilot", help="Unattended: apply to every live, fitting job in a list (dry run unless --submit).")
+    auto.add_argument("--jobs", default="", help="JSON list of {url, title, company, location}; default: every direct link in the job dumps")
+    auto.add_argument("--resume", default="", help="PDF to upload into resume fields")
+    auto.add_argument("--submit", action="store_true", help="Actually submit when every guard passes (default: dry run)")
+    auto.add_argument("--max-per-day", type=int, default=20)
+    auto.add_argument("--concurrency", type=int, default=2)
+    auto.add_argument("--pace", type=float, default=60.0, help="Max seconds of gap between application starts (human-like pacing; half to full)")
+    auto.add_argument("--limit", type=int, default=0, help="Only the first N jobs (smoke test)")
+    auto.add_argument("--model", default="")
+    add_brave_args(auto)
+    auto.set_defaults(func=autopilot)

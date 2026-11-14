@@ -85,3 +85,5 @@ data/batch_jobs_*.json
 data/surveys/
 data/ats_categories.json
 data/vendor_research/
+data/mixed_*.json
+data/autopilot/
