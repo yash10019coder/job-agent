@@ -71,7 +71,7 @@ def _write(path: Path, data) -> None:
 
 
 async def run_one(session: BraveSession, job: dict, run_dir: Path, facts: dict, resume: str | None,
-                  model: str | None, submit: bool, sem: asyncio.Semaphore, engine: str = "demo", keep_open: bool = False) -> dict:
+                  model: str | None, submit: bool, sem: asyncio.Semaphore, engine: str = "demo", keep_open: bool = False, auth=None) -> dict:
     run_dir.mkdir(parents=True, exist_ok=True)
     log = run_dir / "events.log"
 
@@ -89,7 +89,7 @@ async def run_one(session: BraveSession, job: dict, run_dir: Path, facts: dict, 
             try:
                 note(f"attempt {attempt}: open {job['url']}")
                 attempt_fn = _attempt_controller if engine == "controller" else _attempt
-                summary.update(await attempt_fn(session, job, run_dir, facts, resume, llm, submit, note, started, opened))
+                summary.update(await attempt_fn(session, job, run_dir, facts, resume, llm, submit, note, started, opened, auth))
                 summary.pop("error", None)
                 break
             except Exception:
@@ -108,7 +108,7 @@ async def run_one(session: BraveSession, job: dict, run_dir: Path, facts: dict, 
     return summary
 
 
-async def _attempt(session, job, run_dir, facts, resume, llm, submit, note, started, opened) -> dict:
+async def _attempt(session, job, run_dir, facts, resume, llm, submit, note, started, opened, auth=None) -> dict:
     page = await new_window(session, job["url"])
     opened.append(page)
     _write(run_dir / "meta.json", job)
@@ -134,7 +134,7 @@ async def _attempt(session, job, run_dir, facts, resume, llm, submit, note, star
         problems=(result.submit.problems if result.submit else []), unparsed=len(after.unparsed))
 
 
-async def _attempt_controller(session, job, run_dir, facts, resume, llm, submit, note, started, opened) -> dict:
+async def _attempt_controller(session, job, run_dir, facts, resume, llm, submit, note, started, opened, auth=None) -> dict:
     """The generic loop (classify -> act -> verify) on one job; dry run unless the caller passes submit (apply-run never does)."""
     from job_agent.apply.controller import run_application
 
@@ -142,7 +142,7 @@ async def _attempt_controller(session, job, run_dir, facts, resume, llm, submit,
     opened.append(page)
     _write(run_dir / "meta.json", job)
     note("running the application loop")
-    result = await run_application(page, llm, facts, resume, run_dir, submit=submit)
+    result = await run_application(page, llm, facts, resume, run_dir, submit=submit, auth=auth)
     opened.append(result.page)
     end = result.page
     unparsed = 0
@@ -163,11 +163,11 @@ async def _attempt_controller(session, job, run_dir, facts, resume, llm, submit,
 
 
 async def run_batch(session: BraveSession, jobs: list[dict], base: Path, facts: dict, resume: str | None,
-                    model: str | None, submit: bool = False, concurrency: int = 5, engine: str = "demo", keep_open: bool = False) -> list[dict]:
+                    model: str | None, submit: bool = False, concurrency: int = 5, engine: str = "demo", keep_open: bool = False, auth=None) -> list[dict]:
     stamp = datetime.now().strftime("%Y%m%d-%H%M%S")
     batch_dir = base / stamp
     sem = asyncio.Semaphore(clamp_parallel(concurrency))
-    tasks = [run_one(session, j, batch_dir / f"{i + 1}-{_slug(j.get('ats', 'job'))}-{_slug(j.get('company') or urlparse(j['url']).netloc)}", facts, resume, model, submit, sem, engine, keep_open)
+    tasks = [run_one(session, j, batch_dir / f"{i + 1}-{_slug(j.get('ats', 'job'))}-{_slug(j.get('company') or urlparse(j['url']).netloc)}", facts, resume, model, submit, sem, engine, keep_open, auth)
              for i, j in enumerate(jobs)]
     results = await asyncio.gather(*tasks)
     batch_dir.mkdir(parents=True, exist_ok=True)

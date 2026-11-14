@@ -116,7 +116,8 @@ def classify(obs: Observation) -> Classification:
         return Classification(PageState.LISTING, None, 0.85, ["board/listing page (filters, 'N jobs', or a job URL that landed on the board)"])
     if not form and (_SUCCESS.search(head) or re.search(r"/(confirmation|thank|submitted|success|applied)\b", obs.url, re.I)):
         return Classification(PageState.CONFIRMATION, None, 0.8, ["confirmation wording (the controller still requires a post-submit transition)"])
-    if any(_CODE_LABEL.search(f.label) for f in m.fields if f.region in _MAIN and f.kind != "email") or (not form and len(m.fields) <= 3 and _CODE_FIELD.search(head)):
+    boxes = [f for f in m.fields if f.region in _MAIN and f.kind in {"text", "number", "tel"} and f.maxlength == 1]
+    if 4 <= len(boxes) <= 8 or any(_CODE_LABEL.search(f.label) for f in m.fields if f.region in _MAIN and f.kind != "email") or (not form and len(m.fields) <= 3 and _CODE_FIELD.search(head)):
         return Classification(PageState.EMAIL_CODE, None, 0.85, ["a verification-code field or prompt"])
     if not form and not apply_id:
         if sig["password_field"]:

@@ -251,6 +251,52 @@ def apply_survey(args: argparse.Namespace) -> int:
     return 0
 
 
+def _auth_kit(facts: dict, allow_signup: bool = False):
+    """Account handling for runs: OS keyring for passwords, Gmail (if connected) for emailed codes. None if neither exists."""
+    from job_agent.apply.auth import default_store
+    from job_agent.apply.gate_flow import AuthKit
+    from job_agent.apply.mailcode import default_code_provider
+
+    store, provider = default_store(), default_code_provider()
+    print(f"accounts: keyring {'ready' if store else 'NOT available (no accounts will be created)'}; "
+          f"Gmail {'connected' if provider else 'NOT connected (emailed codes will be skipped: run gmail-auth)'}; "
+          f"account creation {'ON' if allow_signup else 'off'}")
+    return AuthKit.from_facts(facts, store, provider, allow_signup)
+
+
+def gmail_auth(args: argparse.Namespace) -> int:
+    from job_agent.apply.mailcode import CLIENT_PATH, gmail_authorize
+
+    path = Path(args.client_secret) if args.client_secret else CLIENT_PATH
+    if not path.exists():
+        raise SystemExit(f"No OAuth client file at {path}.\nOne-time setup: in Google Cloud Console create a project, enable the Gmail API, "
+                         "create an OAuth client of type 'Desktop app', add your Gmail address as a test user, download the JSON and pass it with --client-secret.")
+    print("token saved to", gmail_authorize(path))
+    return 0
+
+
+def creds_list(args: argparse.Namespace) -> int:
+    from job_agent.apply.auth import default_store
+
+    store = default_store()
+    if store is None:
+        raise SystemExit("no usable OS keyring")
+    for site in store.sites():
+        print(site)
+    return 0
+
+
+def creds_forget(args: argparse.Namespace) -> int:
+    from job_agent.apply.auth import default_store
+
+    store = default_store()
+    if store is None:
+        raise SystemExit("no usable OS keyring")
+    store.forget(args.site)
+    print("forgot", args.site)
+    return 0
+
+
 def _parallel(text: str) -> int:
     n = int(text)
     if not 1 <= n <= 10:
@@ -267,10 +313,12 @@ def apply_run(args: argparse.Namespace) -> int:
     facts = build_facts(root / "data" / "applicant_profile.json", root / "data" / "resume_inventory.json")
     jobs = json.loads(Path(args.jobs).read_text(encoding="utf-8"))
 
+    auth = _auth_kit(facts, args.allow_signup)
+
     async def run():
         async with BraveSession(_config(args)) as session:
             return await run_batch(session, jobs, root / "data" / "runs", facts, args.resume or None, args.model or None,
-                                   submit=False, concurrency=args.concurrency, engine="controller", keep_open=args.keep_open)
+                                   submit=False, concurrency=args.concurrency, engine="controller", keep_open=args.keep_open, auth=auth)
 
     for r in asyncio.run(run()):
         print(f"{(r.get('ats') or '-')[:12]:12} {r['status']:22} steps={r.get('steps', '-')} fields={r.get('fields', '-')} {r['seconds']}s  "
@@ -292,6 +340,7 @@ def autopilot(args: argparse.Namespace) -> int:
     jobs = json.loads(Path(args.jobs).read_text(encoding="utf-8")) if args.jobs else jobs_from_dumps(root / "data")
     if args.limit:
         jobs = jobs[: args.limit]
+    auth = _auth_kit(facts, args.submit or args.allow_signup)
     out_dir = root / "data" / "autopilot" / datetime.now().strftime("%Y%m%d-%H%M%S")
     print(f"autopilot: {len(jobs)} jobs, {'LIVE: will submit' if args.submit else 'dry run'}, cap {args.max_per_day}/day -> {out_dir}")
 
@@ -299,7 +348,7 @@ def autopilot(args: argparse.Namespace) -> int:
         async with BraveSession(_config(args)) as session:
             return await run_autopilot(jobs, lambda u: new_window(session, u), lambda: LLM(model=args.model or None), facts, args.resume or None,
                                        out_dir, submit=args.submit, max_per_day=args.max_per_day, concurrency=args.concurrency,
-                                       pace_s=(args.pace / 2, args.pace))
+                                       pace_s=(args.pace / 2, args.pace), auth=auth)
 
     results = asyncio.run(run())
     counts = {}
@@ -388,6 +437,7 @@ def register(subparsers) -> None:
     run.add_argument("--jobs", required=True, help="JSON list of {url, company?, title?, ats?}")
     run.add_argument("--resume", default="", help="PDF to upload into resume fields")
     run.add_argument("--model", default="")
+    run.add_argument("--allow-signup", action="store_true", help="Let the dry run create accounts on real sites (default: off)")
     run.add_argument("--keep-open", action="store_true", help="Leave each job window open for inspection (default: close it)")
     run.add_argument("--concurrency", type=_parallel, default=3)
     add_brave_args(run)
@@ -397,6 +447,7 @@ def register(subparsers) -> None:
     auto.add_argument("--jobs", default="", help="JSON list of {url, title, company, location}; default: every direct link in the job dumps")
     auto.add_argument("--resume", default="", help="PDF to upload into resume fields")
     auto.add_argument("--submit", action="store_true", help="Actually submit when every guard passes (default: dry run)")
+    auto.add_argument("--allow-signup", action="store_true", help="Create accounts even without --submit (with --submit it is on)")
     auto.add_argument("--max-per-day", type=int, default=20)
     auto.add_argument("--concurrency", type=_parallel, default=2)
     auto.add_argument("--pace", type=float, default=60.0, help="Max seconds of gap between application starts (human-like pacing; half to full)")
@@ -404,3 +455,12 @@ def register(subparsers) -> None:
     auto.add_argument("--model", default="")
     add_brave_args(auto)
     auto.set_defaults(func=autopilot)
+
+    ga = subparsers.add_parser("gmail-auth", help="One-time read-only Gmail consent so the agent can read emailed verification codes.")
+    ga.add_argument("--client-secret", default="", help="Path to the OAuth client JSON (Desktop app); default ~/.config/job-agent/gmail_client_secret.json")
+    ga.set_defaults(func=gmail_auth)
+    cl = subparsers.add_parser("creds-list", help="List the sites the agent holds an account for (never prints passwords).")
+    cl.set_defaults(func=creds_list)
+    cf = subparsers.add_parser("creds-forget", help="Forget the stored login for one site.")
+    cf.add_argument("site")
+    cf.set_defaults(func=creds_forget)

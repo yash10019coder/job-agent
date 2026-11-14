@@ -17,6 +17,7 @@ from playwright.async_api import Page
 
 from job_agent.apply.classify import Classification, classify_page
 from job_agent.apply.demo import DemoResult, Row, fill_until_stable
+from job_agent.apply.gate_flow import GATE_STATES, AuthKit, handle_gate
 from job_agent.apply.llm import LLM
 from job_agent.apply.navigate import Hop, click_and_follow
 from job_agent.apply.perceive import Settler, diff, perceive
@@ -72,7 +73,7 @@ def _errors(problems: list[str]) -> tuple[str, ...]:
 
 async def run_application(page: Page, llm: LLM, facts: dict, resume: str | None, run_dir: Path | None = None, submit: bool = False,
                           max_steps: int = 40, max_hops: int = 3, deadline_s: float = 600, click_wait_s: float = 10.0,
-                          limiter: RateLimiter | None = None, log_path: Path | None = None) -> RunResult:
+                          limiter: RateLimiter | None = None, log_path: Path | None = None, auth: AuthKit | None = None) -> RunResult:
     import json
 
     page.set_default_timeout(8000)
@@ -80,7 +81,7 @@ async def run_application(page: Page, llm: LLM, facts: dict, resume: str | None,
     log_path = log_path or ROOT / "outputs" / "apply" / "submissions.jsonl"
     trace, context = Trace(run_dir / "trace.jsonl" if run_dir else None), json.dumps(facts, indent=1)
     res, status, started = RunResult(Outcome.STUCK), _Status(page), time.monotonic()
-    start_url, last_errors, same_error, idle = page.url, (), 0, 0
+    start_url, last_errors, same_error, idle, gate_steps = page.url, (), 0, 0, 0
 
     def done(outcome: Outcome, detail: str) -> RunResult:
         res.outcome, res.detail, res.page = outcome, detail, page
@@ -108,6 +109,20 @@ async def run_application(page: Page, llm: LLM, facts: dict, resume: str | None,
 
         if c.state in _TERMINAL:
             return done(_TERMINAL[c.state], "; ".join(c.reasons))
+        if auth is not None and c.state in GATE_STATES:
+            gate_steps += 1
+            if gate_steps > 8:
+                return done(Outcome.NEEDS_HUMAN, "account steps did not lead anywhere after 8 tries")
+            gate = await handle_gate(page, c.state, auth, facts, llm, resume)
+            trace.log(step=res.steps, gate=c.state.value, result=gate.kind, detail=gate.detail)  # descriptive text only: no secrets
+            if gate.kind == "human":
+                return done(Outcome.NEEDS_HUMAN, f"{c.state.value}: {gate.detail} (window left open)")
+            if gate.page is not None and gate.page is not page:
+                page, status = gate.page, _Status(gate.page)
+                page.set_default_timeout(8000)
+            continue
+        if c.state in (PageState.FORM_STEP, PageState.JOB_PAGE, PageState.REVIEW):
+            gate_steps = 0
         if c.state in _HUMAN_STATES:
             return done(Outcome.NEEDS_HUMAN, f"{c.state.value}: {'; '.join(c.reasons)} (window left open)")
         if c.state == PageState.CONFIRMATION:

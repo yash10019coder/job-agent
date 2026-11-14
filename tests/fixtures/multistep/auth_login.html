@@ -1,0 +1,3 @@
+<!doctype html><html><head><title>Sign in</title></head><body><main><h1>Sign in to continue</h1><div id=err></div>
+<label for=em>Email</label><input id=em type=email><label for=pw>Password</label><input id=pw type=password><button id=nx>Sign in</button></main>
+<script>document.getElementById('nx').onclick=()=>{ if(document.getElementById('pw').value==='Correct-Horse-9!'){location.href='step1.html';} else {document.getElementById('err').innerHTML='<div role=alert>Incorrect email or password</div>';} };</script></body></html>
