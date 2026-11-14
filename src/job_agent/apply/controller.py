@@ -15,19 +15,19 @@ from urllib.parse import urlparse
 
 from playwright.async_api import Page
 
-from job_agent.apply.classify import Classification, classify_page
+from job_agent.apply.classify import _REVIEW, Classification, classify_page
 from job_agent.apply.demo import DemoResult, Row, fill_until_stable
+from job_agent.apply import controls
 from job_agent.apply.gate_flow import GATE_STATES, AuthKit, handle_gate
 from job_agent.apply.llm import LLM
 from job_agent.apply.navigate import Hop, click_and_follow
 from job_agent.apply.perceive import Settler, diff, perceive
 from job_agent.apply.states import Observation, Outcome, PageState
-from job_agent.apply.submit import _STRONG_SUBMIT, _WEAK_SUBMIT, captcha_visible, check_step_ready, guarded_submit
+from job_agent.apply.submit import captcha_visible, check_step_ready, guarded_submit
 from job_agent.apply.trace import Trace
 from job_agent.rate_limiter import RateLimiter
 
 ROOT = Path(__file__).resolve().parents[3]
-_NEXT = re.compile(r"^(next|next step|continue|save (and|&) (continue|next)|proceed|continue to .+|review( (and|&) submit| application)?)$", re.I)
 _HUMAN_STATES = {PageState.LOGIN, PageState.SIGNUP, PageState.ACCOUNT_CHOICE, PageState.SSO_ONLY, PageState.EMAIL_CODE, PageState.CAPTCHA}
 _TERMINAL = {PageState.DEAD: Outcome.DEAD, PageState.CLOSED: Outcome.CLOSED, PageState.LISTING: Outcome.CLOSED,
              PageState.BOT_BLOCK: Outcome.BLOCKED, PageState.EMAIL_ONLY: Outcome.NEEDS_HUMAN}
@@ -55,16 +55,11 @@ class _Status:
 
 async def observe(page: Page, status: _Status, from_url: str | None) -> tuple[Observation, object]:
     perception = await perceive(page)
+    m = perception.model
+    if m.fields or any(a.in_form for a in m.actions) or _REVIEW.search(" ".join([m.title, *m.headings])):
+        await controls.annotate(perception.model)  # step/submit roles, needed by classify() and the controls below
     hosts = sorted({urlparse(f.url).netloc for f in page.frames if f.url.startswith("http") and f != page.main_frame})
     return Observation(page.url, status.value, perception.model, hosts, await captcha_visible(page), from_url), perception
-
-
-def _controls(model) -> tuple[list, list]:
-    """(next-like controls, submit-like controls) among enabled actions."""
-    enabled = [a for a in model.actions if not a.disabled and a.region in {"main", "dialog", "footer"}]  # sticky footers hold Next/Submit
-    submit = [a for a in enabled if _STRONG_SUBMIT.search(a.label.strip())] or [a for a in enabled if _WEAK_SUBMIT.search(a.label.strip())]
-    nxt = [a for a in enabled if _NEXT.match(a.label.strip()) and a not in submit]
-    return nxt, submit
 
 
 def _errors(problems: list[str]) -> tuple[str, ...]:
@@ -77,6 +72,7 @@ async def run_application(page: Page, llm: LLM, facts: dict, resume: str | None,
     import json
 
     page.set_default_timeout(8000)
+    controls.use(llm)
     limiter = limiter or RateLimiter(storage_path=ROOT / "outputs" / "rate_limiter" / "history.jsonl")
     log_path = log_path or ROOT / "outputs" / "apply" / "submissions.jsonl"
     trace, context = Trace(run_dir / "trace.jsonl" if run_dir else None), json.dumps(facts, indent=1)
@@ -176,7 +172,7 @@ async def run_application(page: Page, llm: LLM, facts: dict, resume: str | None,
         elif problems:
             return done(Outcome.BLOCKED, "; ".join(problems)[:400])
         perception = await perceive(page)
-        nxt, final = _controls(perception.model)
+        nxt, final = await controls.find(perception.model)
         if final and not nxt:
             out = await guarded_submit(page, res.rows, Settler(page), page.url, limiter, log_path, submit)
             trace.log(step=res.steps, action="submit", status=out.status, detail=out.detail, problems=out.problems)
@@ -199,7 +195,7 @@ async def run_application(page: Page, llm: LLM, facts: dict, resume: str | None,
                 continue
             return done(Outcome.STUCK, out.detail)
         if not nxt and not final:
-            disabled = [a.label for a in perception.model.actions if a.disabled and (_NEXT.match(a.label.strip()) or _STRONG_SUBMIT.search(a.label.strip()) or _WEAK_SUBMIT.search(a.label.strip()))]
+            disabled = [a.label for a in controls.shortlist(perception.model) if a.disabled and controls.cached_role(perception.model, a) in {"next_step", "submit_final"}]
             if disabled:
                 empty = [f.label for f in perception.model.fields if f.required and f.empty][:4]
                 return done(Outcome.BLOCKED, f"'{disabled[0]}' is disabled: a required field is probably still unfilled ({', '.join(empty) or 'unknown which'})")

@@ -72,7 +72,8 @@ from dataclasses import dataclass, field  # noqa: E402
 from job_agent.apply.gates import BOT, classify_gate  # noqa: E402
 from job_agent.apply.reveal import pick_apply  # noqa: E402
 from job_agent.apply.states import Observation, PageState  # noqa: E402
-from job_agent.apply.submit import _CODE_FIELD, _STRONG_SUBMIT, _SUCCESS  # noqa: E402
+from job_agent.apply import controls
+from job_agent.apply.submit import _CODE_FIELD, _SUCCESS  # noqa: E402
 
 _CLOSED = re.compile(
     r"no longer (accepting|available|open)|(position|job|posting|role|requisition|vacancy)( has been| is| was)? (now )?(filled|closed|expired|removed|no longer)|"
@@ -132,7 +133,7 @@ def classify(obs: Observation) -> Classification:
         if sig["login_text"]:
             return Classification(PageState.LOGIN, None, 0.55, ["login wording in main content"])
     if not form and _REVIEW.search(" ".join([m.title, *m.headings])):
-        submit_btn = next((a for a in m.actions if not a.disabled and _STRONG_SUBMIT.search(a.label.strip())), None)
+        submit_btn = next((a for a in m.actions if not a.disabled and controls.cached_role(m, a) == "submit_final"), None)
         if submit_btn:
             return Classification(PageState.REVIEW, submit_btn.id, 0.75, ["review heading with a Submit control and no questions"])
     if form:

@@ -206,8 +206,8 @@
       const label = clean(el.innerText || el.value || el.getAttribute("aria-label") || el.getAttribute("title"));
       if (!label) continue;
       actions.push({
-        region: regionOf(el), id: stamp(el), kind: tag === "a" || role === "link" ? "link" : "button", label: clip(label, 80),
-        primary: type === "submit" || /^(next|continue|submit|apply|save and continue|review)/i.test(label),
+        region: regionOf(el), in_form: !!el.closest("form,[role=form]"), id: stamp(el), kind: tag === "a" || role === "link" ? "link" : "button", label: clip(label, 80),
+        primary: type === "submit",
         disabled: el.disabled === true || el.getAttribute("aria-disabled") === "true",
       });
       continue;

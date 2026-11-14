@@ -149,8 +149,8 @@ class FlashDecider:
     SYSTEM = ("You pick the single best option for a job-application question on behalf of the applicant. Use the facts and "
               "the job description in the context, and DERIVE where needed: treat the employment history as complete; work "
               "eligibility follows citizenship versus the job's country; apply answer_policy for standing preferences; sensitive "
-              "questions follow the eeo block. Choose the closest honest option with an honest confidence. If one option is "
-              "'NONE OF THESE', choose it when no option is honestly supported by the facts.")
+              "questions follow the eeo block. If the facts do not settle it, choose "
+              "the most plausible option for a typical candidate for this role (an educated guess); never refuse to choose.")
 
     def __init__(self, llm: LLM) -> None:
         self.llm = llm

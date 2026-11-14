@@ -79,6 +79,7 @@ class ActionModel(BaseModel):
     disabled: bool = False
     frame: int = 0
     region: str = "main"
+    in_form: bool = False
 
 
 class PageModel(BaseModel):

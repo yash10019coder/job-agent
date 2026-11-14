@@ -74,7 +74,7 @@ def build_context(profile_path: Path, inventory_path: Path) -> str:
     return json.dumps(build_facts(profile_path, inventory_path), indent=1)
 
 
-_SOURCES = ["profile", "derived", "policy", "decline", "unknown"]
+_SOURCES = ["profile", "derived", "policy", "decline", "guess", "unknown"]
 _ANSWER_SCHEMA = {
     "type": "object", "additionalProperties": False, "required": ["answers"],
     "properties": {"answers": {"type": "array", "items": {
@@ -99,16 +99,17 @@ _SYSTEM = (
     "present role is based. Put the facts and reasoning in 'basis'. "
     "(3) 'policy': apply the answer_policy block (notice period, relocation, salary: 'Negotiable', etc.) for standing preferences. "
     "(4) 'decline': sensitive questions (gender, race, disability, veteran) follow the eeo block only. "
-    "(5) 'unknown' with an empty value: ONLY when no honest answer can be derived. Never invent employers, dates, numbers, credentials or "
-    "experience with technologies that the facts do not support. Optional fields with no honest answer should be left empty (source unknown). "
+    "(5) 'guess': when the facts do not settle it, make the most plausible educated guess a typical candidate for this role would give "
+    "(a believable number, the most likely option, a short sensible text) and put the reasoning in 'basis'. The applicant has asked that NO field "
+    "be left unanswered, optional ones included, so always give a value. 'unknown' with an empty value only for yes/no questions about a criminal "
+    "record, convictions or background-check history, and for 'I certify / I attest' signature statements. "
     "For fields with options, value must be exactly one option label. "
     "Privacy-policy/terms acknowledgement checkboxes: check them (source 'policy') only if consents.accept_privacy_and_terms is true. "
     "If options_total is given the option list is too long to show: give your best value (e.g. the university name) and it will be matched locally. "
     "If a choice field shows options null (they load only when opened) give your best value anyway (e.g. 'India'): it is used to filter the widget's real options, which are then matched. "
     "Free-text answers ('why this role', 'describe a project') must be 2-4 sentences, grounded only in the facts and the job description, "
-    "honest, free of filler, and respect maxlength. REQUIRED free-text questions must always get an answer: if the facts show no direct "
-    "experience with what is asked, say so plainly in one sentence and then cite the closest REAL related experience from the facts "
-    "(never claim experience or results that the facts do not show). Optional free-text questions with nothing honest to say stay unknown."
+    "free of filler, and respect maxlength. Free-text questions (required or not) always get an answer: use the facts where they apply and "
+    "otherwise write a plausible, confident answer for this role (source 'guess')."
 )
 
 
@@ -148,8 +149,12 @@ NONE_OPTION = "NONE OF THESE"
 
 def _trusted(ans: dict | None) -> bool:
     """Profile/decline/policy answers are applied; derived ones need a stated basis; guesses never are."""
-    if not ans or not ans["value"].strip() or ans["confidence"] < MIN_CONFIDENCE:
+    if not ans or not ans["value"].strip():
         return False
+    if ans["source"] != "guess" and ans["confidence"] < MIN_CONFIDENCE:
+        return False
+    if ans["source"] == "guess":
+        return True   # the applicant chose to have every field answered; guesses are listed in the report for review
     if ans["source"] in {"profile", "decline", "policy"}:
         return True
     return ans["source"] == "derived" and ans["confidence"] >= 0.7 and bool(ans.get("basis", "").strip())
@@ -170,12 +175,12 @@ async def _decide_from_options(page, perception, settler, field_: FieldModel, de
         said = await decider.state_answer(field_.label, context)
         if said.choice.strip().lower() in {"", "none"}:
             return None
-        return {"id": field_.id, "value": said.choice, "confidence": said.confidence, "source": "derived", "basis": said.rationale}
+        return {"id": field_.id, "value": said.choice, "confidence": said.confidence, "source": "derived" if said.confidence >= 0.7 else "guess", "basis": said.rationale}
     labels = [o.label for o in options][:MAX_DECIDER_OPTIONS]
-    decision = await decider.decide(field_.label, labels + ([] if field_.required else [NONE_OPTION]), context)
+    decision = await decider.decide(field_.label, labels, context)
     if decision.choice == NONE_OPTION:
         return None
-    return {"id": field_.id, "value": decision.choice, "confidence": decision.confidence, "source": "derived", "basis": decision.rationale}
+    return {"id": field_.id, "value": decision.choice, "confidence": decision.confidence, "source": "derived" if decision.confidence >= 0.7 else "guess", "basis": decision.rationale}
 
 
 async def _apply_field(page, perception, settler, field_: FieldModel, value: str, decider: Decider, context: str):
@@ -300,6 +305,8 @@ async def fill_until_stable(page: Page, llm: LLM, context: str, resume: str | No
 async def run_demo(page: Page, llm: LLM, context: str, resume: str | None = None, facts: dict | None = None,
                    submit: bool = False, limiter: RateLimiter | None = None, log_path: Path | None = None) -> DemoResult:
     result = DemoResult()
+    from job_agent.apply import controls
+    controls.use(llm)
     page.set_default_timeout(8000)  # fail fast on missing/replaced elements instead of Playwright's 30s default
     from job_agent.apply.opening import open_application  # local import: opening imports this module lazily too
 
@@ -321,6 +328,9 @@ def render(result: DemoResult, llm: LLM) -> str:
     why = [r for r in result.rows if r.note]
     if why:
         lines += ["", "Why these answers (derived / policy):", *[f"  - {r.label[:50]}: {r.note[:160]}" for r in why]]
+    guessed = [r for r in result.rows if r.source == "guess" and r.status == "ok"]
+    if guessed:
+        lines += ["", f"GUESSED ({len(guessed)}): answers the facts did not settle, worth a look:", *[f"  - {r.label[:50]} -> {r.answer[:40]}" for r in guessed]]
     blocked = [r for r in result.rows if r.status.startswith("BLOCKED")]
     if blocked:
         lines += ["", f"BLOCKED: {len(blocked)} required field(s) have no honest answer, so this application would not be submitted:",

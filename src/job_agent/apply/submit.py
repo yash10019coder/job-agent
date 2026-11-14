@@ -18,13 +18,11 @@ from urllib.parse import urlsplit
 
 from playwright.async_api import Page
 
-from job_agent.apply import execute
+from job_agent.apply import controls, execute
 from job_agent.apply.perceive import Perception, Settler, perceive
 from job_agent.rate_limiter import RateLimiter
 
 MIN_SUBMIT_CONFIDENCE = 0.7
-_STRONG_SUBMIT = re.compile(r"^(submit|send) (my |your )?application|^submit$|^complete application", re.I)
-_WEAK_SUBMIT = re.compile(r"^apply( now)?$|^finish$", re.I)
 _SUCCESS = re.compile(
     r"(thank you|thanks) for (applying|your (application|interest|submission))|application (has been |was |is )?(successfully )?"
     r"(submitted|received|sent|complete)|we('ve| have) received your application|successfully (submitted|applied)|you('ve| have) applied",
@@ -87,14 +85,12 @@ async def captcha_visible(page: Page) -> bool:
     return False
 
 
-def _submit_button(perception: Perception):
-    """(button, how_many_equally_good_candidates). 'Submit application' beats a bare 'Apply' (often a scroll-to-form link)."""
-    enabled = [a for a in perception.model.actions if not a.disabled]
-    for tier in (_STRONG_SUBMIT, _WEAK_SUBMIT):
-        found = [a for a in enabled if tier.search(a.label.strip())]
-        if found:
-            return (next((a for a in found if a.primary), found[0]), len(found))
-    return None, 0
+async def _submit_button(perception: Perception):
+    """(button, how_many_candidates), as labelled by controls.py (no button-name lists)."""
+    _, submit = await controls.find(perception.model)
+    if not submit:
+        return None, 0
+    return (next((a for a in submit if a.primary), submit[0]), len(submit))
 
 
 async def _step_problems(page: Page, rows: list):
@@ -104,7 +100,7 @@ async def _step_problems(page: Page, rows: list):
         if r.status.startswith("BLOCKED"):
             problems.append(f"required field has no honest answer: {r.label}")
         elif r.status == "ok":
-            if r.confidence < MIN_SUBMIT_CONFIDENCE:
+            if r.confidence < MIN_SUBMIT_CONFIDENCE and r.source != "guess":
                 problems.append(f"low-confidence answer: {r.label} ({r.confidence:.2f})")
         elif not r.status.startswith(("left blank", "skipped")):   # anything else is a failed fill (required-but-empty is caught below)
             problems.append(f"could not fill: {r.label} ({r.status})")
@@ -129,7 +125,7 @@ async def check_step_ready(page: Page, rows: list) -> list[str]:
 async def check_ready(page: Page, rows: list, limiter: RateLimiter, log_path: Path, url: str) -> list[str]:
     """Every reason NOT to submit; an empty list means all guards passed."""
     problems, perception = await _step_problems(page, rows)
-    button, count = _submit_button(perception)
+    button, count = await _submit_button(perception)
     if not button:
         problems.append("no enabled Submit control found")
     elif count > 1:
@@ -184,7 +180,7 @@ async def guarded_submit(page: Page, rows: list, settler: Settler, url: str, lim
         outcome = SubmitOutcome("dry_run", "all guards passed; not submitting (--submit not given)")
     else:
         perception = await perceive(page)
-        button, _ = _submit_button(perception)
+        button, _ = await _submit_button(perception)
         before = {f.label for f in perception.model.fields}
         clicked = await execute.click_action(perception, button.id, button.frame)
         outcome = await _classify(page, settler, before) if clicked.ok else SubmitOutcome("unknown_outcome", clicked.detail)

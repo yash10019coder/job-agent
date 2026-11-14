@@ -17,6 +17,7 @@ from playwright.async_api import Page
 
 from job_agent.apply import execute
 from job_agent.apply.demo import (DemoResult, Row, _trusted, fill_until_stable, pick_apply_action, resolve_batch)
+from job_agent.apply import controls
 from job_agent.apply.llm import LLM
 from job_agent.apply.opening import open_application
 from job_agent.apply.perceive import Settler, perceive
@@ -53,6 +54,7 @@ class Ctx:
 async def stage_open(c: Ctx) -> None:
     p = await perceive(c.page)
     print(f"url:     {c.page.url}\ntitle:   {p.model.title}\nfields:  {len(p.model.fields)}   actions: {len(p.model.actions)}   frames: {len(p.frames)}")
+    controls.use(c.llm)
     c.page, note = await open_application(c.page, c.llm)
     c.settler = Settler(c.page)
     await c.settler.settle()
@@ -119,7 +121,7 @@ async def stage_guards(c: Ctx) -> None:
     if not c.result.rows:
         print("(no fill results in this run: checking the page itself only)")
     problems = await check_ready(c.page, c.result.rows, _limiter(), ROOT / "outputs" / "apply" / "submissions.jsonl", c.page.url)
-    button, n = _submit_button(await perceive(c.page))
+    button, n = await _submit_button(await perceive(c.page))
     print(f"submit control: {button.label if button else 'NONE'} ({n} candidate{'s' if n != 1 else ''})")
     print("ALL GUARDS PASSED: safe to submit" if not problems else f"{len(problems)} guard(s) failed:\n" + "\n".join(f"  - {p}" for p in problems))
 

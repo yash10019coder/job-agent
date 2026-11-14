@@ -46,6 +46,15 @@ class FakeLLM(LLM):
         if purpose == "decide_option":   # option-decider fallback: pick the first real option
             options = json.loads(user.split("Options: ", 1)[1])
             return {"choice": options[0], "confidence": 0.9, "rationale": "scripted"}
+        if purpose == "control_roles":   # scripted stand-in for the model: labels by wording, like a model would
+            roles = []
+            for line in user.split("Controls:\n", 1)[1].splitlines():
+                cid, _kind, _form, _region, _state, label = [x.strip() for x in line.split("|", 5)]
+                low = label.lower()
+                role = ("submit_final" if low.startswith(("submit", "apply now", "send application", "finish", "complete application"))
+                        else "next_step" if low.startswith(("next", "continue", "review", "save and continue", "save & continue")) else "other")
+                roles.append({"id": cid, "role": role})
+            return {"roles": roles}
         raise AssertionError(f"unexpected LLM call: {purpose}")
 
 
@@ -195,3 +204,27 @@ def test_header_login_link_is_region_header():
     assert next(a for a in m.actions if a.label == "Privacy").region == "footer"
     assert next(a for a in m.actions if a.label == "Accept cookies").region == "dialog"
     assert [f.region for f in m.fields] == ["main", "main"]
+
+
+def test_guesses_are_typed_in_so_no_field_is_left_unanswered():
+    """The applicant asked for every field to be answered: a low-confidence 'guess' is applied and listed for review."""
+    class Guesser(FakeLLM):
+        async def complete_json(self, purpose, system, user, schema, name="answer"):
+            out = await super().complete_json(purpose, system, user, schema, name)
+            if purpose == "resolve_fields":
+                for a in out["answers"]:
+                    if not a["value"]:
+                        a.update(value="Because the work matches my backend experience.", confidence=0.2, source="guess", basis="typical answer")
+            return out
+
+    async def go():
+        async with async_playwright() as pw:
+            browser, page = await _page(pw)
+            result = DemoResult()
+            ctx = build_context(ROOT / "data/applicant_profile.json", ROOT / "data/resume_inventory.json")
+            await fill_until_stable(page, Guesser(), ctx, RESUME, result)
+            await browser.close()
+            return result
+
+    result = run(go())
+    assert not [r for r in result.rows if r.status.startswith("BLOCKED")]
