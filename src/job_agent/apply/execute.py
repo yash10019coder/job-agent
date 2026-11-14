@@ -144,6 +144,28 @@ def _overlap(want: str, cand: str) -> float:
     return len(a & (b | {t[:3] for t in b})) / max(1, len(set(_norm(want).split())))
 
 
+DWELL_MS = 500            # pause after typing so suggestion lists and validators can react
+SUGGEST_SETTLE_TICKS = 6   # the list must look the same for ~0.6 s: results often re-render as the search request returns
+
+
+async def _collect_rows(page: Page, loc, max_ticks: int, settle_ticks: int = SUGGEST_SETTLE_TICKS) -> list[dict]:
+    """Suggestion rows that appeared after typing, once the list has stopped changing (or [] if none show up in time)."""
+    rows: list[dict] = []
+    last, stable = None, 0
+    for _ in range(max_ticks):
+        await page.wait_for_timeout(100)
+        rows = await loc.evaluate(_SUGGEST_JS)
+        sig = [r["text"] for r in rows]
+        if rows and sig == last:
+            stable += 1
+            if stable >= settle_ticks:
+                return rows
+        else:
+            stable = 0
+        last = sig
+    return rows
+
+
 async def pick_suggestion(page: Page, perception: Perception, field: FieldModel, value: str) -> ActionResult:
     """Typeahead inputs that clear themselves unless a result is clicked: type, wait for the result rows that
     appear, click the best match, confirm the input keeps a value. Only rows that appeared after typing count."""
@@ -155,12 +177,7 @@ async def pick_suggestion(page: Page, perception: Perception, field: FieldModel,
         await loc.fill("")
         await frame.evaluate(_MARK_PRE_JS)
         await loc.press_sequentially(query, delay=80)
-        rows: list[dict] = []
-        for _ in range(40):  # up to ~4s for the search request + render
-            await page.wait_for_timeout(100)
-            rows = await loc.evaluate(_SUGGEST_JS)
-            if rows:
-                break
+        rows = await _collect_rows(page, loc, max_ticks=80)  # up to ~8s for the search request, then wait for the list to settle
         if not rows:
             return ActionResult(False, "no suggestion list appeared after typing")
         best = max(rows, key=lambda r: _overlap(value, r["text"]))
@@ -178,16 +195,28 @@ async def fill_text(page: Page, perception: Perception, field: FieldModel, value
     loc = perception.locator(field.id, field.frame)
     try:
         await loc.click(timeout=3000)
+        await perception.frames[field.frame].evaluate(_MARK_PRE_JS)
         await loc.fill(value, timeout=3000)
         if (await _current(loc)) != value:  # React-style controlled inputs may swallow fill()
             await loc.fill("")
             await loc.press_sequentially(value, delay=15)
+        await page.wait_for_timeout(DWELL_MS)  # give the site time to show suggestions / validate before we leave the box
+        chose = False
+        rows = await _collect_rows(page, loc, max_ticks=20) if await loc.evaluate(_SUGGEST_JS) else []
+        if rows:  # the site offered suggestions: take the matching one instead of leaving unconfirmed typed text
+            best = max(rows, key=lambda r: _overlap(value, r["text"]))
+            if _overlap(value, best["text"]) >= 0.5:
+                await perception.frames[field.frame].locator(f'[data-agent-sugg="{best["i"]}"]').first.click(timeout=3000)
+                chose = True
+                await page.wait_for_timeout(DWELL_MS)
         await loc.blur()
         await page.wait_for_timeout(300)  # blur handlers may clear a value that was not picked from a suggestion list
         actual = await _current(loc)
     except Exception as error:
         return ActionResult(False, f"fill failed: {error}")
     same = re.sub(r"[^a-z0-9]", "", actual.lower()) == re.sub(r"[^a-z0-9]", "", value.lower())  # inputs may reformat (phone masks)
+    if chose and not same and actual.strip() and _overlap(value, actual) >= 0.5:
+        same = True   # the site replaced our text with the full suggestion it offered ("Mumbai" -> "Mumbai, Maharashtra, India")
     if not same and (field.kind == "tel" or re.search(r"phone|mobile|cell", field.label, re.I)):  # the country code may live in a separate box
         got, want = re.sub(r"\D", "", actual), re.sub(r"\D", "", value)
         same = len(got) >= 8 and want.endswith(got)
@@ -276,11 +305,25 @@ async def read_combobox_options(page: Page, perception: Perception, field: Field
     controlled = await loc.get_attribute("aria-controls") or await loc.get_attribute("aria-owns")
     scope = f'[id="{controlled}"] [role=option]' if controlled else "[role=option]"
     options = frame.locator(scope)
-    out: list[Option] = []
-    for i in range(min(await options.count(), 60)):
-        item = options.nth(i)
-        if await item.is_visible():
-            out.append(Option(id=str(i), label=" ".join((await item.inner_text()).split())))
+    async def read() -> list[Option]:
+        got: list[Option] = []
+        for i in range(min(await options.count(), 60)):
+            item = options.nth(i)
+            if await item.is_visible():
+                got.append(Option(id=str(i), label=" ".join((await item.inner_text()).split())))
+        return got
+
+    # Suggestions arrive after the search request and often re-render: wait (up to 8 s when we typed a filter, 3 s otherwise)
+    # until the list has looked the same for ~0.6 s, so we never pick from a half-loaded list.
+    out, last, stable = await read(), None, 0
+    for _ in range(80 if query else 30):
+        sig = [o.label for o in out]
+        stable = stable + 1 if (out and sig == last) else 0
+        if stable >= SUGGEST_SETTLE_TICKS:
+            break
+        last = sig
+        await page.wait_for_timeout(100)
+        out = await read()
     return out
 
 
