@@ -132,7 +132,7 @@ def _to_result(job: dict, run, out_dir: Path, run_dir: Path) -> JobResult:
 async def run_autopilot(jobs: list[dict], open_page: OpenPage, make_llm: Callable, facts: dict, resume: str | None, out_dir: Path,
                         submit: bool = False, max_per_day: int = 20, concurrency: int = 2, limiter: RateLimiter | None = None,
                         log_path: Path | None = None, live_check: LiveCheck = is_live, pace_s: tuple[float, float] = (20.0, 60.0),
-                        click_wait_s: float = 10.0, auth=None) -> list[JobResult]:
+                        click_wait_s: float = 10.0, auth=None, check_fit: bool = True) -> list[JobResult]:
     out_dir.mkdir(parents=True, exist_ok=True)
     limiter = limiter or RateLimiter(storage_path=ROOT / "outputs" / "rate_limiter" / "history.jsonl")
     log_path = log_path or ROOT / "outputs" / "apply" / "submissions.jsonl"
@@ -147,14 +147,14 @@ async def run_autopilot(jobs: list[dict], open_page: OpenPage, make_llm: Callabl
             skip(job, "duplicate of an earlier job in this list")
             continue
         seen.add(key)
-        decision = fit(job, filters)
-        if not decision.ok:
+        decision = fit(job, filters) if check_fit else None
+        if decision is not None and not decision.ok:
             skip(job, "does not fit: " + "; ".join(decision.reasons))
         elif already_submitted(log_path, job["url"]):
             skip(job, "already applied")
         else:
             queue.append(job)
-            if decision.needs_page_check:
+            if decision is not None and decision.needs_page_check:
                 verify.add(job["url"])
     live_queue = []
     for job in queue:
@@ -189,6 +189,11 @@ async def run_autopilot(jobs: list[dict], open_page: OpenPage, make_llm: Callabl
                                             click_wait_s=click_wait_s, auth=auth)
                 result = _to_result(job, run, out_dir, run_dir)
             except Exception as error:
+                try:   # keep the traceback next to the run: "crashed: <one line>" alone is not enough to fix anything
+                    import traceback
+                    (out_dir / f"crash-{index}.txt").write_text(traceback.format_exc(), encoding="utf-8")
+                except Exception:
+                    pass
                 result = JobResult(job["url"], str(job.get("company") or ""), str(job.get("title") or ""), "failed", f"crashed: {str(error).splitlines()[0][:160]}")
             finally:
                 for p in {page, run.page if run else None}:

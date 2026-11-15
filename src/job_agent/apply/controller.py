@@ -15,13 +15,14 @@ from urllib.parse import urlparse
 
 from playwright.async_api import Page
 
-from job_agent.apply.classify import _REVIEW, Classification, classify_page
+from job_agent.apply.classify import _REVIEW, Classification, classify_page, continue_application
 from job_agent.apply.demo import DemoResult, Row, fill_until_stable
 from job_agent.apply import controls
 from job_agent.apply.gate_flow import GATE_STATES, AuthKit, handle_gate
 from job_agent.apply.llm import LLM
 from job_agent.apply.navigate import Hop, click_and_follow
 from job_agent.apply.perceive import Settler, diff, perceive
+from job_agent.apply.semantic import describe
 from job_agent.apply.states import Observation, Outcome, PageState
 from job_agent.apply.submit import captcha_visible, check_step_ready, guarded_submit
 from job_agent.apply.trace import Trace
@@ -70,9 +71,13 @@ async def _wait_until_stable(page: Page, max_s: float = 10.0) -> None:
         await asyncio.sleep(1.0)
         m = (await perceive(page)).model
         sig = (page.url, tuple(f.label for f in m.fields), tuple(a.label for a in m.actions), tuple(m.headings))
-        if sig == last:
+        if sig == last and not m.busy:
             return
         last = sig
+
+
+def _error_problems(problems: list[str]) -> list[str]:
+    return [p for p in problems if p.startswith(("field shows an error", "page alert"))]
 
 
 def _errors(problems: list[str]) -> tuple[str, ...]:
@@ -90,7 +95,7 @@ async def run_application(page: Page, llm: LLM, facts: dict, resume: str | None,
     log_path = log_path or ROOT / "outputs" / "apply" / "submissions.jsonl"
     trace, context = Trace(run_dir / "trace.jsonl" if run_dir else None), json.dumps(facts, indent=1)
     res, status, started = RunResult(Outcome.STUCK), _Status(page), time.monotonic()
-    start_url, last_errors, same_error, idle, gate_steps = page.url, (), 0, 0, 0
+    start_url, last_errors, same_error, idle, gate_steps, unknown_looks = page.url, (), 0, 0, 0, 0
 
     def done(outcome: Outcome, detail: str) -> RunResult:
         res.outcome, res.detail, res.page = outcome, detail, page
@@ -112,11 +117,22 @@ async def run_application(page: Page, llm: LLM, facts: dict, resume: str | None,
             await Settler(page).settle()
             await asyncio.sleep(1.0)
             obs, _ = await observe(page, status, start_url if page.url != start_url else None)
-        c: Classification = await classify_page(obs, llm)
+        c: Classification = await classify_page(obs, None)   # rules (and the semantic check when enabled) first, no model call
+        if c.state == PageState.UNKNOWN:
+            nxt_c, final_c = await controls.find(obs.model)
+            c = continue_application(res.states[-1] if res.states else None, obs.model, bool(nxt_c), bool(final_c)) or c
+        if c.state == PageState.UNKNOWN and unknown_looks < 3:
+            unknown_looks += 1   # a page that is still loading or mid-transition reads as unknown: look again before asking a model
+            trace.log(step=res.steps, url=page.url, state="unknown", note=f"look {unknown_looks}/3 again", desc=describe(obs.model))
+            await asyncio.sleep(3.0)
+            continue
+        if c.state == PageState.UNKNOWN:
+            c = await classify_page(obs, llm)
+        unknown_looks = 0
         prev = res.states[-1] if res.states else None
         res.states.append(c.state)
         trace.log(step=res.steps, url=page.url, state=c.state.value, confidence=c.confidence, reasons=c.reasons, source=c.source,
-                  fields=len(obs.model.fields), actions=len(obs.model.actions))
+                  fields=len(obs.model.fields), actions=len(obs.model.actions), desc=describe(obs.model)[:600])
 
         if c.state in _TERMINAL:
             return done(_TERMINAL[c.state], "; ".join(c.reasons))
@@ -141,11 +157,19 @@ async def run_application(page: Page, llm: LLM, facts: dict, resume: str | None,
                 return done(Outcome.APPLIED, "confirmation after the final step")
             return done(Outcome.STUCK, "confirmation wording without a preceding submit: not counted as applied")
         if c.state == PageState.UNKNOWN:
-            idle += 1
-            if idle >= 2:
-                return done(Outcome.STUCK, "page not recognised after a second look")
-            await Settler(page).settle()
-            continue
+            from job_agent.apply.semantic import record_unknown
+            record_unknown(obs.model, page.url)   # queued (description only) so it can be labelled and learned
+            fresh = await perceive(page)
+            only_next, only_final = await controls.find(fresh.model)
+            if prev in {PageState.FORM_STEP, PageState.REVIEW, PageState.EMAIL_CODE} and idle == 0 and len(only_next) == 1 and not only_final:
+                idle += 1   # inside an application with exactly one way forward: take it once
+                hop = await click_and_follow(page, fresh, only_next[0].id, only_next[0].frame, wait_s=click_wait_s)
+                trace.log(step=res.steps, action=f"unrecognised page, only way forward: {only_next[0].label}", hop=hop.kind, error=hop.error)
+                if hop.page is not page:
+                    page, status = hop.page, _Status(hop.page)
+                    page.set_default_timeout(8000)
+                continue
+            return done(Outcome.NEEDS_HUMAN, "page not recognised after looking again; window left open (the page was queued for labelling)")
 
         if c.state == PageState.JOB_PAGE:
             if not c.advance_id:
@@ -178,6 +202,9 @@ async def run_application(page: Page, llm: LLM, facts: dict, resume: str | None,
         if any("captcha" in p for p in problems):
             return done(Outcome.NEEDS_HUMAN, "captcha: solve it in the open window")
         errs = _errors(problems)
+        hard = [p for p in problems if p not in set(_error_problems(problems))]
+        if hard:   # failed fills / required fields still empty / unclear controls never go through, even if the page also shows errors
+            return done(Outcome.BLOCKED, "; ".join(hard)[:400])
         if errs and errs == last_errors:
             same_error += 1
             if same_error >= 3:

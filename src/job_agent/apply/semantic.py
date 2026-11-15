@@ -138,3 +138,40 @@ def predict_wording(model) -> Meaning:
         scores[state] = sum(top) / len(top)
     ranked = sorted(scores.items(), key=lambda kv: -kv[1])
     return Meaning(ranked[0][0], ranked[0][1], ranked[0][1] - ranked[1][1], scores)
+
+
+UNKNOWN_QUEUE = Path(__file__).resolve().parents[3] / "data" / "semantic_unknown.jsonl"
+
+
+def record_unknown(model, url: str) -> None:
+    """Queue a page the classifier could not place (description only, no field values) so it can be labelled later."""
+    from urllib.parse import urlsplit
+
+    try:
+        UNKNOWN_QUEUE.parent.mkdir(parents=True, exist_ok=True)
+        with UNKNOWN_QUEUE.open("a", encoding="utf-8") as fh:
+            fh.write(json.dumps({"host": urlsplit(url).netloc, "text": describe(model)}) + "\n")
+    except OSError:
+        pass
+
+
+def label_queue(states: list[str], ask) -> int:
+    """Walk the queue; `ask(text) -> state | ''` (empty = skip). Labelled pages become examples; skipped ones stay queued."""
+    if not UNKNOWN_QUEUE.exists():
+        return 0
+    keep, done = [], 0
+    data = json.loads("[" + ",".join(l for l in UNKNOWN_QUEUE.read_text(encoding="utf-8").splitlines() if l.strip()) + "]")
+    for item in data:
+        state = ask(item["text"])
+        if state in states:
+            learned = json.loads(LEARNED.read_text(encoding="utf-8")) if LEARNED.exists() else []
+            learned.append({"state": state, "text": item["text"]})
+            LEARNED.parent.mkdir(parents=True, exist_ok=True)
+            LEARNED.write_text(json.dumps(learned, indent=1), encoding="utf-8")
+            done += 1
+        else:
+            keep.append(item)
+    UNKNOWN_QUEUE.write_text("".join(json.dumps(i) + "\n" for i in keep), encoding="utf-8")
+    _bank.cache_clear()
+    _wording_bank.cache_clear()
+    return done

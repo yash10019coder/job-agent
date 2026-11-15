@@ -33,8 +33,14 @@ def _key(model, a) -> tuple:
 
 
 def shortlist(model) -> list:
+    """Controls worth labelling: main/dialog/footer, one per identical label (repeated Edit/Delete buttons on imported entries
+    would otherwise fill the list), and when there are many, the ones nearest the end of the page, where Next/Submit live."""
     acts = [a for a in model.actions if a.region in {"main", "dialog", "footer"}]
-    return sorted(acts, key=lambda a: not a.in_form)[:14]
+    last: dict[tuple, int] = {}
+    for i, a in enumerate(acts):
+        last[(a.kind, a.region, a.label.strip().lower())] = i
+    acts = [a for i, a in enumerate(acts) if last[(a.kind, a.region, a.label.strip().lower())] == i]
+    return acts[-14:]
 
 
 def cached_role(model, a) -> str | None:

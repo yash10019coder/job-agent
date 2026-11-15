@@ -276,6 +276,21 @@ def gmail_auth(args: argparse.Namespace) -> int:
     return 0
 
 
+def semantic_label(args: argparse.Namespace) -> int:
+    from job_agent.apply import semantic
+    from job_agent.apply.semantic_bank import BANK
+
+    states = sorted(BANK)
+    print("States:", ", ".join(states), "\n(press Enter to skip a page)")
+
+    def ask(text: str) -> str:
+        print("\n" + text[:700])
+        return input("state> ").strip().lower()
+
+    print(f"labelled {semantic.label_queue(states, ask)} page(s); the rest stay queued")
+    return 0
+
+
 def creds_list(args: argparse.Namespace) -> int:
     from job_agent.apply.auth import default_store
 
@@ -353,7 +368,7 @@ def autopilot(args: argparse.Namespace) -> int:
         async with BraveSession(_config(args)) as session:
             return await run_autopilot(jobs, lambda u: new_window(session, u), lambda: LLM(model=args.model or None), facts, args.resume or None,
                                        out_dir, submit=args.submit, max_per_day=args.max_per_day, concurrency=args.concurrency,
-                                       pace_s=(args.pace / 2, args.pace), auth=auth)
+                                       pace_s=(args.pace / 2, args.pace), auth=auth, check_fit=not args.no_fit_check)
 
     results = asyncio.run(run())
     counts = {}
@@ -459,6 +474,7 @@ def register(subparsers) -> None:
     auto.add_argument("--pace", type=float, default=60.0, help="Max seconds of gap between application starts (human-like pacing; half to full)")
     auto.add_argument("--limit", type=int, default=0, help="Only the first N jobs (smoke test)")
     auto.add_argument("--model", default="")
+    auto.add_argument("--no-fit-check", action="store_true", help="Apply to every link given, without judging whether the job suits the profile")
     auto.add_argument("--semantic", action="store_true", help="Also classify page meaning with local embeddings (closed/dead/confirmation/code/bot wording)")
     add_brave_args(auto)
     auto.set_defaults(func=autopilot)
@@ -466,6 +482,8 @@ def register(subparsers) -> None:
     ga = subparsers.add_parser("gmail-auth", help="One-time read-only Gmail consent so the agent can read emailed verification codes.")
     ga.add_argument("--client-secret", default="", help="Path to the OAuth client JSON (Desktop app); default ~/.config/job-agent/gmail_client_secret.json")
     ga.set_defaults(func=gmail_auth)
+    sl = subparsers.add_parser("semantic-label", help="Label pages the classifier could not place; they become examples for --semantic.")
+    sl.set_defaults(func=semantic_label)
     cl = subparsers.add_parser("creds-list", help="List the sites the agent holds an account for (never prints passwords).")
     cl.set_defaults(func=creds_list)
     cf = subparsers.add_parser("creds-forget", help="Forget the stored login for one site.")

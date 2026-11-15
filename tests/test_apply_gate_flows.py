@@ -1,5 +1,6 @@
 """Login, signup and emailed-code flows through the real controller on local pages (no network, a stub mail provider)."""
 import asyncio
+import json
 import re
 import tempfile
 from pathlib import Path
@@ -72,7 +73,8 @@ def test_choice_page_creates_an_account_reads_the_code_and_reaches_the_form():
     assert cred and cred.username == EMAIL and len(cred.password) >= 18      # saved before the account was created
     assert provider.calls and provider.calls[0][1] is not None                # the code was looked up with a since-time
     assert cred.password not in trace and "482913" not in trace               # secrets never reach the trace
-    assert "Continue with Google" not in trace                                  # SSO is never chosen
+    chosen = [json.loads(line) for line in trace.splitlines()]
+    assert not any("Continue with Google" in str({k: v for k, v in entry.items() if k != "desc"}) for entry in chosen)   # SSO is never chosen (the page description may list the button)
 
 
 def test_code_typed_into_one_box_per_digit():

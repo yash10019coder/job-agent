@@ -71,7 +71,7 @@ from dataclasses import dataclass, field  # noqa: E402
 
 from job_agent.apply.gates import BOT, classify_gate  # noqa: E402
 from job_agent.apply.reveal import pick_apply  # noqa: E402
-from job_agent.apply.states import Observation, PageState  # noqa: E402
+from job_agent.apply.states import ALLOWED, Observation, PageState  # noqa: E402
 from job_agent.apply import controls
 from job_agent.apply.submit import _CODE_FIELD, _SUCCESS  # noqa: E402
 
@@ -188,6 +188,18 @@ def classify(obs: Observation) -> Classification:
                           [note, f"rules said {rules.state.value}: {'; '.join(rules.reasons)[:120]}"], "semantic")
 
 
+def continue_application(prev: PageState | None, model: PageModel, has_next: bool, has_submit: bool) -> Classification | None:
+    """What the loop needs is not a page type but "what can I do here": inside an application, a page that has input fields and
+    a step control is the next step of it, whatever else it holds (education links, uploads, sections). The previous state limits
+    what can follow (states.ALLOWED); a loading page, a password page or a page with nothing to fill is not decided here."""
+    if prev is None or PageState.FORM_STEP not in ALLOWED.get(prev, set()) or model.busy:
+        return None
+    inputs = [f for f in model.fields if f.region in _MAIN]
+    if not inputs or any(f.kind == "password" for f in inputs) or not (has_next or has_submit):
+        return None
+    return Classification(PageState.FORM_STEP, None, 0.6, [f"after {prev.value}: inputs and a step control, so the next step of the same application"])
+
+
 async def classify_page(obs: Observation, llm=None) -> Classification:
     """Rules first; a text-only model call only when the rules find nothing. The model may name the state and the
     control that advances, but it cannot create a FORM_STEP/REVIEW/CONFIRMATION that the page evidence does not support."""
@@ -215,6 +227,12 @@ async def classify_page(obs: Observation, llm=None) -> Classification:
         state, why = PageState.UNKNOWN, ["model said form but the page has no application-shaped fields: rejected"]
     if state == PageState.CONFIRMATION and not _SUCCESS.search(_head_text(m)):
         state, why = PageState.UNKNOWN, ["model said confirmation but the page has no confirmation wording: rejected"]
+    if state == PageState.EMAIL_ONLY:
+        state, why = PageState.UNKNOWN, ["model said 'apply by email': not accepted from a guess (needs real evidence)"]
+    if state in {PageState.DEAD, PageState.CLOSED, PageState.BOT_BLOCK, PageState.LISTING} and any(f.region in _MAIN for f in m.fields) and not obs.captcha:
+        state, why = PageState.UNKNOWN, ["model said the page is unavailable but it has input fields: rejected"]
+    if m.busy and state != PageState.UNKNOWN:
+        state, why = PageState.UNKNOWN, ["the page is still loading (busy indicator): not judged yet"]
     thin = not m.fields and len(m.actions) < 3 and len(m.text_digest.strip()) < 80
     if thin and state in {PageState.DEAD, PageState.CLOSED, PageState.LISTING, PageState.BOT_BLOCK, PageState.EMAIL_ONLY}:
         state, why = PageState.UNKNOWN, ["model said the job is unavailable but the page has almost no content (still loading?): rejected"]
