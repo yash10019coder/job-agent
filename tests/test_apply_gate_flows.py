@@ -130,3 +130,14 @@ def test_logging_in_with_an_existing_credential_needs_no_signup_permission():
     store.save("local", Credential(EMAIL, "Correct-Horse-9!"))
     res, _, _ = flow("auth_login.html", store, allow_signup=False)
     assert res.outcome == Outcome.DRY_RUN_READY
+
+
+def test_signup_form_with_both_create_and_sign_in_buttons_is_filled_not_clicked_empty():
+    """Flexiple/Workday style: one form with a password box plus 'Create account' and 'Sign in' buttons. The agent must fill the form
+    (not click a button of an empty form again and again)."""
+    store, provider = MemoryStore(), StaticCodeProvider(MailCode(code="482913"))
+    res, trace, _ = flow("auth_signup_choice.html", store, provider)
+    assert res.outcome == Outcome.DRY_RUN_READY, (res.outcome, res.detail)
+    cred = store.get("local")
+    assert cred and cred.username == EMAIL and len(cred.password) >= 12
+    assert trace.count('"gate": "account_choice"') <= 1, trace.count('"gate": "account_choice"')      # not a click-loop

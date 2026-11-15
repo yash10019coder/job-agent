@@ -60,6 +60,14 @@ def test_login_gate_needs_a_human_and_leaves_the_window_open():
     assert res.outcome == Outcome.NEEDS_HUMAN and still_open and PageState.LOGIN in res.states
 
 
+def test_captcha_is_waited_out_when_a_person_solves_it_and_never_solved_by_the_agent():
+    gave_up, _, _, _ = run("captcha_solved_by_person.html")                                  # no wait requested: hand off at once
+    assert gave_up.outcome == Outcome.NEEDS_HUMAN
+    res, url, _, _ = run("captcha_solved_by_person.html", captcha_wait_s=90.0)              # the person solves it after ~25 s
+    assert res.outcome == Outcome.DRY_RUN_READY, (res.outcome, res.detail)
+    assert PageState.CAPTCHA in res.states
+
+
 def test_captcha_gate_needs_a_human():
     res, _, still_open, _ = run("captcha_gate.html")
     assert res.outcome == Outcome.NEEDS_HUMAN and still_open and PageState.CAPTCHA in res.states

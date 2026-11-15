@@ -132,7 +132,7 @@ def _to_result(job: dict, run, out_dir: Path, run_dir: Path) -> JobResult:
 async def run_autopilot(jobs: list[dict], open_page: OpenPage, make_llm: Callable, facts: dict, resume: str | None, out_dir: Path,
                         submit: bool = False, max_per_day: int = 20, concurrency: int = 2, limiter: RateLimiter | None = None,
                         log_path: Path | None = None, live_check: LiveCheck = is_live, pace_s: tuple[float, float] = (20.0, 60.0),
-                        click_wait_s: float = 10.0, auth=None, check_fit: bool = True) -> list[JobResult]:
+                        click_wait_s: float = 10.0, auth=None, check_fit: bool = True, captcha_wait_s: float = 0.0) -> list[JobResult]:
     out_dir.mkdir(parents=True, exist_ok=True)
     limiter = limiter or RateLimiter(storage_path=ROOT / "outputs" / "rate_limiter" / "history.jsonl")
     log_path = log_path or ROOT / "outputs" / "apply" / "submissions.jsonl"
@@ -186,7 +186,7 @@ async def run_autopilot(jobs: list[dict], open_page: OpenPage, make_llm: Callabl
                             reserved -= 1 if submit else 0
                         return skip(job, "location not verified as India (the dump says '" + str(job.get("location") or "") + "' and the page does not mention India)")
                 run = await run_application(page, make_llm(), facts, resume, run_dir, submit=submit, limiter=limiter, log_path=log_path,
-                                            click_wait_s=click_wait_s, auth=auth)
+                                            click_wait_s=click_wait_s, auth=auth, captcha_wait_s=captcha_wait_s)
                 result = _to_result(job, run, out_dir, run_dir)
             except Exception as error:
                 try:   # keep the traceback next to the run: "crashed: <one line>" alone is not enough to fix anything

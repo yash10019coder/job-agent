@@ -122,7 +122,7 @@ def _classify_rules(obs: Observation) -> Classification:
         return Classification(PageState.EMAIL_CODE, None, 0.85, ["a verification-code field or prompt"])
     if not form and not apply_id:
         if sig["password_field"]:
-            state = PageState.SIGNUP if (sig["signup_text"] and not sig["login_text"]) else PageState.LOGIN if (sig["login_text"] and not sig["signup_text"]) else PageState.ACCOUNT_CHOICE
+            state = PageState.SIGNUP if (sig.get("password_count", 0) >= 2 or (sig["signup_text"] and not sig["login_text"])) else PageState.LOGIN if (sig["login_text"] and not sig["signup_text"]) else PageState.ACCOUNT_CHOICE
             return Classification(state, None, 0.85, ["a password field in main content"])
         if sig["login_text"] and sig["signup_text"]:
             return Classification(PageState.ACCOUNT_CHOICE, None, 0.6, ["login and signup wording in main content"])

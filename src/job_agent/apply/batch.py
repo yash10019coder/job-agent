@@ -40,8 +40,15 @@ async def blank_window(session: BraveSession) -> Page:
     """Own window per job: background tabs get throttled by the browser, which would stall the page logic."""
     assert session.browser and session.context
     async with _window_lock:  # pick out OUR new page from the context, never another job's popup
-        before = set(session.context.pages)
-        cdp = await session.browser.new_browser_cdp_session()
+        try:
+            before = set(session.context.pages)
+            cdp = await session.browser.new_browser_cdp_session()
+        except Exception as error:   # the agent browser died or restarted under us: bring it back once and carry on
+            if "closed" not in str(error).lower():
+                raise
+            await session.reconnect()
+            before = set(session.context.pages)
+            cdp = await session.browser.new_browser_cdp_session()
         await cdp.send("Target.createTarget", {"url": "about:blank", "newWindow": True})
         for _ in range(100):
             fresh = [p for p in session.context.pages if p not in before and p.url in ("about:blank", "")]

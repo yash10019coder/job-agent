@@ -93,6 +93,10 @@ async def handle_gate(page: Page, state: PageState, kit: AuthKit, facts: dict, l
     perception = await perceive(page)
     model, site = perception.model, site_key(page.url)
     if state == PageState.ACCOUNT_CHOICE:
+        if any(f.kind == "password" and f.region in {"main", "dialog"} for f in model.fields):
+            # Sign-in AND create-account buttons next to real password boxes: it is a form to fill, not a choice to click
+            # (clicking the button of an empty form just loops). A stored login means sign in, otherwise create the account.
+            return await (_login(page, model, kit, site) if (kit.store and kit.store.get(site)) else _signup(page, model, kit, site, facts, llm, resume))
         return await _choose(page, model, kit, site)
     if state == PageState.LOGIN:
         return await _login(page, model, kit, site)

@@ -26,6 +26,7 @@ def classify_gate(model, frame_hosts: list[str], status: int | None = None, capt
     form_like = len(main_fields) >= 3 and any(f.kind == "email" or re.search(r"email|first name|full name", f.label, re.I) for f in main_fields)
     signals = {
         "password_field": "password" in kinds,
+        "password_count": sum(1 for f in main_fields if f.kind == "password"),   # two password boxes (set + verify) = a signup form
         "login_text": bool(LOGIN.search(gate_text)),
         "signup_text": bool(SIGNUP.search(gate_text)),
         "sso": sorted({m.group(2).lower() for a in main_actions for m in [SSO.search(a)] if m}),

@@ -29,6 +29,7 @@ from job_agent.apply.trace import Trace
 from job_agent.rate_limiter import RateLimiter
 
 ROOT = Path(__file__).resolve().parents[3]
+_SERVER_ERROR = re.compile(r"unable to (apply|submit|process)|try again later|something went wrong|temporarily|server error|could not (process|submit)", re.I)
 _HUMAN_STATES = {PageState.LOGIN, PageState.SIGNUP, PageState.ACCOUNT_CHOICE, PageState.SSO_ONLY, PageState.EMAIL_CODE, PageState.CAPTCHA}
 _TERMINAL = {PageState.DEAD: Outcome.DEAD, PageState.CLOSED: Outcome.CLOSED, PageState.LISTING: Outcome.CLOSED,
              PageState.BOT_BLOCK: Outcome.BLOCKED, PageState.EMAIL_ONLY: Outcome.NEEDS_HUMAN}
@@ -76,6 +77,28 @@ async def _wait_until_stable(page: Page, max_s: float = 10.0) -> None:
         last = sig
 
 
+async def _wait_for_person(page: Page, wait_s: float, trace: Trace, what: str) -> bool:
+    """A captcha is for a person: bring the window forward and wait (up to wait_s) for them to solve it, then carry on.
+    Nothing is solved or bypassed by the agent. Returns True once the challenge is gone."""
+    if wait_s <= 0:
+        return False
+    try:
+        await page.bring_to_front()
+    except Exception:
+        pass
+    trace.log(step=0, note=f"WAITING FOR YOU: {what} in this window (up to {int(wait_s)} s)")
+    deadline = time.monotonic() + wait_s
+    while time.monotonic() < deadline:
+        if page.is_closed():
+            return False
+        if not await captcha_visible(page):
+            await asyncio.sleep(2.0)   # let the page react to the solved challenge
+            trace.log(step=0, note="captcha solved: continuing")
+            return True
+        await asyncio.sleep(2.0)
+    return False
+
+
 def _error_problems(problems: list[str]) -> list[str]:
     return [p for p in problems if p.startswith(("field shows an error", "page alert"))]
 
@@ -86,16 +109,18 @@ def _errors(problems: list[str]) -> tuple[str, ...]:
 
 async def run_application(page: Page, llm: LLM, facts: dict, resume: str | None, run_dir: Path | None = None, submit: bool = False,
                           max_steps: int = 40, max_hops: int = 3, deadline_s: float = 600, click_wait_s: float = 10.0,
-                          limiter: RateLimiter | None = None, log_path: Path | None = None, auth: AuthKit | None = None) -> RunResult:
+                          limiter: RateLimiter | None = None, log_path: Path | None = None, auth: AuthKit | None = None,
+                          captcha_wait_s: float = 0.0) -> RunResult:
     import json
 
     page.set_default_timeout(8000)
     controls.use(llm)
     limiter = limiter or RateLimiter(storage_path=ROOT / "outputs" / "rate_limiter" / "history.jsonl")
     log_path = log_path or ROOT / "outputs" / "apply" / "submissions.jsonl"
-    trace, context = Trace(run_dir / "trace.jsonl" if run_dir else None), json.dumps(facts, indent=1)
+    trace, context = Trace(run_dir / "trace.jsonl" if run_dir else None, echo=True, label=run_dir.name if run_dir else "run"), json.dumps(facts, indent=1)
     res, status, started = RunResult(Outcome.STUCK), _Status(page), time.monotonic()
     start_url, last_errors, same_error, idle, gate_steps, unknown_looks = page.url, (), 0, 0, 0, 0
+    server_retry, apply_asks = False, 0
 
     def done(outcome: Outcome, detail: str) -> RunResult:
         res.outcome, res.detail, res.page = outcome, detail, page
@@ -112,7 +137,7 @@ async def run_application(page: Page, llm: LLM, facts: dict, resume: str | None,
         obs, _ = await observe(page, status, start_url if res.steps == 1 or page.url != start_url else None)
         for _ in range(4):  # single-page apps render after the load event: give a blank page a few chances before judging it
             blank = not obs.model.fields and not obs.model.actions  # nothing to act on yet: still rendering
-            if not blank or obs.status in (403, 404, 410, 429) or (obs.status or 0) >= 500:
+            if not blank or obs.captcha or obs.status in (403, 404, 410, 429) or (obs.status or 0) >= 500:   # a visible captcha is judged at once
                 break
             await Settler(page).settle()
             await asyncio.sleep(1.0)
@@ -150,6 +175,8 @@ async def run_application(page: Page, llm: LLM, facts: dict, resume: str | None,
             continue
         if c.state in (PageState.FORM_STEP, PageState.JOB_PAGE, PageState.REVIEW):
             gate_steps = 0
+        if c.state == PageState.CAPTCHA and await _wait_for_person(page, captcha_wait_s, trace, "solve the captcha"):
+            continue
         if c.state in _HUMAN_STATES:
             return done(Outcome.NEEDS_HUMAN, f"{c.state.value}: {'; '.join(c.reasons)} (window left open)")
         if c.state == PageState.CONFIRMATION:
@@ -169,6 +196,19 @@ async def run_application(page: Page, llm: LLM, facts: dict, resume: str | None,
                     page, status = hop.page, _Status(hop.page)
                     page.set_default_timeout(8000)
                 continue
+            if not any(f.region in {"main", "dialog"} for f in fresh.model.fields) and apply_asks < 2:
+                # A job page whose apply control the rules do not know ("Apply with Flexiple"): let a text-only model point at it once.
+                from job_agent.apply.demo import pick_apply_action
+                apply_asks += 1
+                pointed = await pick_apply_action(llm, fresh)
+                action = next((a for a in fresh.model.actions if a.id == pointed), None) if pointed else None
+                if action is not None:
+                    hop = await click_and_follow(page, fresh, action.id, action.frame, wait_s=click_wait_s)
+                    trace.log(step=res.steps, action=f"apply (model-picked): {action.label}", hop=hop.kind, error=hop.error)
+                    if hop.page is not page:
+                        page, status = hop.page, _Status(hop.page)
+                        page.set_default_timeout(8000)
+                    continue
             return done(Outcome.NEEDS_HUMAN, "page not recognised after looking again; window left open (the page was queued for labelling)")
 
         if c.state == PageState.JOB_PAGE:
@@ -193,13 +233,15 @@ async def run_application(page: Page, llm: LLM, facts: dict, resume: str | None,
 
         # FORM_STEP or REVIEW
         step = DemoResult()
-        if c.state == PageState.FORM_STEP:
-            await fill_until_stable(page, llm, context, resume, step, facts)
+        if c.state == PageState.FORM_STEP or (c.state == PageState.REVIEW and any(f.region in {"main", "dialog"} for f in obs.model.fields)):
+            await fill_until_stable(page, llm, context, resume, step, facts)   # review pages can hold inputs too (a required consent box)
             res.rows += step.rows
         problems = await check_step_ready(page, step.rows)
         if any("no honest answer" in p for p in problems):
             return done(Outcome.NEEDS_ANSWER, "; ".join(p for p in problems if "no honest answer" in p))
         if any("captcha" in p for p in problems):
+            if await _wait_for_person(page, captcha_wait_s, trace, "solve the captcha"):
+                continue
             return done(Outcome.NEEDS_HUMAN, "captcha: solve it in the open window")
         errs = _errors(problems)
         hard = [p for p in problems if p not in set(_error_problems(problems))]
@@ -223,6 +265,9 @@ async def run_application(page: Page, llm: LLM, facts: dict, resume: str | None,
             if out.status == "submitted":
                 res.states.append(PageState.CONFIRMATION)
                 return done(Outcome.APPLIED, out.detail)
+            if out.status == "blocked_captcha" and await _wait_for_person(page, captcha_wait_s, trace, "solve the captcha that appeared after Submit"):
+                res.states.append(PageState.CAPTCHA)
+                continue   # look again: a confirmation, or the form (guards run again before any second Submit)
             if out.status in {"blocked_captcha", "blocked_otp"}:
                 res.states.append(PageState.CAPTCHA if out.status == "blocked_captcha" else PageState.EMAIL_CODE)
                 return done(Outcome.NEEDS_HUMAN, out.detail)
@@ -230,6 +275,15 @@ async def run_application(page: Page, llm: LLM, facts: dict, resume: str | None,
                 if any("no honest answer" in p for p in out.problems):
                     return done(Outcome.NEEDS_ANSWER, "; ".join(out.problems)[:400])
                 return done(Outcome.BLOCKED, "; ".join(out.problems)[:400])
+            if out.status == "error_validation" and any(_SERVER_ERROR.search(p) for p in out.problems):
+                # "Unable to apply, try again later": the site's own failure, not a field problem. Pressing Submit again and again could
+                # create duplicate applications if the server did accept one, so: one patient retry, then stop with the site's words.
+                if server_retry:
+                    return done(Outcome.BLOCKED, "the site refused the submission: " + "; ".join(out.problems)[:200])
+                server_retry = True
+                trace.log(step=res.steps, note="site error after Submit: waiting 40 s before one retry")
+                await asyncio.sleep(40.0)
+                continue
             if out.status == "error_validation":
                 last_errors, same_error = tuple(out.problems), same_error + 1
                 if same_error >= 3:

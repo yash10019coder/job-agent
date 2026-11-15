@@ -20,6 +20,7 @@ from playwright.async_api import Page
 
 from job_agent.apply import controls, execute
 from job_agent.apply.perceive import Perception, Settler, perceive
+from job_agent.apply.repair import useful_alerts
 from job_agent.rate_limiter import RateLimiter
 
 MIN_SUBMIT_CONFIDENCE = 0.7
@@ -114,7 +115,7 @@ async def _step_problems(page: Page, rows: list):
         if f.invalid or f.error:
             problems.append(f"field shows an error: {f.label} ({f.error or 'invalid'})")
     problems += [f"required control not understood by the agent: {u['text']}" for u in perception.model.unparsed if u.get("required")]
-    problems += [f"page alert: {a}" for a in perception.model.alerts]
+    problems += [f"page alert: {a}" for a in useful_alerts(perception.model)]   # not the page title read out by a live region
     if await captcha_visible(page):
         problems.append("a captcha is showing (not solved automatically)")
     return problems, perception
@@ -163,7 +164,7 @@ async def _classify(page: Page, settler: Settler, before_labels: set[str]) -> Su
             return SubmitOutcome("blocked_otp", f"the site wants an emailed code ({new_code[0]}); email verification is not automated yet")
         if _SUCCESS.search(body) or re.search(r"/(confirmation|thank|submitted|success|applied)\b", page.url, re.I):
             return SubmitOutcome("submitted", "confirmation detected on the page")
-        errors = [a for a in perception.model.alerts] + [f"{f.label}: {f.error or 'invalid'}" for f in perception.model.fields if f.invalid or f.error]
+        errors = [a for a in useful_alerts(perception.model)] + [f"{f.label}: {f.error or 'invalid'}" for f in perception.model.fields if f.invalid or f.error]
         if errors:
             return SubmitOutcome("error_validation", "the site rejected the form", errors[:6])
         if time.monotonic() >= deadline:

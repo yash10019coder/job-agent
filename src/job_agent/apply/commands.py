@@ -320,7 +320,15 @@ def _parallel(text: str) -> int:
     return n
 
 
+def _check_resume(args: argparse.Namespace) -> None:
+    """A resume path that does not exist made every upload fail quietly ("file not attached"): stop before any browser work."""
+    path = getattr(args, "resume", "")
+    if path and not Path(path).is_file():
+        raise SystemExit(f"Resume file not found: {path}\nPass the current PDF with --resume <path>.")
+
+
 def apply_run(args: argparse.Namespace) -> int:
+    _check_resume(args)
     if getattr(args, "semantic", False):
         os.environ["JOB_AGENT_SEMANTIC"] = "1"
     """Run the generic application loop on many jobs (dry run only; one Brave window each); data/runs/<timestamp>/."""
@@ -345,6 +353,7 @@ def apply_run(args: argparse.Namespace) -> int:
 
 
 def autopilot(args: argparse.Namespace) -> int:
+    _check_resume(args)
     if getattr(args, "semantic", False):
         os.environ["JOB_AGENT_SEMANTIC"] = "1"
     """Unattended application run: fit gate, liveness check, rate limits, generic loop, report in data/autopilot/<ts>/."""
@@ -368,7 +377,7 @@ def autopilot(args: argparse.Namespace) -> int:
         async with BraveSession(_config(args)) as session:
             return await run_autopilot(jobs, lambda u: new_window(session, u), lambda: LLM(model=args.model or None), facts, args.resume or None,
                                        out_dir, submit=args.submit, max_per_day=args.max_per_day, concurrency=args.concurrency,
-                                       pace_s=(args.pace / 2, args.pace), auth=auth, check_fit=not args.no_fit_check)
+                                       pace_s=(args.pace / 2, args.pace), auth=auth, check_fit=not args.no_fit_check, captcha_wait_s=args.wait_captcha)
 
     results = asyncio.run(run())
     counts = {}
@@ -474,6 +483,7 @@ def register(subparsers) -> None:
     auto.add_argument("--pace", type=float, default=60.0, help="Max seconds of gap between application starts (human-like pacing; half to full)")
     auto.add_argument("--limit", type=int, default=0, help="Only the first N jobs (smoke test)")
     auto.add_argument("--model", default="")
+    auto.add_argument("--wait-captcha", type=float, default=0.0, help="Seconds to wait, window in front, for YOU to solve a captcha (the agent never solves one); default 0 = give up")
     auto.add_argument("--no-fit-check", action="store_true", help="Apply to every link given, without judging whether the job suits the profile")
     auto.add_argument("--semantic", action="store_true", help="Also classify page meaning with local embeddings (closed/dead/confirmation/code/bot wording)")
     add_brave_args(auto)

@@ -198,3 +198,10 @@ def test_confirm_your_email_box_is_not_an_emailed_code_prompt():
     assert classify(obs(form)).state == PageState.FORM_STEP
     code = page("Verify", ["Verify your email"], fields=[("text", "Verification code")])
     assert classify(obs(code)).state == PageState.EMAIL_CODE
+
+
+def test_workday_style_page_with_set_and_verify_password_is_a_signup_not_a_choice():
+    """Both a Create Account and a Sign In button, but two password boxes (set + verify): it is the signup form itself."""
+    combined = page("Software Engineer (II)", ["Create Account"], fields=[("text", "Email Address"), ("password", "Password"), ("password", "Verify New Password"),
+                                                                       ("checkbox", "I have read and consent")], actions=["Create Account", "Sign In"])
+    assert classify(obs(combined)).state == PageState.SIGNUP

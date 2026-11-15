@@ -95,13 +95,20 @@ class BraveSession:
         self.context: BrowserContext | None = None
 
     async def __aenter__(self) -> "BraveSession":
-        self.launched = await ensure_brave_running(self.config)
         self._pw = await async_playwright().start()
+        await self.reconnect()
+        return self
+
+    async def reconnect(self) -> None:
+        """(Re)start the agent browser if it is gone and attach to it. A freshly launched Brave can restart itself once while it
+        starts up, which used to kill the run with 'browser has been closed': give it a moment, and the callers retry once."""
+        self.launched = await ensure_brave_running(self.config) or self.launched
+        if self.launched:
+            await asyncio.sleep(2.5)
         self.browser = await self._pw.chromium.connect_over_cdp(self.config.cdp_url)
         self.context = self.browser.contexts[0] if self.browser.contexts else await self.browser.new_context()
         from job_agent.apply.perceive import install_open_shadow
         await install_open_shadow(self.context)
-        return self
 
     async def __aexit__(self, *exc) -> None:
         # Stop the Playwright driver only; Brave itself keeps running.
