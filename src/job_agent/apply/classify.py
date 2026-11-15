@@ -96,7 +96,7 @@ def _head_text(model: PageModel) -> str:
     return " ".join([model.title, *model.headings, model.text_digest[:400]])
 
 
-def classify(obs: Observation) -> Classification:
+def _classify_rules(obs: Observation) -> Classification:
     """Map one observation to a PageState by rules. Order matters: the states that stop a run come first, and
     FORM_STEP/REVIEW/CONFIRMATION are only returned on application-shaped evidence."""
     m, head = obs.model, _head_text(obs.model)
@@ -143,6 +143,49 @@ def classify(obs: Observation) -> Classification:
     if apply_id:
         return Classification(PageState.JOB_PAGE, apply_id, 0.8, ["an Apply control and no application form"])
     return Classification(PageState.UNKNOWN, None, 0.0, ["no rule matched"])
+
+
+SEMANTIC_MIN_CONFIDENCE = 0.45   # similarity of the winning state's closest examples (multilingual mpnet scale; calibrated on the saved pages)
+SEMANTIC_MIN_MARGIN = 0.06       # lead over the runner-up (usually "other")
+_SEM_STATES = {"closed": PageState.CLOSED, "dead": PageState.DEAD, "confirmation": PageState.CONFIRMATION,
+               "email_code": PageState.EMAIL_CODE, "bot_block": PageState.BOT_BLOCK}
+
+
+def semantic_enabled() -> bool:
+    import os
+    return os.environ.get("JOB_AGENT_SEMANTIC", "") not in {"", "0", "false", "no"}
+
+
+def classify(obs: Observation) -> Classification:
+    """Rules, plus (behind JOB_AGENT_SEMANTIC / --semantic) a meaning-based verdict for the wording-driven states.
+    Structure always wins: a real application form is never 'closed', 'dead', 'confirmation' or 'bot block', a code page needs
+    an input box, and a visible captcha or an HTTP error is decided before any wording is looked at."""
+    rules = _classify_rules(obs)
+    if not semantic_enabled() or obs.captcha or (obs.status is not None and obs.status >= 400):
+        return rules
+    m = obs.model
+    try:
+        from job_agent.apply import semantic
+        heard = semantic.predict_wording(m)
+    except Exception as error:   # embedding model missing/unavailable: behave exactly like the rules
+        rules.reasons.append(f"semantic unavailable ({str(error)[:60]})")
+        return rules
+    state = _SEM_STATES.get(heard.state)
+    note = f"semantic: {heard.state} {heard.confidence:.2f} (+{heard.margin:.2f})"
+    if state is None or heard.confidence < SEMANTIC_MIN_CONFIDENCE or heard.margin < SEMANTIC_MIN_MARGIN:
+        rules.reasons.append(note + " - not confident enough to act")
+        return rules
+    if is_application_form(m) and state != PageState.EMAIL_CODE:
+        rules.reasons.append(note + " - vetoed: the page has an application form")
+        return rules
+    if state == PageState.EMAIL_CODE and not any(f.region in _MAIN for f in m.fields):
+        rules.reasons.append(note + " - vetoed: no input box for a code")
+        return rules
+    if state == rules.state:
+        rules.reasons.append(note + " - agrees with the rules")
+        return rules
+    return Classification(state, None, round(min(0.9, heard.confidence + 0.1), 2),
+                          [note, f"rules said {rules.state.value}: {'; '.join(rules.reasons)[:120]}"], "semantic")
 
 
 async def classify_page(obs: Observation, llm=None) -> Classification:

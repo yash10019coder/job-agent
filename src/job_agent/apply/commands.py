@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import argparse
+import os
 import asyncio
 import json
 import sys
@@ -305,6 +306,8 @@ def _parallel(text: str) -> int:
 
 
 def apply_run(args: argparse.Namespace) -> int:
+    if getattr(args, "semantic", False):
+        os.environ["JOB_AGENT_SEMANTIC"] = "1"
     """Run the generic application loop on many jobs (dry run only; one Brave window each); data/runs/<timestamp>/."""
     from job_agent.apply.batch import run_batch
     from job_agent.apply.prefill import build_facts
@@ -327,6 +330,8 @@ def apply_run(args: argparse.Namespace) -> int:
 
 
 def autopilot(args: argparse.Namespace) -> int:
+    if getattr(args, "semantic", False):
+        os.environ["JOB_AGENT_SEMANTIC"] = "1"
     """Unattended application run: fit gate, liveness check, rate limits, generic loop, report in data/autopilot/<ts>/."""
     from datetime import datetime
 
@@ -440,6 +445,7 @@ def register(subparsers) -> None:
     run.add_argument("--allow-signup", action="store_true", help="Let the dry run create accounts on real sites (default: off)")
     run.add_argument("--keep-open", action="store_true", help="Leave each job window open for inspection (default: close it)")
     run.add_argument("--concurrency", type=_parallel, default=3)
+    run.add_argument("--semantic", action="store_true", help="Also classify page meaning with local embeddings (closed/dead/confirmation/code/bot wording)")
     add_brave_args(run)
     run.set_defaults(func=apply_run)
 
@@ -453,6 +459,7 @@ def register(subparsers) -> None:
     auto.add_argument("--pace", type=float, default=60.0, help="Max seconds of gap between application starts (human-like pacing; half to full)")
     auto.add_argument("--limit", type=int, default=0, help="Only the first N jobs (smoke test)")
     auto.add_argument("--model", default="")
+    auto.add_argument("--semantic", action="store_true", help="Also classify page meaning with local embeddings (closed/dead/confirmation/code/bot wording)")
     add_brave_args(auto)
     auto.set_defaults(func=autopilot)
 
