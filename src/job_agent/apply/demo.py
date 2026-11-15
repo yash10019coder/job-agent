@@ -16,10 +16,10 @@ from pathlib import Path
 
 from playwright.async_api import Page
 
-from job_agent.apply import execute
+from job_agent.apply import execute, repair
 from job_agent.apply.llm import LLM, Decider, FlashDecider
 from job_agent.apply.perceive import FieldModel, Perception, Settler, diff, explore, perceive
-from job_agent.apply.prefill import build_facts, prefill
+from job_agent.apply.prefill import Prefill, build_facts, prefill
 from job_agent.apply.submit import SubmitOutcome, guarded_submit
 from job_agent.rate_limiter import RateLimiter
 
@@ -162,6 +162,14 @@ def _trusted(ans: dict | None) -> bool:
 
 
 async def _decide_from_options(page, perception, settler, field_: FieldModel, decider: Decider, context: str) -> dict | None:
+    """One stubborn widget (a click that times out, a popup that never opens) must not end the whole application: no answer then."""
+    try:
+        return await _decide_from_options_inner(page, perception, settler, field_, decider, context)
+    except Exception:
+        return None
+
+
+async def _decide_from_options_inner(page, perception, settler, field_: FieldModel, decider: Decider, context: str) -> dict | None:
     """The option-decider path: read the field's real options (opening dropdowns that load them lazily),
     then let the decision model pick with facts + job context. Optional fields may decline to choose."""
     options = field_.options or []
@@ -229,12 +237,25 @@ async def fill_until_stable(page: Page, llm: LLM, context: str, resume: str | No
         # a field we filled successfully that is empty again is queued for one more fill (at most twice).
         kept = {f"{r.kind}|{re.sub(r'[^a-z0-9]+', ' ', r.label.lower()).strip()}" for r in result.rows
                 if r.status == "ok" and r.answer.strip() and r.kind != "file"}
-        lost = [f for f in perception.model.fields if f.empty and f.key in kept and f.key in attempted and refills.get(f.key, 0) < 2]
+        intended = {f"{r.kind}|{re.sub(r'[^a-z0-9]+', ' ', r.label.lower()).strip()}": r.answer for r in result.rows
+                    if r.status == "ok" and r.answer.strip() and r.kind in {"text", "email", "tel"}}
+
+        def drifted(f: FieldModel) -> bool:   # the site (resume import / autofill) changed a contact-style value we had set
+            want = intended.get(f.key)
+            if not want or not f.value.strip() or f.kind not in {"text", "email", "tel"}:
+                return False
+            a, b = re.sub(r"[^a-z0-9]", "", f.value.lower()), re.sub(r"[^a-z0-9]", "", want.lower())
+            if f.kind == "tel" or re.search(r"phone|mobile", f.label, re.I):
+                a, b = re.sub(r"\D", "", f.value), re.sub(r"\D", "", want)
+                return not (len(a) >= 8 and (b.endswith(a) or a.endswith(b)))
+            return not (a == b or a in b or b in a)
+
+        lost = [f for f in perception.model.fields if (f.empty or drifted(f)) and f.key in kept and f.key in attempted and refills.get(f.key, 0) < 2]
         for f in lost:
             attempted.discard(f.key)
             refills[f.key] = refills.get(f.key, 0) + 1
         if lost:
-            result.events.append("  site cleared: " + ", ".join(f.label[:40] for f in lost) + " (filling again)")
+            result.events.append("  site cleared or changed: " + ", ".join(f.label[:40] for f in lost) + " (filling again)")
         todo = [f for f in perception.model.fields if f.key not in attempted and (f.empty or f.invalid)]
         if not todo and not late_check and round_no > 1:
             late_check = True   # one last look after a pause: a late page-side reset shows up here
@@ -250,6 +271,12 @@ async def fill_until_stable(page: Page, llm: LLM, context: str, resume: str | No
         result.events.append(f"round {round_no}: {len(todo)} field(s) to resolve: " + ", ".join(f.label[:40] for f in todo))
         # Standard questions are pre-answered deterministically from your facts; only the rest goes to the model.
         pre = {f.id: pf for f in todo if facts and (pf := prefill(f, facts))}
+        for f in todo:   # a phone box next to a separate country-code control takes the national number only
+            pf = pre.get(f.id)
+            if pf is not None and pf.basis == "contact.phone" and repair.has_country_code_control(perception.model, f):
+                national = repair.phone_parts(facts or {})[1]
+                if national:
+                    pre[f.id] = Prefill(national, "contact.phone (the country code is a separate control)")
         batch = [f for f in todo if f.kind != "file" and f.id not in pre]
         answers = await resolve_batch(llm, context, batch, job_context) if batch else {}
         for fid, pf in pre.items():
@@ -272,6 +299,8 @@ async def fill_until_stable(page: Page, llm: LLM, context: str, resume: str | No
                     res = await execute.upload(page, fresh, cur, resume, settler)
                     status = "ok" if res.ok else (res.detail if cur.required else f"left blank (optional; could not attach: {res.detail[:60]})")
                     result.rows.append(Row(cur.label, cur.kind, Path(resume).name, 1.0, "profile", status))
+                    if res.ok:   # many sites now parse the resume and rewrite the form: let that finish before filling on
+                        await repair.wait_until_stable(page, settler, max_s=12.0)
                 else:
                     why = "no --resume given" if not resume else "not a resume field (cover letter etc.)"
                     result.rows.append(Row(cur.label, cur.kind, "", 0, "unknown", f"skipped ({why})"))
@@ -314,6 +343,7 @@ async def fill_until_stable(page: Page, llm: LLM, context: str, resume: str | No
                     result.events.append(f"  after '{f.label[:40]}': {change}")
                 if change.added or change.removed:
                     break  # page shape changed: re-perceive and resolve the new fields next round
+    await repair.validate_and_repair(page, llm, settler, facts or {}, result.events)   # read the form's own errors and fix formats before going on
     final = await perceive(page)
     for a in final.model.actions:
         if any(w in a.label.lower() for w in _SUBMIT_WORDS) and a.primary:

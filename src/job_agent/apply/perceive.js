@@ -345,8 +345,9 @@
   const headings = Array.from(document.querySelectorAll("h1,h2")).filter(visible).slice(0, 6).map((h) => clip(h.innerText, 100));
   const alerts = Array.from(document.querySelectorAll("[role=alert],[aria-live=assertive]")).filter(visible).map((a) => clip(a.innerText, 160)).filter(Boolean).slice(0, 5);
 
+  const busy = Array.from(document.querySelectorAll("[aria-busy=true],[role=progressbar],[class*=spinner i],[class*=loading i],[class*=skeleton i]")).some(visible);
   return {
-    url: location.href, title: document.title, headings, alerts,
+    url: location.href, title: document.title, headings, alerts, busy,
     fields: fields.map(({ index, ...f }) => f), actions, unparsed: unparsed.slice(0, 10),
     text_digest: clip((document.body && document.body.innerText) || "", 3000),
   };

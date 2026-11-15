@@ -96,7 +96,10 @@ async def _submit_button(perception: Perception):
 async def _step_problems(page: Page, rows: list):
     """Reasons this step is not ready to move on (answers + what the page itself shows). Returns (problems, perception)."""
     problems = []
-    for r in rows:
+    latest: dict[tuple, object] = {}
+    for r in rows:   # the last attempt at a field is what counts: an old failure that a later fill fixed must not block
+        latest[(r.kind, r.label)] = r
+    for r in latest.values():
         if r.status.startswith("BLOCKED"):
             problems.append(f"required field has no honest answer: {r.label}")
         elif r.status == "ok":

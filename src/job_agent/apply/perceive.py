@@ -92,6 +92,7 @@ class PageModel(BaseModel):
     title: str = ""
     headings: list[str] = Field(default_factory=list)
     alerts: list[str] = Field(default_factory=list)
+    busy: bool = False   # a spinner / progress bar / aria-busy region is showing: the page is still loading
     fields: list[FieldModel] = Field(default_factory=list)
     actions: list[ActionModel] = Field(default_factory=list)
     text_digest: str = ""
