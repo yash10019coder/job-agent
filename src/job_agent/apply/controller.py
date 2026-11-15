@@ -62,6 +62,19 @@ async def observe(page: Page, status: _Status, from_url: str | None) -> tuple[Ob
     return Observation(page.url, status.value, perception.model, hosts, await captcha_visible(page), from_url), perception
 
 
+async def _wait_until_stable(page: Page, max_s: float = 10.0) -> None:
+    """Wait until two reads 1 s apart show the same URL, fields and buttons (or the time runs out)."""
+    await Settler(page).settle()
+    last, deadline = None, time.monotonic() + max_s
+    while time.monotonic() < deadline:
+        await asyncio.sleep(1.0)
+        m = (await perceive(page)).model
+        sig = (page.url, tuple(f.label for f in m.fields), tuple(a.label for a in m.actions), tuple(m.headings))
+        if sig == last:
+            return
+        last = sig
+
+
 def _errors(problems: list[str]) -> tuple[str, ...]:
     return tuple(sorted(p for p in problems if p.startswith(("field shows an error", "page alert"))))
 
@@ -89,6 +102,8 @@ async def run_application(page: Page, llm: LLM, facts: dict, resume: str | None,
         res.steps += 1
         if page.is_closed():
             return done(Outcome.STUCK, "the page was closed")
+        if res.steps > 1:   # a single-page app swaps its content a moment after the click: read the page once it stops changing
+            await _wait_until_stable(page)
         obs, _ = await observe(page, status, start_url if res.steps == 1 or page.url != start_url else None)
         for _ in range(4):  # single-page apps render after the load event: give a blank page a few chances before judging it
             blank = not obs.model.fields and not obs.model.actions  # nothing to act on yet: still rendering

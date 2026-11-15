@@ -248,7 +248,14 @@ async def set_choice(perception: Perception, field: FieldModel, wanted: str) -> 
             await (loc.check(timeout=3000) if want else loc.uncheck(timeout=3000))
             return ActionResult(await loc.is_checked() == want, "ok")
         except Exception as error:
-            return ActionResult(False, f"checkbox failed: {error}")
+            try:   # a native box hidden behind a styled label (common): click the label like a user would
+                await loc.evaluate("(el) => { const l = (el.labels && el.labels[0]) || el.closest('label'); (l || el).click(); }")
+                await perception.frames[field.frame].page.wait_for_timeout(300)
+                if await loc.is_checked() == want:
+                    return ActionResult(True, "ok")
+            except Exception:
+                pass
+            return ActionResult(False, f"checkbox failed: {str(error).splitlines()[0][:100]}")
     if field.cards:
         return await _choose_card(perception, field, wanted)
     wanted_list = [w.strip() for w in wanted.split(";") if w.strip()] if field.kind == "checkbox_group" else [wanted]

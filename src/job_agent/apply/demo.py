@@ -270,7 +270,8 @@ async def fill_until_stable(page: Page, llm: LLM, context: str, resume: str | No
             if cur.kind == "file":
                 if resume and cur.key in resume_field_keys(fresh.model):
                     res = await execute.upload(page, fresh, cur, resume, settler)
-                    result.rows.append(Row(cur.label, cur.kind, Path(resume).name, 1.0, "profile", "ok" if res.ok else res.detail))
+                    status = "ok" if res.ok else (res.detail if cur.required else f"left blank (optional; could not attach: {res.detail[:60]})")
+                    result.rows.append(Row(cur.label, cur.kind, Path(resume).name, 1.0, "profile", status))
                 else:
                     why = "no --resume given" if not resume else "not a resume field (cover letter etc.)"
                     result.rows.append(Row(cur.label, cur.kind, "", 0, "unknown", f"skipped ({why})"))
