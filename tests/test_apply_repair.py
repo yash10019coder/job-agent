@@ -74,3 +74,76 @@ def test_phone_next_to_a_country_code_gets_the_national_number_and_errors_are_re
     assert state["ph"] == "8957557113" and state["phBad"] != "true", state    # national number only, no 'Enter a valid number'
     assert state["ct"] == "1200000" and state["ctBad"] != "true", state          # 'Negotiable' was rejected, the model repaired it
     assert any("model repair" in e for e in result.events), result.events
+
+
+@pytestmark_live
+def test_yes_no_toggle_buttons_are_a_required_question_and_get_answered():
+    """Ashby-style Yes/No answers are aria-pressed buttons, not radios: they must show up as a field and be pressed."""
+    url = (ROOT / "tests/fixtures/toggle_buttons.html").resolve().as_uri()
+
+    async def go():
+        async with async_playwright() as pw:
+            browser = await pw.chromium.launch(executable_path=BRAVE, headless=True, args=["--no-sandbox"])
+            page = await browser.new_page()
+            await page.goto(url)
+            before = (await perceive(page)).model
+            result = DemoResult()
+            await fill_until_stable(page, FakeLLM(), json.dumps(FACTS), RESUME, result, FACTS)
+            pressed = await page.evaluate("() => [...document.querySelectorAll('.yesno button')].filter(b => b.getAttribute('aria-pressed') === 'true').map(b => b.innerText)")
+            await browser.close()
+            return before, pressed, result
+
+    before, pressed, result = asyncio.run(go())
+    question = next(f for f in before.fields if "sponsorship" in f.label)
+    assert question.required and question.kind == "radio_group" and [o.label for o in question.options] == ["Yes", "No"]
+    assert not any(a.label in {"Yes", "No"} for a in before.actions)       # the buttons are one question, not two loose actions
+    assert len(pressed) == 1, (pressed, [r for r in result.rows])           # exactly one answer was chosen
+
+
+@pytestmark_live
+def test_checkboxes_sharing_a_fieldset_are_one_required_question_and_get_answered():
+    """Ashby-style 'How did you hear about us?': a fieldset whose title is a <label>, with one separately named checkbox per answer."""
+    url = (ROOT / "tests/fixtures/checkbox_fieldset.html").resolve().as_uri()
+
+    async def go():
+        async with async_playwright() as pw:
+            browser = await pw.chromium.launch(executable_path=BRAVE, headless=True, args=["--no-sandbox"])
+            page = await browser.new_page()
+            await page.goto(url)
+            before = (await perceive(page)).model
+            result = DemoResult()
+            await fill_until_stable(page, FakeLLM(), json.dumps(FACTS), RESUME, result, FACTS)
+            checked = await page.evaluate("() => [...document.querySelectorAll('input[type=checkbox]')].filter(c => c.checked).map(c => c.name)")
+            await browser.close()
+            return before, checked, result
+
+    before, checked, result = asyncio.run(go())
+    group = next(f for f in before.fields if f.kind == "checkbox_group")
+    assert group.label.startswith("How did you hear") and group.required and len(group.options) == 3
+    assert not any(f.kind == "checkbox" for f in before.fields)              # not three unrelated checkboxes
+    assert len(checked) >= 1, (checked, result.rows)                          # an answer was ticked
+
+
+@pytestmark_live
+def test_site_defaults_that_contradict_the_profile_are_overwritten_and_shared_labels_use_placeholders():
+    """A location the SITE guessed ('Indianapolis') must not stand when the profile says otherwise; inputs that all inherit one
+    section heading as their label are told apart by their placeholders."""
+    url = (ROOT / "tests/fixtures/site_defaults.html").resolve().as_uri()
+
+    async def go():
+        async with async_playwright() as pw:
+            browser = await pw.chromium.launch(executable_path=BRAVE, headless=True, args=["--no-sandbox"])
+            page = await browser.new_page()
+            await page.goto(url)
+            before = (await perceive(page)).model
+            result = DemoResult()
+            await fill_until_stable(page, FakeLLM(), json.dumps(FACTS), RESUME, result, FACTS)
+            vals = await page.evaluate("() => ({fn: fn.value, ln: ln.value, em: em.value, loc: loc.value})")
+            await browser.close()
+            return before, vals, result
+
+    before, vals, result = asyncio.run(go())
+    labels = [f.label for f in before.fields]
+    assert "First Name" in labels and "Email Address" in labels and "Get in touch directly with the team." not in labels, labels
+    assert vals["fn"] == FACTS["identity"]["first_name"] and vals["em"] == FACTS["contact"]["email"], vals
+    assert FACTS["location"]["city"].lower() in vals["loc"].lower() and "indianapolis" not in vals["loc"].lower(), (vals, result.events)

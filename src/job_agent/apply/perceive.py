@@ -200,6 +200,21 @@ async def explore(page: Page, settler: "Settler | None" = None, max_scrolls: int
     return after if len(after.model.fields) >= len(best.model.fields) else best
 
 
+def _use_placeholders_for_shared_labels(model: PageModel) -> None:
+    """Several inputs under one heading all inherit that heading as their label ("Get in touch directly with the team." x5):
+    when a label is shared and a field has its own placeholder, the placeholder says what it is ("First Name *", "Phone Number")."""
+    counts: dict[str, int] = {}
+    for f in model.fields:
+        counts[f.label] = counts.get(f.label, 0) + 1
+    for f in model.fields:
+        if counts.get(f.label, 0) >= 2 and f.kind in {"text", "email", "tel", "url", "number", "textarea"} and f.placeholder.strip():
+            ph = re.sub(r"\s*[*✱]+\s*", " ", f.placeholder).strip()
+            if ph and ph.lower() not in {"type here...", "type here", "search"}:
+                if "*" in f.placeholder:
+                    f.required = True
+                f.label = ph
+
+
 async def perceive(page: Page) -> Perception:
     merged = PageModel(url=page.url, title=await page.title())
     frames: list[Frame] = []
@@ -224,6 +239,7 @@ async def perceive(page: Page) -> Perception:
             merged.fields.append(FieldModel(**{**f, "frame": index}))
         for a in raw["actions"]:
             merged.actions.append(ActionModel(**{**a, "frame": index}))
+    _use_placeholders_for_shared_labels(merged)
     return Perception(merged, frames or [page.main_frame])
 
 

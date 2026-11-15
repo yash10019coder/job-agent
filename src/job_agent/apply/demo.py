@@ -230,6 +230,7 @@ async def fill_until_stable(page: Page, llm: LLM, context: str, resume: str | No
     attempted: set[str] = set()
     job_context = ""
     refills: dict[str, int] = {}
+    refilled_defaults: set[str] = set()
     late_check = False
     for round_no in range(1, MAX_ROUNDS + 2):
         perception = await explore(page, settler) if round_no == 1 else await perceive(page)  # first read also expands/scrolls
@@ -250,13 +251,30 @@ async def fill_until_stable(page: Page, llm: LLM, context: str, resume: str | No
                 return not (len(a) >= 8 and (b.endswith(a) or a.endswith(b)))
             return not (a == b or a in b or b in a)
 
-        lost = [f for f in perception.model.fields if (f.empty or drifted(f)) and f.key in kept and f.key in attempted and refills.get(f.key, 0) < 2]
+        blocked_keys = {f"{r.kind}|{re.sub(r'[^a-z0-9]+', ' ', r.label.lower()).strip()}" for r in result.rows if r.status.startswith("BLOCKED")}
+        lost = [f for f in perception.model.fields
+                if (f.empty or drifted(f)) and f.key in attempted and refills.get(f.key, 0) < 2
+                and (f.key in kept or (f.required and f.kind != "file" and f.key not in blocked_keys))]   # a required field still empty gets another try
         for f in lost:
             attempted.discard(f.key)
             refills[f.key] = refills.get(f.key, 0) + 1
         if lost:
             result.events.append("  site cleared or changed: " + ", ".join(f.label[:40] for f in lost) + " (filling again)")
-        todo = [f for f in perception.model.fields if f.key not in attempted and (f.empty or f.invalid)]
+        def contradicts(f: FieldModel) -> bool:
+            """A value the SITE put there (a default country code, a location guessed from the IP) that disagrees with your profile."""
+            if not facts or f.empty or f.kind in {"file", "checkbox", "checkbox_group", "radio_group"}:
+                return False
+            pf = prefill(f, facts)
+            if pf is None or pf.blank or not pf.value.strip() or f.key in refilled_defaults:
+                return False
+            a, b = re.sub(r"[^a-z0-9]", "", f.value.lower()), re.sub(r"[^a-z0-9]", "", pf.value.lower())
+            return bool(b) and a != b and a not in b and b not in a
+
+        for f in perception.model.fields:
+            if f.key not in attempted and contradicts(f):
+                refilled_defaults.add(f.key)
+                result.events.append(f"  site default '{f.value[:30]}' in '{f.label[:40]}' disagrees with your profile: filling it")
+        todo = [f for f in perception.model.fields if f.key not in attempted and (f.empty or f.invalid or f.key in refilled_defaults)]
         if not todo and not late_check and round_no > 1:
             late_check = True   # one last look after a pause: a late page-side reset shows up here
             await asyncio.sleep(4.0)
@@ -292,6 +310,9 @@ async def fill_until_stable(page: Page, llm: LLM, context: str, resume: str | No
             matches = [g for g in fresh.model.fields if g.key == f.key]
             if len(matches) <= occurrence[id(f)]:
                 result.rows.append(Row(f.label, f.kind, "", 0, "unknown", "skipped (field disappeared)"))
+                if refills.get(f.key, 0) < 2:   # the page re-rendered under us (e.g. after a Country choice): look for it again next round
+                    refills[f.key] = refills.get(f.key, 0) + 1
+                    attempted.discard(f.key)
                 continue
             cur = matches[occurrence[id(f)]]
             if cur.kind == "file":
@@ -331,6 +352,12 @@ async def fill_until_stable(page: Page, llm: LLM, context: str, resume: str | No
             if not res.ok and not cur.required and cur.kind in {"text", "textarea", "number", "tel", "email", "date", "url"}:
                 try:  # an optional box that will not take our answer is left empty (and logged), not a reason to stop
                     await fresh.locator(cur.id, cur.frame).fill("", timeout=2000)
+                except Exception:
+                    pass
+                status = f"left blank (optional; could not set: {res.detail[:70]})"
+            elif not res.ok and not cur.required:   # an optional dropdown/choice that will not take our answer: leave it, close any popup
+                try:
+                    await page.keyboard.press("Escape")
                 except Exception:
                     pass
                 status = f"left blank (optional; could not set: {res.detail[:70]})"

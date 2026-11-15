@@ -371,7 +371,6 @@ async def _choose_once(page: Page, perception: Perception, field: FieldModel, se
         return ActionResult(False, f"option click failed: {error}")
     try:
         shown = await loc.evaluate("(el) => (el.value || '') + ' ' + window.__agentFieldText(el)", timeout=2500)
-        typed = await loc.evaluate("(el) => /^(INPUT|TEXTAREA)$/.test(el.tagName) ? (el.value || '') : null", timeout=2500)
     except Exception:
         # The page reacted to the selection by removing this very field (e.g. declining an EEO question collapses it).
         return ActionResult(True, f"selected {option.label!r}; the page then removed the field")
@@ -379,8 +378,6 @@ async def _choose_once(page: Page, perception: Perception, field: FieldModel, se
     # The widget may display a shortened form of the option (e.g. "India +91" -> "+91"), so a changed,
     # non-empty display with the popup closed also counts as taken.
     ok = closed and (_norm(option.label) in _norm(shown) or _norm(shown) != _norm(before))
-    if typed is not None:   # a plain text box that is empty after the pause did not keep the choice
-        ok = ok and bool(typed.strip())
     return ActionResult(ok, f"selected {option.label!r}" if ok else f"popup/value not confirmed (shown={shown.strip()[:60]!r})")
 
 

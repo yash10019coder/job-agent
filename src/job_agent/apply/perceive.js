@@ -316,6 +316,56 @@
     if (above) f.label = clean(above).replace(/\s*[*✱]+\s*/g, " ").trim();
   }
 
+  // ---- checkboxes that share a <fieldset>/role=group are ONE multi-choice question, whatever their individual names ----
+  {
+    const items = fields.filter((f) => f.kind === "checkbox").map((f) => ({ f, el: byAgentId(f.id) })).filter((x) => x.el);
+    const groups = new Map();
+    for (const x of items) {
+      const box = x.el.closest("fieldset,[role=group]");
+      if (box) { if (!groups.has(box)) groups.set(box, []); groups.get(box).push(x); }
+    }
+    for (const [box, members] of groups) {
+      if (members.length < 2) continue;
+      const inside = (id) => { const t = id && document.getElementById(id); return !!(t && box.contains(t)); };
+      const title = Array.from(box.querySelectorAll("legend,label,h1,h2,h3,h4,p,span")).find((e) =>
+        clean(e.innerText) && !members.some((m) => e.contains(m.el)) && !(e.tagName === "LABEL" && inside(e.htmlFor)) && !(e.parentElement && e.parentElement.closest("label")));
+      const q = clean(title ? title.innerText : "");
+      if (!q) continue;
+      const set = new Set(members.map((m) => m.f));
+      for (let i = fields.length - 1; i >= 0; i--) if (set.has(fields[i])) fields.splice(i, 1);
+      curEl = members[0].el;
+      const checked = members.filter((m) => m.el.checked).map((m) => m.f.label);
+      addField({ id: members[0].f.id, kind: "checkbox_group", label: q.replace(/\s*[*✱]+\s*/g, " ").trim(), help: "",
+        required: /[*✱]/.test(q) || !!(title && /required/i.test(title.className || "")), value: checked.join("; "),
+        options: members.map((m) => ({ id: m.f.id, label: m.f.label })), invalid: false, error: "", section: sectionOf(members[0].el) });
+    }
+  }
+
+  // ---- toggle-button groups: sibling buttons with aria-pressed (Yes/No, option pills) are ONE choice question ----
+  {
+    const byParent = new Map();
+    for (const a of actions) {
+      const el = byAgentId(a.id);
+      if (el && el.tagName === "BUTTON" && el.hasAttribute("aria-pressed") && el.parentElement) {
+        if (!byParent.has(el.parentElement)) byParent.set(el.parentElement, []);
+        byParent.get(el.parentElement).push({ a, el });
+      }
+    }
+    const used = new Set();
+    for (const [parent, items] of byParent) {
+      if (items.length < 2) continue;
+      curEl = items[0].el;
+      const q = precedingText(parent) || (parent.parentElement && precedingText(parent.parentElement)) || "";
+      const lab = parent.previousElementSibling;
+      const chosen = items.filter((i) => cardSelected(i.el));
+      addField({ id: items[0].a.id, kind: "radio_group", cards: true, label: clean(q).replace(/\s*[*✱]+\s*/g, " ").trim(), help: "",
+        required: /[*✱]/.test(q) || !!(lab && /required/i.test(lab.className || "")), value: chosen.length ? clean(chosen[0].el.innerText) : "",
+        options: items.map((i) => ({ id: i.a.id, label: clean(i.el.innerText) })), invalid: false, error: "", section: sectionOf(items[0].el) });
+      items.forEach((i) => used.add(i.a.id));
+    }
+    if (used.size) for (let i = actions.length - 1; i >= 0; i--) if (used.has(actions[i].id)) actions.splice(i, 1);
+  }
+
   // ---- clickable cards / pills with no input and no role (cursor:pointer is the only signal) -----------
   const unparsed = [];
   const isPointer = (el) => getComputedStyle(el).cursor === "pointer";

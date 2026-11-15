@@ -88,7 +88,7 @@ def _bad_fields(model: PageModel) -> list[FieldModel]:
     return [f for f in model.fields if f.region in {"main", "dialog"} and f.kind in _TEXTLIKE and f.value.strip() and (f.error or f.invalid)]
 
 
-def _useful_alerts(model: PageModel) -> list[str]:
+def useful_alerts(model: PageModel) -> list[str]:
     echo = " ".join([model.title, *model.headings]).lower()
     return [a for a in model.alerts if a.strip() and a.lower().strip(" .") not in echo][:5]
 
@@ -103,7 +103,7 @@ async def validate_and_repair(page: Page, llm, settler: Settler, facts: dict, ev
     for _ in range(max_rounds):
         await _blur_all(page, settler)
         model = (await perceive(page)).model
-        bad, alerts = _bad_fields(model), _useful_alerts(model)
+        bad, alerts = _bad_fields(model), useful_alerts(model)
         if not bad and not alerts:
             return []
         for f in bad:                                   # 1. cheap deterministic fixes
@@ -118,13 +118,13 @@ async def validate_and_repair(page: Page, llm, settler: Settler, facts: dict, ev
                     events.append(f"  repaired '{f.label[:40]}': {f.error[:50] or 'invalid'} -> accepted as {cand!r}")
                     break
         model = (await perceive(page)).model
-        bad, alerts = _bad_fields(model), _useful_alerts(model)
+        bad, alerts = _bad_fields(model), useful_alerts(model)
         if not bad and not alerts:
             return []
         if llm is not None:                             # 2. one small text-only call that has read the error texts
             await _model_repair(page, llm, model, bad, alerts, facts, events)
     model = (await perceive(page)).model
-    return [f"{f.label}: {f.error or 'invalid'}" for f in _bad_fields(model)] + _useful_alerts(model)
+    return [f"{f.label}: {f.error or 'invalid'}" for f in _bad_fields(model)] + useful_alerts(model)
 
 
 async def _model_repair(page: Page, llm, model: PageModel, bad: list[FieldModel], alerts: list[str], facts: dict, events: list[str]) -> None:
