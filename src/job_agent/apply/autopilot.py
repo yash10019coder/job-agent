@@ -8,6 +8,7 @@ Writes results.jsonl, unanswered.jsonl and report.md to the run folder. Submits 
 from __future__ import annotations
 
 import asyncio
+from collections import deque
 import json
 import random
 from collections.abc import Awaitable, Callable
@@ -24,7 +25,7 @@ from job_agent.apply.controller import ROOT, run_application
 from job_agent.apply.fit import fit, india_in_text
 from job_agent.apply.states import Outcome
 from job_agent.apply.submit import already_submitted
-from job_agent.rate_limiter import RateLimiter
+from job_agent.rate_limiter import OpenRateLimiter, RateLimiter
 
 OpenPage = Callable[[str], Awaitable[Page]]
 LiveCheck = Callable[[str], Awaitable[tuple[bool, str]]]
@@ -92,9 +93,7 @@ def jobs_from_dumps(data_dir: Path) -> list[dict]:
     return out
 
 
-def _posting_key(url: str) -> str:
-    parts = urlsplit(url)
-    return f"{parts.netloc}{parts.path}".rstrip("/").lower()
+from job_agent.apply.submit import _posting_key  # noqa: E402  one definition of 'same posting' for the whole engine
 
 
 def _applied_today(log_path: Path) -> int:
@@ -132,9 +131,9 @@ def _to_result(job: dict, run, out_dir: Path, run_dir: Path) -> JobResult:
 async def run_autopilot(jobs: list[dict], open_page: OpenPage, make_llm: Callable, facts: dict, resume: str | None, out_dir: Path,
                         submit: bool = False, max_per_day: int = 20, concurrency: int = 2, limiter: RateLimiter | None = None,
                         log_path: Path | None = None, live_check: LiveCheck = is_live, pace_s: tuple[float, float] = (20.0, 60.0),
-                        click_wait_s: float = 10.0, auth=None, check_fit: bool = True, captcha_wait_s: float = 0.0) -> list[JobResult]:
+                        click_wait_s: float = 10.0, auth=None, check_fit: bool = True, captcha_wait_s: float = 0.0, keep_open: bool = False, no_limits: bool = False, keep_max: int = 15) -> list[JobResult]:
     out_dir.mkdir(parents=True, exist_ok=True)
-    limiter = limiter or RateLimiter(storage_path=ROOT / "outputs" / "rate_limiter" / "history.jsonl")
+    limiter = limiter or (OpenRateLimiter if no_limits else RateLimiter)(storage_path=ROOT / "outputs" / "rate_limiter" / "history.jsonl")
     log_path = log_path or ROOT / "outputs" / "apply" / "submissions.jsonl"
     filters, results, seen, queue, verify = facts.get("job_filters"), [], set(), [], set()
 
@@ -162,6 +161,7 @@ async def run_autopilot(jobs: list[dict], open_page: OpenPage, make_llm: Callabl
         (live_queue.append(job) if alive else skip(job, f"dead link: {why}"))
 
     sem, lock = asyncio.Semaphore(clamp_parallel(concurrency)), asyncio.Lock()
+    kept: deque = deque()   # tabs left open for a person, oldest first
     reserved = _applied_today(log_path)
 
     async def work(index: int, job: dict) -> None:
@@ -176,7 +176,7 @@ async def run_autopilot(jobs: list[dict], open_page: OpenPage, make_llm: Callabl
                 if submit:
                     reserved += 1
                 await asyncio.sleep(random.uniform(*pace_s))  # human-like gap between application starts
-            page, run, run_dir = None, None, out_dir / f"{index:03d}"
+            page, run, run_dir, result = None, None, out_dir / f"{index:03d}", None
             try:
                 page = await open_page(job["url"])
                 if job["url"] in verify:  # vague location in the dump: the job page itself must say India
@@ -196,12 +196,13 @@ async def run_autopilot(jobs: list[dict], open_page: OpenPage, make_llm: Callabl
                     pass
                 result = JobResult(job["url"], str(job.get("company") or ""), str(job.get("title") or ""), "failed", f"crashed: {str(error).splitlines()[0][:160]}")
             finally:
-                for p in {page, run.page if run else None}:
-                    if p is not None and not p.is_closed():
-                        try:
-                            await p.close()
-                        except Exception:
-                            pass
+                pages = {page, run.page if run else None}
+                if keep_open and _needs_a_look(result):   # only jobs that stopped on a problem stay open, and only the newest keep_max of them
+                    kept.append(pages)
+                    pages = set()
+                    while len(kept) > keep_max:
+                        pages |= kept.popleft()
+                await _close_pages(pages)
             if submit and result.status != "applied":
                 async with lock:
                     reserved -= 1  # the slot was not used
@@ -210,6 +211,20 @@ async def run_autopilot(jobs: list[dict], open_page: OpenPage, make_llm: Callabl
     await asyncio.gather(*[work(i, j) for i, j in enumerate(live_queue, 1)])
     _write_outputs(out_dir, results, submit)
     return results
+
+
+def _needs_a_look(result: JobResult | None) -> bool:
+    """A tab is worth keeping open when the job stopped on something a person can finish or inspect."""
+    return bool(result) and (result.status == "failed" or result.reason.startswith(("needs a human", "unanswered")))
+
+
+async def _close_pages(pages) -> None:
+    for p in pages:
+        if p is not None and not p.is_closed():
+            try:
+                await p.close()
+            except Exception:
+                pass
 
 
 def _write_outputs(out_dir: Path, results: list[JobResult], submit: bool) -> None:

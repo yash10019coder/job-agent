@@ -228,3 +228,41 @@ def test_guesses_are_typed_in_so_no_field_is_left_unanswered():
 
     result = run(go())
     assert not [r for r in result.rows if r.status.startswith("BLOCKED")]
+
+
+SHADOW_PAGE = """<!doctype html><html><body><main>
+<sign-in></sign-in>
+<script>
+  // Web components with open shadow roots, like ADP's <sdf-input> / <sdf-button>: the button comes BEFORE the input in the DOM.
+  class SignIn extends HTMLElement {
+    connectedCallback() {
+      const r = this.attachShadow({mode: "open"});
+      r.innerHTML = '<button type="button">Continue</button>'
+                  + '<div id="late" style="display:none"><label>Email Address<input type="text"></label></div>';
+    }
+  }
+  customElements.define("sign-in", SignIn);
+</script></main></body></html>"""
+
+
+def test_ids_stay_unique_across_reads_inside_shadow_roots():
+    """Reading the page twice must not leave one id on two elements (the stale one inside a shadow root used to win, so the
+    email text went to the Continue button: 'Element is not an <input>')."""
+    async def go():
+        async with async_playwright() as pw:
+            browser = await pw.chromium.launch(executable_path=BRAVE, headless=True, args=["--no-sandbox"])
+            page = await browser.new_page()
+            await page.set_content(SHADOW_PAGE)
+            await perceive(page)                                       # first read stamps only the Continue button
+            await page.evaluate("document.querySelector('sign-in').shadowRoot.getElementById('late').style.display = 'block'")
+            p = await perceive(page)                                   # second read: the input is new, the button's old stamp is still there
+            email = next(f for f in p.model.fields if "email" in f.label.lower())
+            holders = await page.locator(f'[data-agent-id="{email.id}"]').evaluate_all("els => els.map(e => e.tagName)")
+            total = await page.evaluate("""() => { const ids = []; const w = (r) => r.querySelectorAll('*').forEach((e) => {
+                if (e.hasAttribute('data-agent-id')) ids.push(e.getAttribute('data-agent-id')); if (e.shadowRoot) w(e.shadowRoot); }); w(document); return ids; }""")
+            await browser.close()
+            return holders, total
+
+    holders, ids = run(go())
+    assert holders == ["INPUT"]                    # exactly one element carries the email field's id, and it is the input
+    assert len(ids) == len(set(ids))               # no id is used twice anywhere, shadow roots included

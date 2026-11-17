@@ -191,7 +191,20 @@ async def pick_suggestion(page: Page, perception: Perception, field: FieldModel,
     return ActionResult(bool(kept), f"picked suggestion {best['text']!r}" if kept else "picked a suggestion but the input is empty again")
 
 
+def date_part_value(label: str, value: str, today: date | None = None) -> str:
+    """A start date asked as separate boxes ("Start date year", "... month", "... day"): a number box cannot take "Immediately", so an
+    answer meaning "now" becomes today's year / month / day. Any other value is left exactly as it is."""
+    today = today or date.today()
+    if value.strip().isdigit() or not _NOW_WORDS.match(value.strip()):
+        return value
+    for word, number in (("year", today.year), ("month", today.month), ("day", today.day)):
+        if re.search(rf"\b{word}\b", label, re.I):
+            return str(number)
+    return value
+
+
 async def fill_text(page: Page, perception: Perception, field: FieldModel, value: str) -> ActionResult:
+    value = date_part_value(field.label, value)
     loc = perception.locator(field.id, field.frame)
     try:
         await loc.click(timeout=3000)
@@ -223,6 +236,24 @@ async def fill_text(page: Page, perception: Perception, field: FieldModel, value
     if not same and not actual.strip() and field.kind == "text":
         picked = await pick_suggestion(page, perception, field, value)  # emptied on blur: a typeahead that needs a clicked result
         return picked if picked.ok else ActionResult(False, f"value not accepted (got ''); {picked.detail}")
+    return ActionResult(same, "ok" if same else f"value not accepted (got {actual!r})")
+
+
+async def retype(page: Page, perception: Perception, field: FieldModel, value: str) -> ActionResult:
+    """Clear the box and type the value key by key. fill() sets the text without key events, and some widgets (phone boxes, masked or
+    framework-controlled inputs) only register typed input: the box shows the number while the form behind it still says 'required'."""
+    loc = perception.locator(field.id, field.frame)
+    try:
+        await loc.click(timeout=3000)
+        await loc.fill("", timeout=3000)
+        await loc.press_sequentially(value, delay=40)
+        await page.wait_for_timeout(300)
+        await loc.blur()
+        await page.wait_for_timeout(500)
+        actual = await _current(loc)
+    except Exception as error:
+        return ActionResult(False, f"retype failed: {error}")
+    same = re.sub(r"[^a-z0-9]", "", actual.lower()) == re.sub(r"[^a-z0-9]", "", value.lower())
     return ActionResult(same, "ok" if same else f"value not accepted (got {actual!r})")
 
 
@@ -313,12 +344,13 @@ async def read_combobox_options(page: Page, perception: Perception, field: Field
     scope = f'[id="{controlled}"] [role=option]' if controlled else "[role=option]"
     options = frame.locator(scope)
     async def read() -> list[Option]:
-        got: list[Option] = []
-        for i in range(min(await options.count(), 60)):
-            item = options.nth(i)
-            if await item.is_visible():
-                got.append(Option(id=str(i), label=" ".join((await item.inner_text()).split())))
-        return got
+        # One atomic read in the page: a typeahead re-renders its list while we look, and reading item by item then waited 8 s on an
+        # element that had just been replaced ("Locator.inner_text: Timeout"), failing fields that were fine.
+        texts = await options.evaluate_all(
+            """(els) => els.slice(0, 60).map((e, i) => { const r = e.getBoundingClientRect(); const s = getComputedStyle(e);
+                 const shown = r.width > 0 && r.height > 0 && s.visibility !== 'hidden' && s.display !== 'none';
+                 return shown ? [i, (e.innerText || e.textContent || '')] : null; }).filter(Boolean)""")
+        return [Option(id=str(i), label=" ".join(t.split())) for i, t in texts]
 
     # Suggestions arrive after the search request and often re-render: wait (up to 8 s when we typed a filter, 3 s otherwise)
     # until the list has looked the same for ~0.6 s, so we never pick from a half-loaded list.

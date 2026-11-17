@@ -16,7 +16,7 @@ from pathlib import Path
 
 from playwright.async_api import Page
 
-from job_agent.apply import execute, repair
+from job_agent.apply import execute, overlays, phone_country, repair
 from job_agent.apply.llm import LLM, Decider, FlashDecider
 from job_agent.apply.perceive import FieldModel, Perception, Settler, diff, explore, perceive
 from job_agent.apply.prefill import Prefill, build_facts, prefill
@@ -231,6 +231,7 @@ async def fill_until_stable(page: Page, llm: LLM, context: str, resume: str | No
     job_context = ""
     refills: dict[str, int] = {}
     refilled_defaults: set[str] = set()
+    picker_set = phone_country.remembered(page)   # phone box -> what its country picker showed right after we set it (kept per tab)
     late_check = False
     for round_no in range(1, MAX_ROUNDS + 2):
         perception = await explore(page, settler) if round_no == 1 else await perceive(page)  # first read also expands/scrolls
@@ -274,7 +275,17 @@ async def fill_until_stable(page: Page, llm: LLM, context: str, resume: str | No
             if f.key not in attempted and contradicts(f):
                 refilled_defaults.add(f.key)
                 result.events.append(f"  site default '{f.value[:30]}' in '{f.label[:40]}' disagrees with your profile: filling it")
-        todo = [f for f in perception.model.fields if f.key not in attempted and (f.empty or f.invalid or f.key in refilled_defaults)]
+        picker_lost: set[str] = set()   # a phone country picker we set that the site has put back (the number box may still look filled)
+        for f in perception.model.fields:
+            if picker_set.get(f.key) and f.kind in {"tel", "text"} and refills.get(f.key, 0) < 3:
+                now = await phone_country.picker_label(perception, f)
+                if now is not None and now != picker_set[f.key]:
+                    result.events.append(f"  country picker of '{f.label[:30]}' changed from {picker_set[f.key]} to {now}: setting it again")
+                    picker_set.pop(f.key)
+                    attempted.discard(f.key)
+                    refills[f.key] = refills.get(f.key, 0) + 1
+                    picker_lost.add(f.key)
+        todo = [f for f in perception.model.fields if f.key not in attempted and (f.empty or f.invalid or f.key in refilled_defaults or f.key in picker_lost)]
         if not todo and not late_check and round_no > 1:
             late_check = True   # one last look after a pause: a late page-side reset shows up here
             await asyncio.sleep(4.0)
@@ -337,10 +348,31 @@ async def fill_until_stable(page: Page, llm: LLM, context: str, resume: str | No
                 status = "BLOCKED (required, no honest answer)" if cur.required else "left blank (optional)"
                 result.rows.append(Row(f.label, f.kind, guess, (ans or {}).get("confidence", 0), (ans or {}).get("source", "unknown"), status))
                 continue
+            if ans.get("basis") == "contact.phone" and cur.kind in {"tel", "text"} and facts:
+                # A country picker built into the phone box ("US" / flag button) is not a form field of its own: set it to the profile's
+                # country first, then the box takes the national number only.
+                set_note = await phone_country.ensure_country(page, fresh, cur, facts, trust_selected=f.key not in picker_lost)
+                if set_note:
+                    result.events.append(f"  phone country: {set_note}")
+                    ans = {**ans, "value": repair.phone_parts(facts)[1] or ans["value"]}
+                    fresh = await perceive(page)
+                    cur = next((g for g in fresh.model.fields if g.key == f.key), cur)
+                    picker_set[f.key] = await phone_country.picker_label(fresh, cur) or ""
             try:
                 res, final_value = await _apply_field(page, fresh, settler, cur, ans["value"], decider, context)
             except Exception as error:  # one stubborn widget must not end the run
                 res, final_value = execute.ActionResult(False, f"error: {str(error).splitlines()[0][:90]}"), ans["value"]
+            if not res.ok and overlays.blocked_by_overlay(res.detail):   # something may have popped up over the box (terms, cookies): clear it, retry once
+                cleared = [n for n in await overlays.clear(page, allow_accept=bool((facts or {}).get("consents", {}).get("accept_privacy_and_terms")))
+                           if n.startswith("dismissed")]
+                if cleared:
+                    result.events.append("  " + cleared[0][:110])
+                    fresh = await perceive(page)
+                    cur = next((g for g in fresh.model.fields if g.key == f.key), cur)
+                    try:
+                        res, final_value = await _apply_field(page, fresh, settler, cur, ans["value"], decider, context)
+                    except Exception as error:
+                        res, final_value = execute.ActionResult(False, f"error: {str(error).splitlines()[0][:90]}"), ans["value"]
             if not res.ok and cur.kind in _OPTION_KINDS and re.search(r"no (option|matching)", res.detail):
                 alt = await _decide_from_options(page, await perceive(page), settler, cur, decider, context + "\n\nJob:\n" + job_context)
                 if alt:  # our wording matched no real option: let the decider choose from what the widget offers
@@ -348,6 +380,9 @@ async def fill_until_stable(page: Page, llm: LLM, context: str, resume: str | No
                     cur = next((g for g in fresh.model.fields if g.key == f.key), cur)
                     ans = alt
                     res, final_value = await _apply_field(page, fresh, settler, cur, alt["value"], decider, context)
+            # Ticking a consent box usually opens its policy in an overlay that covers the rest of the form: clear it before the next field.
+            await overlays.clear(page, allow_accept=bool((facts or {}).get("consents", {}).get("accept_privacy_and_terms")),
+                                 log=lambda note: result.events.append("  " + note[:110]))
             status = "ok" if res.ok else res.detail
             if not res.ok and not cur.required and cur.kind in {"text", "textarea", "number", "tel", "email", "date", "url"}:
                 try:  # an optional box that will not take our answer is left empty (and logged), not a reason to stop
@@ -379,7 +414,8 @@ async def fill_until_stable(page: Page, llm: LLM, context: str, resume: str | No
 
 
 async def run_demo(page: Page, llm: LLM, context: str, resume: str | None = None, facts: dict | None = None,
-                   submit: bool = False, limiter: RateLimiter | None = None, log_path: Path | None = None) -> DemoResult:
+                   submit: bool = False, limiter: RateLimiter | None = None, log_path: Path | None = None,
+                   code_provider=None) -> DemoResult:
     result = DemoResult()
     from job_agent.apply import controls
     controls.use(llm)
@@ -393,7 +429,7 @@ async def run_demo(page: Page, llm: LLM, context: str, resume: str | None = None
     root = Path(__file__).resolve().parents[3]
     limiter = limiter or RateLimiter(storage_path=root / "outputs" / "rate_limiter" / "history.jsonl")
     result.submit = await guarded_submit(page, result.rows, settler, page.url, limiter,
-                                         log_path or root / "outputs" / "apply" / "submissions.jsonl", submit)
+                                         log_path or root / "outputs" / "apply" / "submissions.jsonl", submit, code_provider=code_provider)
     return result
 
 

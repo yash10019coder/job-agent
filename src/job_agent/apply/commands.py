@@ -369,6 +369,8 @@ def autopilot(args: argparse.Namespace) -> int:
     jobs = json.loads(Path(args.jobs).read_text(encoding="utf-8")) if args.jobs else jobs_from_dumps(root / "data")
     if args.limit:
         jobs = jobs[: args.limit]
+    if args.no_limits:  # every rule off except parallelism (still clamped to 10): no limiter, no daily cap, no pacing, no fit gate
+        args.no_fit_check, args.max_per_day, args.pace = True, 10**9, 0.0
     auth = _auth_kit(facts, args.submit or args.allow_signup)
     out_dir = root / "data" / "autopilot" / datetime.now().strftime("%Y%m%d-%H%M%S")
     print(f"autopilot: {len(jobs)} jobs, {'LIVE: will submit' if args.submit else 'dry run'}, cap {args.max_per_day}/day -> {out_dir}")
@@ -377,7 +379,7 @@ def autopilot(args: argparse.Namespace) -> int:
         async with BraveSession(_config(args)) as session:
             return await run_autopilot(jobs, lambda u: new_window(session, u), lambda: LLM(model=args.model or None), facts, args.resume or None,
                                        out_dir, submit=args.submit, max_per_day=args.max_per_day, concurrency=args.concurrency,
-                                       pace_s=(args.pace / 2, args.pace), auth=auth, check_fit=not args.no_fit_check, captcha_wait_s=args.wait_captcha)
+                                       pace_s=(args.pace / 2, args.pace), auth=auth, check_fit=not args.no_fit_check, captcha_wait_s=args.wait_captcha, keep_open=args.keep_open, no_limits=args.no_limits, keep_max=args.keep_max)
 
     results = asyncio.run(run())
     counts = {}
@@ -484,6 +486,9 @@ def register(subparsers) -> None:
     auto.add_argument("--limit", type=int, default=0, help="Only the first N jobs (smoke test)")
     auto.add_argument("--model", default="")
     auto.add_argument("--wait-captcha", type=float, default=0.0, help="Seconds to wait, window in front, for YOU to solve a captcha (the agent never solves one); default 0 = give up")
+    auto.add_argument("--keep-open", action="store_true", help="Leave each job tab open after applying (default: close it)")
+    auto.add_argument("--keep-max", type=int, default=15, help="With --keep-open: at most this many tabs of problem jobs stay open (oldest closed first); finished jobs always close")
+    auto.add_argument("--no-limits", action="store_true", help="Turn every limit off (rate limiter, daily cap, pacing, fit gate); only --concurrency (max 10) still applies")
     auto.add_argument("--no-fit-check", action="store_true", help="Apply to every link given, without judging whether the job suits the profile")
     auto.add_argument("--semantic", action="store_true", help="Also classify page meaning with local embeddings (closed/dead/confirmation/code/bot wording)")
     add_brave_args(auto)

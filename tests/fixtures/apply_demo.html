@@ -53,6 +53,17 @@ document.getElementById('submit').addEventListener('click', () => {
                   || !document.getElementById('src').value || Q.get('reject');
   if (missing) { const a=document.createElement('div'); a.setAttribute('role','alert'); a.className='err';
     a.textContent = Q.get('reject') ? 'Invalid email address' : 'Please complete all required fields'; document.getElementById('top').appendChild(a); return; }
+  if (Q.get('otp3')) {  // like Databricks: a row of 8 single-character boxes with NO labels
+    if (!document.getElementById('b0')) { const w=document.createElement('div'); w.innerHTML='<p>Security code: enter the 8-character code we emailed you</p>'+[0,1,2,3,4,5,6,7].map(i=>'<input id="b'+i+'" maxlength="1" style="width:24px">').join(''); document.getElementById('top').appendChild(w); return; }
+    const v=[0,1,2,3,4,5,6,7].map(i=>document.getElementById('b'+i).value).join('');
+    if (v !== '12345678') { const a=document.createElement('div'); a.setAttribute('role','alert'); a.className='err'; a.textContent='Incorrect security code'; document.getElementById('top').appendChild(a); return; }
+  }
+  if (Q.get('otp2')) {  // like Greenhouse: the code box appears INSIDE the form and the same Submit button stays
+    const c = document.getElementById('code2');
+    if (!c) { const l=document.createElement('label'); l.textContent='Security code'; l.htmlFor='code2'; const i=document.createElement('input'); i.id='code2'; i.name='code2'; i.required=true;
+      document.getElementById('top').appendChild(l); document.getElementById('top').appendChild(i); return; }
+    if (c.value !== '12345678') { const a=document.createElement('div'); a.setAttribute('role','alert'); a.className='err'; a.textContent='Incorrect security code'; document.getElementById('top').appendChild(a); return; }
+  }
   if (Q.get('otp')) { document.body.innerHTML = '<h1>Verify your email</h1><p>We sent a code to your email.</p><label for="code">Security code</label><input id="code" name="code">'; return; }
   if (Q.get('latecaptcha')) { setTimeout(() => { const f=document.createElement('iframe'); f.src='about:blank#hcaptcha-challenge'; f.style='position:fixed;top:20px;left:20px;width:300px;height:400px'; document.body.appendChild(f); }, 1500); return; }
   if (Q.get('silent')) { document.body.innerHTML = '<p>Working...</p>'; return; }

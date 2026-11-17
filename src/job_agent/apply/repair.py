@@ -53,12 +53,37 @@ def has_country_code_control(model: PageModel, field: FieldModel) -> bool:
     return False
 
 
-def variants(field: FieldModel, facts: dict, current: str) -> list[str]:
-    """Deterministic alternatives for a value the site rejected."""
+def is_phone(field: FieldModel) -> bool:
+    return field.kind == "tel" or bool(re.search(r"phone|mobile|cell", field.label, re.I))
+
+
+def national_only(value: str, facts: dict) -> str:
+    """The number without its country code, digits only ("+91 91234 56780" -> "9123456780")."""
+    code, national = phone_parts(facts)
+    digits = re.sub(r"\D", "", value)
+    if national and digits.endswith(national):
+        return national
+    c = code.lstrip("+")
+    return digits[len(c):] if c and digits.startswith(c) and len(digits) - len(c) >= 6 else digits
+
+
+async def has_separate_country(page: Page, key: str) -> bool:
+    """True when the phone box has its own country control: a separate dial-code field, or a picker built into the widget.
+    Then the box takes the national number ONLY: the code lives in the other control, and typing it again breaks the number."""
+    from job_agent.apply import phone_country   # imported here: phone_country imports phone_parts from this module
+    p, cur = await _refind(page, key)
+    if cur is None:
+        return False
+    return has_country_code_control(p.model, cur) or await phone_country.picker_label(p, cur) is not None
+
+
+def variants(field: FieldModel, facts: dict, current: str, national_only_: bool = False) -> list[str]:
+    """Deterministic alternatives for a value the site rejected. `national_only_`: the box has its own country control, so never
+    offer a form that carries the country code."""
     out: list[str] = []
-    if field.kind == "tel" or re.search(r"phone|mobile|cell", field.label, re.I):
+    if is_phone(field):
         code, national = phone_parts(facts)
-        out = [national, f"{code}{national}", f"{code} {national}".strip(), f"0{national}"]
+        out = [national] if national_only_ else [national, f"{code}{national}", f"{code} {national}".strip(), f"0{national}"]
     elif field.kind == "url" or re.search(r"url|link|website|profile", field.label, re.I):
         if current and not re.match(r"https?://", current):
             out = ["https://" + current.lstrip("/")]
@@ -98,6 +123,16 @@ async def _refind(page: Page, key: str):
     return p, next((f for f in p.model.fields if f.key == key), None)
 
 
+def _complained_about(model: PageModel, bad: list[FieldModel], alerts: list[str]) -> list[FieldModel]:
+    """Filled boxes the page complains about: those with their own error, plus those a page message names by label
+    (some sites show 'Phone Number is required.' away from the box, so the box itself carries no error)."""
+    norm = lambda t: re.sub(r"[^a-z0-9]+", " ", t.lower()).strip()
+    said = [norm(a) for a in alerts]
+    named = [f for f in model.fields if f.region in {"main", "dialog"} and f.kind in _TEXTLIKE and f.value.strip()
+             and norm(f.label) and any(norm(f.label) in a for a in said)]
+    return list({f.key: f for f in [*bad, *named]}.values())
+
+
 async def validate_and_repair(page: Page, llm, settler: Settler, facts: dict, events: list[str], max_rounds: int = 2) -> list[str]:
     """Returns the remaining problems (empty = nothing the page complains about)."""
     for _ in range(max_rounds):
@@ -106,8 +141,20 @@ async def validate_and_repair(page: Page, llm, settler: Settler, facts: dict, ev
         bad, alerts = _bad_fields(model), useful_alerts(model)
         if not bad and not alerts:
             return []
+        for f in _complained_about(model, bad, alerts):  # 0. the value may be right but never registered with the site's own form: type it key by key
+            p, cur = await _refind(page, f.key)
+            if cur is None or not cur.value.strip():
+                continue
+            await execute.retype(page, p, cur, cur.value)
+            await _blur_all(page, settler)
+            events.append(f"  retyped '{f.label[:40]}' key by key ({(f.error or 'page message')[:40]})")
+        model = (await perceive(page)).model
+        bad, alerts = _bad_fields(model), useful_alerts(model)
+        if not bad and not alerts:
+            return []
         for f in bad:                                   # 1. cheap deterministic fixes
-            for cand in variants(f, facts, f.value):
+            sep = is_phone(f) and await has_separate_country(page, f.key)
+            for cand in variants(f, facts, f.value, national_only_=sep):
                 p, cur = await _refind(page, f.key)
                 if cur is None:
                     break
@@ -133,11 +180,13 @@ async def _model_repair(page: Page, llm, model: PageModel, bad: list[FieldModel]
         "type": "array", "maxItems": 4, "items": {"type": "object", "additionalProperties": False, "required": ["id", "value"],
                                                   "properties": {"id": {"type": "string", "enum": [f.id for f in candidates]}, "value": {"type": "string"}}}}}}
     code, national = phone_parts(facts)
+    own_country = {f.key for f in candidates if is_phone(f) and await has_separate_country(page, f.key)}
     payload = {"page_messages": alerts, "fields": [{"id": f.id, "label": f.label, "kind": f.kind, "value": f.value, "error": f.error or None,
                                                     "pattern": f.pattern, "placeholder": f.placeholder or None, "maxlength": f.maxlength, "help": f.help or None}
                                                    for f in candidates],
-               "phone": {"country_code": code, "national_number": national}}
-    system = ("A web form rejected some inputs. From the error texts and each field's constraints decide what value the field wants and return "
+               "phone": {"country_code": code, "national_number": national,
+                         "boxes_with_their_own_country_control": [f.id for f in candidates if f.key in own_country]}}
+    system = ("A phone box listed as having its own country control takes the national number only: never put the country code in it. " +"A web form rejected some inputs. From the error texts and each field's constraints decide what value the field wants and return "
               "only the fields you can fix, with the corrected value (same meaning, the format the form asks for; never invent new facts). "
               "If a message is about a field that is not listed, or you cannot tell, return nothing for it.")
     try:
@@ -146,6 +195,8 @@ async def _model_repair(page: Page, llm, model: PageModel, bad: list[FieldModel]
         return
     for fix in out.get("fixes", []):
         f = next((c for c in candidates if c.id == fix["id"]), None)
+        if f is not None and f.key in own_country:
+            fix = {**fix, "value": national_only(fix["value"], facts)}   # whatever the model said, the code is the other control's job
         if f is None or not fix["value"].strip() or fix["value"] == f.value:
             continue
         p, cur = await _refind(page, f.key)

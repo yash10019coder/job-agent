@@ -14,11 +14,11 @@ import time
 from dataclasses import dataclass, field
 from datetime import datetime
 from pathlib import Path
-from urllib.parse import urlsplit
+from urllib.parse import parse_qs, urlsplit
 
 from playwright.async_api import Page
 
-from job_agent.apply import controls, execute
+from job_agent.apply import controls, execute, post_submit
 from job_agent.apply.perceive import Perception, Settler, perceive
 from job_agent.apply.repair import useful_alerts
 from job_agent.rate_limiter import RateLimiter
@@ -51,7 +51,12 @@ class SubmitOutcome:
 
 
 def _posting_key(url: str) -> str:
+    """Identity of a posting. A Greenhouse job id (?gh_jid=N on a company page, or /jobs/N on the board) is the same job wherever it is
+    hosted and is the ONLY thing telling company-page links apart; otherwise host + path."""
     parts = urlsplit(url)
+    gh = parse_qs(parts.query).get("gh_jid", [""])[0] or (re.search(r"/jobs/(\d{6,})", parts.path) or [None, ""])[1]
+    if gh:
+        return f"greenhouse:{gh}"
     return f"{parts.netloc}{parts.path}".rstrip("/").lower()
 
 
@@ -160,6 +165,10 @@ async def _classify(page: Page, settler: Settler, before_labels: set[str]) -> Su
         perception = await perceive(page)
         body = " ".join(f"{perception.model.title} {' '.join(perception.model.headings)} {perception.model.text_digest}".split())
         new_code = [f.label for f in perception.model.fields if _CODE_FIELD.search(f.label) and f.label not in before_labels]
+        # Some forms (Databricks) draw the code as a row of single-character boxes with NO label at all: recognise it by its shape.
+        boxes = [f for f in perception.model.fields if f.maxlength == 1 and f.empty and f.kind in {"text", "number", "tel"}]
+        if not new_code and 4 <= len(boxes) <= 10 and _CODE_FIELD.search(body):
+            new_code = ["code boxes"]
         if new_code:
             return SubmitOutcome("blocked_otp", f"the site wants an emailed code ({new_code[0]}); email verification is not automated yet")
         if _SUCCESS.search(body) or re.search(r"/(confirmation|thank|submitted|success|applied)\b", page.url, re.I):
@@ -175,21 +184,44 @@ async def _classify(page: Page, settler: Settler, before_labels: set[str]) -> Su
     return SubmitOutcome("unknown_outcome", "clicked Submit but found neither a confirmation nor an error; do NOT assume it was sent" + note)
 
 
-async def guarded_submit(page: Page, rows: list, settler: Settler, url: str, limiter: RateLimiter, log_path: Path, submit: bool) -> SubmitOutcome:
+async def guarded_submit(page: Page, rows: list, settler: Settler, url: str, limiter: RateLimiter, log_path: Path, submit: bool,
+                         code_provider=None) -> SubmitOutcome:
     title = await page.title()
     problems = await check_ready(page, rows, limiter, log_path, url)
     if problems:
         outcome = SubmitOutcome("blocked_guard", f"{len(problems)} guard(s) failed; nothing was submitted", problems)
     elif not submit:
         outcome = SubmitOutcome("dry_run", "all guards passed; not submitting (--submit not given)")
-    else:
-        perception = await perceive(page)
-        button, _ = await _submit_button(perception)
-        before = {f.label for f in perception.model.fields}
-        clicked = await execute.click_action(perception, button.id, button.frame)
-        outcome = await _classify(page, settler, before) if clicked.ok else SubmitOutcome("unknown_outcome", clicked.detail)
-        if outcome.submitted:
-            limiter.record_application(url, company=limiter._extract_domain(url), title=title, success=True)
+    elif code_provider is None:
+        outcome = await _press_submit(page, settler)
+    else:   # the whole click -> emailed code -> second click stretch is one critical section per company (see post_submit)
+        key = post_submit.company_key(url, title)
+        async with post_submit.company_lock(key):
+            started = datetime.now()
+            outcome = await _press_submit(page, settler)
+            if outcome.status == "blocked_otp":
+                outcome = await _finish_with_code(page, rows, settler, url, limiter, log_path, code_provider, key, started, outcome)
+    if outcome.submitted:
+        limiter.record_application(url, company=limiter._extract_domain(url), title=title, success=True)
     if outcome.status != "dry_run":
         _log(log_path, url, title, outcome)
     return outcome
+
+
+async def _press_submit(page: Page, settler: Settler) -> SubmitOutcome:
+    perception = await perceive(page)
+    button, _ = await _submit_button(perception)
+    before = {f.label for f in perception.model.fields}
+    clicked = await execute.click_action(perception, button.id, button.frame)
+    return await _classify(page, settler, before) if clicked.ok else SubmitOutcome("unknown_outcome", clicked.detail)
+
+
+async def _finish_with_code(page, rows, settler, url, limiter, log_path, provider, key, started, first: SubmitOutcome) -> SubmitOutcome:
+    """The site asked for an emailed code: read it, type it, run the SAME guards again, press Submit once more. One attempt only."""
+    why = await post_submit.enter_emailed_code(page, provider, key, started)
+    if why:
+        return SubmitOutcome("blocked_otp", f"{first.detail}; {why}")
+    problems = await check_ready(page, rows, limiter, log_path, url)
+    if problems:
+        return SubmitOutcome("blocked_guard", "code entered, but a guard failed before the second Submit; nothing more was sent", problems)
+    return await _press_submit(page, settler)

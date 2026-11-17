@@ -23,7 +23,7 @@ def tmp_path():  # pytest's tmpdir plugin is disabled in this repo's config
 pytestmark = pytest.mark.skipif(not BRAVE or not Path(BRAVE).exists(), reason="Brave not installed")
 
 
-def go(tmp_path, query="", submit=True, llm=None, repeat=1):
+def go(tmp_path, query="", submit=True, llm=None, repeat=1, provider=None):
     async def run():
         limiter = RateLimiter(storage_path=tmp_path / "rl.jsonl")
         log = tmp_path / "log.jsonl"
@@ -33,7 +33,7 @@ def go(tmp_path, query="", submit=True, llm=None, repeat=1):
             for _ in range(repeat):
                 page = await browser.new_page()
                 await page.goto(FIX + query)
-                result = await run_demo(page, llm or FakeLLM(), CTX, RESUME, FACTS, submit=submit, limiter=limiter, log_path=log)
+                result = await run_demo(page, llm or FakeLLM(), CTX, RESUME, FACTS, submit=submit, limiter=limiter, log_path=log, code_provider=provider)
                 outcomes.append((result.submit, await page.inner_text("body")))
             await browser.close()
         return outcomes, log, limiter
@@ -104,3 +104,30 @@ def test_rate_limiter_no_longer_treats_all_greenhouse_companies_as_one(tmp_path)
 def test_captcha_that_appears_after_the_click_is_reported_not_unknown(tmp_path):
     (out, body), = go(tmp_path, "?latecaptcha=1")[0]
     assert out.status == "blocked_captcha" and not out.submitted and "Thank you" not in body
+
+
+def test_emailed_code_is_read_typed_and_guards_run_again(tmp_path):
+    from job_agent.apply.mailcode import MailCode, StaticCodeProvider
+    provider = StaticCodeProvider(MailCode("12345678", None))
+    (out, body), = go(tmp_path, "?otp2=1", provider=provider)[0]
+    assert out.status == "submitted" and "Thank you for applying" in body and len(provider.calls) == 1
+
+
+def test_wrong_emailed_code_is_reported_not_retried(tmp_path):
+    from job_agent.apply.mailcode import MailCode, StaticCodeProvider
+    provider = StaticCodeProvider(MailCode("00000000", None))
+    (out, _), = go(tmp_path, "?otp2=1", provider=provider)[0]
+    assert out.status == "error_validation" and any("Incorrect security code" in p for p in out.problems) and len(provider.calls) == 1
+
+
+def test_no_email_in_time_leaves_it_for_a_human(tmp_path):
+    from job_agent.apply.mailcode import StaticCodeProvider
+    (out, _), = go(tmp_path, "?otp2=1", provider=StaticCodeProvider())[0]
+    assert out.status == "blocked_otp" and "no email" in out.detail
+
+
+def test_unlabeled_row_of_code_boxes_is_recognised_and_filled(tmp_path):
+    from job_agent.apply.mailcode import MailCode, StaticCodeProvider
+    provider = StaticCodeProvider(MailCode("12345678", None))
+    (out, body), = go(tmp_path, "?otp3=1", provider=provider)[0]
+    assert out.status == "submitted" and "Thank you for applying" in body and len(provider.calls) == 1

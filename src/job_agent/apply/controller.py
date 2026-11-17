@@ -17,7 +17,7 @@ from playwright.async_api import Page
 
 from job_agent.apply.classify import _REVIEW, Classification, classify_page, continue_application
 from job_agent.apply.demo import DemoResult, Row, fill_until_stable
-from job_agent.apply import controls
+from job_agent.apply import controls, overlays
 from job_agent.apply.gate_flow import GATE_STATES, AuthKit, handle_gate
 from job_agent.apply.llm import LLM
 from job_agent.apply.navigate import Hop, click_and_follow
@@ -125,7 +125,7 @@ async def run_application(page: Page, llm: LLM, facts: dict, resume: str | None,
     def done(outcome: Outcome, detail: str) -> RunResult:
         res.outcome, res.detail, res.page = outcome, detail, page
         res.llm_cost = float(llm.totals.get("cost_usd", 0) or 0)
-        trace.log(step=res.steps, final=outcome.value, detail=detail, cost_usd=res.llm_cost)
+        trace.log(step=res.steps, final=outcome.value, detail=detail, cost_usd=res.llm_cost, model=getattr(llm, "model", None), llm_calls=getattr(llm, "breakdown", []))
         return res
 
     while res.steps < max_steps and time.monotonic() - started < deadline_s:
@@ -134,6 +134,9 @@ async def run_application(page: Page, llm: LLM, facts: dict, resume: str | None,
             return done(Outcome.STUCK, "the page was closed")
         if res.steps > 1:   # a single-page app swaps its content a moment after the click: read the page once it stops changing
             await _wait_until_stable(page)
+        # A terms/cookie overlay on top of the page hides the real controls from the user and blocks every click: clear it first.
+        await overlays.clear(page, allow_accept=bool(facts.get("consents", {}).get("accept_privacy_and_terms")),
+                             log=lambda note, s=res.steps: trace.log(step=s, overlay=note))
         obs, _ = await observe(page, status, start_url if res.steps == 1 or page.url != start_url else None)
         for _ in range(4):  # single-page apps render after the load event: give a blank page a few chances before judging it
             blank = not obs.model.fields and not obs.model.actions  # nothing to act on yet: still rendering
@@ -236,6 +239,7 @@ async def run_application(page: Page, llm: LLM, facts: dict, resume: str | None,
         if c.state == PageState.FORM_STEP or (c.state == PageState.REVIEW and any(f.region in {"main", "dialog"} for f in obs.model.fields)):
             await fill_until_stable(page, llm, context, resume, step, facts)   # review pages can hold inputs too (a required consent box)
             res.rows += step.rows
+            trace.log(step=res.steps, filled=[f"{r.label[:30]} = {str(r.answer)[:24]!r} -> {r.status[:70]}" for r in step.rows], fill_events=step.events[-14:])
         problems = await check_step_ready(page, step.rows)
         if any("no honest answer" in p for p in problems):
             return done(Outcome.NEEDS_ANSWER, "; ".join(p for p in problems if "no honest answer" in p))
@@ -258,7 +262,8 @@ async def run_application(page: Page, llm: LLM, facts: dict, resume: str | None,
         perception = await perceive(page)
         nxt, final = await controls.find(perception.model)
         if final and not nxt:
-            out = await guarded_submit(page, res.rows, Settler(page), page.url, limiter, log_path, submit)
+            out = await guarded_submit(page, res.rows, Settler(page), page.url, limiter, log_path, submit,
+                                        code_provider=auth.provider if auth else None)
             trace.log(step=res.steps, action="submit", status=out.status, detail=out.detail, problems=out.problems)
             if out.status == "dry_run":
                 return done(Outcome.DRY_RUN_READY, out.detail)

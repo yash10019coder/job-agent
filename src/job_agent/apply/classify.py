@@ -13,6 +13,7 @@ from job_agent.apply.perceive import FieldModel, PageModel
 _MAIN = {"main", "dialog"}
 _FILTER_LABEL = re.compile(r"^(search|keywords?|department|office|team|sort( by)?|filter|job (type|category|function)|category|employment type)\b", re.I)
 _CONSENT = re.compile(r"subscribe|newsletter|consent|agree|privacy|terms|gdpr|marketing|updates", re.I)
+_STEP_CTL = re.compile(r"^(next|continue|save (and|&) continue)\b", re.I)
 _IDENTITY = re.compile(r"\b(first|last|full|legal|given|family|preferred) name\b|^name$|e-?mail", re.I)
 _LISTING_HEADING = re.compile(r"\b\d+\s+(jobs|openings|positions|roles|results)\b|current openings|open positions|job search|search results|all jobs", re.I)
 
@@ -120,6 +121,9 @@ def _classify_rules(obs: Observation) -> Classification:
     boxes = [f for f in m.fields if f.region in _MAIN and f.kind in {"text", "number", "tel"} and f.maxlength == 1]
     if 4 <= len(boxes) <= 8 or any(_CODE_LABEL.search(f.label) for f in m.fields if f.region in _MAIN and f.kind != "email") or (not form and len(m.fields) <= 3 and _CODE_FIELD.search(head)):
         return Classification(PageState.EMAIL_CODE, None, 0.85, ["a verification-code field or prompt"])
+    if not form and re.search(r"verif|pass ?code|one[- ]time|security code", head, re.I) and any(
+            f.kind == "radio_group" and f.region in _MAIN and any(re.search(r"@|e-?mail", o.label, re.I) for o in (f.options or [])) for f in m.fields):
+        return Classification(PageState.EMAIL_CODE, None, 0.8, ["choose where the verification code is sent (an email option is offered)"])
     if not form and not apply_id:
         if sig["password_field"]:
             state = PageState.SIGNUP if (sig.get("password_count", 0) >= 2 or (sig["signup_text"] and not sig["login_text"])) else PageState.LOGIN if (sig["login_text"] and not sig["signup_text"]) else PageState.ACCOUNT_CHOICE
@@ -140,6 +144,12 @@ def _classify_rules(obs: Observation) -> Classification:
         if _REVIEW.search(" ".join([m.title, *m.headings])):
             return Classification(PageState.REVIEW, None, 0.7, ["review/summary heading with form fields"])
         return Classification(PageState.FORM_STEP, None, 0.85, ["application-shaped fields in main content"])
+    main_inputs = [f for f in m.fields if f.region in _MAIN]
+    if (main_inputs and not apply_id and all(f.kind in {"checkbox", "checkbox_group"} and f.required and _CONSENT.search(f.label) for f in main_inputs)
+            and any(a.region in _MAIN and not a.disabled and _STEP_CTL.match(a.label.strip()) for a in m.actions)):
+        # An application that was started earlier, or a step that is only an agreement ("Data Protection Statement": tick the box, Next).
+        # Consent boxes do not count as application fields, so without this the step reads as a page with nothing to do.
+        return Classification(PageState.FORM_STEP, None, 0.7, ["a step that holds only a required consent box and a Next control"])
     if apply_id:
         return Classification(PageState.JOB_PAGE, apply_id, 0.8, ["an Apply control and no application form"])
     return Classification(PageState.UNKNOWN, None, 0.0, ["no rule matched"])

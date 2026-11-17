@@ -361,3 +361,10 @@ def get_rate_limiter(config: Optional[RateLimitConfig] = None) -> RateLimiter:
     if _global_limiter is None:
         _global_limiter = RateLimiter(config)
     return _global_limiter
+
+
+class OpenRateLimiter(RateLimiter):
+    """Records applications but never refuses one (user-approved: no per-company / hourly / daily limits)."""
+
+    def can_apply(self, url: str) -> tuple[bool, str]:
+        return True, "OK (limits disabled)"

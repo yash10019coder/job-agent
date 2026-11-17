@@ -120,6 +120,12 @@ class LLM:
             "cost_note": "estimated from list prices" if self.provider == "vertex" else "reported by OpenRouter",
         }
 
+    @property
+    def breakdown(self) -> list[dict]:
+        """One row per model call (what it was for, tokens, cost, seconds), in call order."""
+        return [{"purpose": c.purpose, "prompt_tokens": c.prompt_tokens, "completion_tokens": c.completion_tokens,
+                 "cost_usd": round(c.cost, 6), "seconds": round(c.seconds, 2)} for c in self.calls]
+
 
 @dataclass
 class Decision:

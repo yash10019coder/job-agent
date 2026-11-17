@@ -4,7 +4,16 @@
 (opts) => {
   const prefix = (opts && opts.prefix) || "";
   const frameLabel = (opts && opts.frameLabel) || "";
-  document.querySelectorAll("[data-agent-id]").forEach((e) => e.removeAttribute("data-agent-id"));
+  // Ids are re-stamped on every read. The old ones must go everywhere, including inside open shadow roots
+  // (document.querySelectorAll does not see into them): a stale id left on a web-component button made the
+  // same id appear on two elements, and the first match (the button) was clicked/filled instead of the input.
+  const clearStamps = (root) => {
+    root.querySelectorAll("*").forEach((e) => {
+      if (e.hasAttribute("data-agent-id")) e.removeAttribute("data-agent-id");
+      if (e.shadowRoot) clearStamps(e.shadowRoot);
+    });
+  };
+  clearStamps(document);
 
   const clean = (s) => (s || "").replace(/\s+/g, " ").trim();
   const clip = (s, n) => { s = clean(s); return s.length > n ? s.slice(0, n - 1) + "…" : s; };
@@ -50,7 +59,11 @@
     return "main";
   };
   let curEl = null;
-  const byId = (id) => document.getElementById(id);
+  // aria-labelledby ids live in the same root as the control: inside a shadow root they are not found by document.getElementById.
+  const byId = (id) => {
+    const root = curEl && curEl.getRootNode ? curEl.getRootNode() : null;
+    return (root && root.getElementById ? root.getElementById(id) : null) || document.getElementById(id);
+  };
   const textOfIds = (ids) =>
     clean((ids || "").split(/\s+/).map((i) => (byId(i) ? byId(i).innerText || byId(i).textContent : "")).join(" "));
 
@@ -199,6 +212,22 @@
     const role = (el.getAttribute("role") || "").toLowerCase();
     const type = (el.getAttribute("type") || "").toLowerCase();
 
+    // A custom select: a button-role trigger that opens a list and is named by a separate label element (aria-labelledby="label value
+    // placeholder"), showing a value or "Select...". It is a field to fill, not an action. A 2-letter / dial-code trigger is a phone
+    // box's country picker (phone_country.py), and a trigger whose text IS its name is a plain menu button: both stay actions.
+    if (role === "button" && el.hasAttribute("aria-expanded") && el.hasAttribute("aria-labelledby") && el.getAttribute("aria-disabled") !== "true"
+        && visible(el) && !el.closest("[role=listbox],[role=option]")) {
+      const name = textOfIds((el.getAttribute("aria-labelledby") || "").split(/\s+/)[0]).replace(/\*+/g, "").trim();
+      const shown = clean(el.innerText);
+      if (name && shown && shown.toLowerCase() !== name.toLowerCase() && !/^[A-Za-z]{2}$|^\+\d{1,3}$/.test(shown)) {
+        const opts = comboOptions(el);
+        addField({ id: stamp(el), kind: "combobox", label: name, help: helpOf(el), required: isRequired(el, name) || /\*/.test(textOfIds((el.getAttribute("aria-labelledby") || "").split(/\s+/)[0])),
+          value: PLACEHOLDER.test(shown) ? "" : clip(shown, 80), options: opts, async_options: opts === null,
+          invalid: el.getAttribute("aria-invalid") === "true", error: errorOf(el), section: sectionOf(el) });
+        continue;
+      }
+    }
+
     // Buttons and links -> actions
     if (tag === "button" || role === "button" || (tag === "a" && el.hasAttribute("href")) || role === "link" || (tag === "input" && /^(submit|button)$/.test(type))) {
       if (!visible(el)) continue;
@@ -302,7 +331,7 @@
   }
 
   // Groups without a fieldset/legend end up labelled with their first option; use the text above the group.
-  const byAgentId = (id) => document.querySelector('[data-agent-id="' + id + '"]');
+  const byAgentId = (id) => all.find((e) => e.getAttribute("data-agent-id") === id) || null;   // `all` includes open shadow roots
   for (const f of fields) {
     if (!f.options || !/^(radio_group|checkbox_group)$/.test(f.kind)) continue;
     const norm = (t) => clean(t).toLowerCase();

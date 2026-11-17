@@ -6,8 +6,10 @@ touched, and a new account's password is stored in the OS keyring BEFORE the sig
 """
 from __future__ import annotations
 
+import asyncio
 import json
 import re
+import time
 from dataclasses import dataclass, field
 from datetime import datetime, timedelta
 
@@ -33,6 +35,8 @@ _REJECT = re.compile(r"incorrect|invalid|wrong|not recogni[sz]ed|failed|locked|d
 _EXISTS = re.compile(r"already (exists|registered|in use|have an account|a member)|account exists|(email|address).{0,25}(taken|in use)|duplicate", re.I)
 _PASSWORD_RULE = re.compile(r"password.{0,70}(must|should|least|character|uppercase|special|symbol|digit|number|weak|strong|requirement)", re.I)
 _CODE_LABEL = re.compile(r"code|otp|pin|digit|verification|security", re.I)
+_EMAIL_OPTION = re.compile(r"e-?mail|@", re.I)
+_SEND_CTL = re.compile(r"^(send\b.*|get (a |the )?(pass)?code|continue|next)$", re.I)
 
 
 @dataclass
@@ -171,9 +175,44 @@ async def _signup(page, model, kit, site, facts, llm, resume) -> GateStep:
     return _human("signup kept failing on the password rules")
 
 
+async def _page_moved_on(page: Page, seconds: float = 10.0) -> bool:
+    """Some sites submit the code the moment the last digit is typed and have no Verify button: the page itself moves on. True once the
+    code box is gone; False when it is still there after `seconds`, or the site complained about the code."""
+    deadline = time.monotonic() + seconds
+    while time.monotonic() < deadline:
+        await asyncio.sleep(1.0)
+        model = (await perceive(page)).model
+        if _REJECT.search(_complaints(model)):
+            return False
+        if not any(f.region in {"main", "dialog"} and (f.maxlength == 1 or _CODE_LABEL.search(f.label)) for f in model.fields):
+            return True
+    return False
+
+
+async def _choose_delivery(page, kit) -> GateStep | Page | None:
+    """'Select your verification method' (text message / email): the code can only be read from the mailbox, so pick the email option and
+    press Send; the code box comes next. None when the page offers no such choice (the code box is already there)."""
+    perception = await perceive(page)
+    group = next((f for f in perception.model.fields if f.kind == "radio_group" and f.region in {"main", "dialog"} and f.options
+                  and any(_EMAIL_OPTION.search(o.label) for o in f.options)), None)
+    if group is None:
+        return None
+    option = next(o for o in group.options if _EMAIL_OPTION.search(o.label))
+    if not (await execute.set_choice(perception, group, option.label)).ok:
+        return _human("the page asks where to send the code and the email option could not be chosen")
+    control = _pick((await perceive(page)).model, _SEND_CTL)
+    if control is None:
+        return _human("the email option is chosen but there is no Send button")
+    return await _click(page, control, kit)   # also restarts the clock: only mail that arrives after this click counts
+
+
 async def _email_code(page, model, kit) -> GateStep:
     if kit.provider is None:
         return _human("an emailed code is needed and Gmail is not connected")
+    sent = await _choose_delivery(page, kit)
+    if isinstance(sent, GateStep):
+        return sent
+    page = sent or page
     since = (kit.gate_since or datetime.now()) - timedelta(seconds=30)
     mail = await kit.provider.fetch(site_hints(page.url), since, 90.0)
     if mail is None:
@@ -195,9 +234,10 @@ async def _email_code(page, model, kit) -> GateStep:
             return _human("the page has no box for the code")
         await execute.fill_text(page, perception, target, mail.code)
     control = _pick((await perceive(page)).model, _CODE_CTL)
-    if control is None:
-        return _human("no verify button found")
-    page = await _click(page, control, kit)
+    if control is not None:
+        page = await _click(page, control, kit)
+    elif not await _page_moved_on(page):
+        return _human("no verify button found and the page did not move on by itself")
     if _REJECT.search(_complaints((await perceive(page)).model)):
         return _human("the site rejected the code")
     kit.gate_since = None

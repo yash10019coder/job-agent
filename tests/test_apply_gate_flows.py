@@ -141,3 +141,33 @@ def test_signup_form_with_both_create_and_sign_in_buttons_is_filled_not_clicked_
     cred = store.get("local")
     assert cred and cred.username == EMAIL and len(cred.password) >= 12
     assert trace.count('"gate": "account_choice"') <= 1, trace.count('"gate": "account_choice"')      # not a click-loop
+
+
+def test_verification_method_page_picks_email_sends_the_code_and_reads_it():
+    """ADP: 'Select your verification method' (text message / email) comes BEFORE the code box. Only the emailed code can be read, so the
+    agent must choose email and press Send first; waiting for a mail that was never requested would just time out."""
+    provider = StaticCodeProvider(MailCode(code="482913"))
+    res, trace, _ = flow("auth_verify_method.html", MemoryStore(), provider)
+    assert res.outcome == Outcome.DRY_RUN_READY, (res.outcome, res.detail)      # reaching the form proves email (not the text message) was chosen
+    assert PageState.EMAIL_CODE in res.states and provider.calls
+    assert "482913" not in trace
+
+
+def test_a_code_page_that_submits_itself_has_no_verify_button_and_is_not_a_dead_end():
+    """ADP submits the passcode as soon as the last digit is typed. 'No verify button' there is not a failure: the page moves on by itself."""
+    provider = StaticCodeProvider(MailCode(code="482913"))
+    res, _, _ = flow("auth_code_autosubmit.html", MemoryStore(), provider)
+    assert res.outcome == Outcome.DRY_RUN_READY, (res.outcome, res.detail)
+
+
+def test_a_code_page_with_no_button_that_does_not_move_on_still_goes_to_a_human():
+    res, _, _ = flow("auth_code_autosubmit.html", MemoryStore(), StaticCodeProvider(MailCode(code="000000")))
+    assert res.outcome == Outcome.NEEDS_HUMAN
+
+
+def test_a_step_that_is_only_a_consent_box_and_next_is_a_form_step_not_an_unknown_page():
+    """ADP's 'Data Protection Statement' step (resumed mid-application): the consent tick is not counted as an application field, so the
+    page used to read as 'nothing to do' and the run stopped there."""
+    res, _, _ = flow("consent_step.html", with_kit=False)
+    assert res.outcome == Outcome.DRY_RUN_READY, (res.outcome, res.detail)
+    assert res.states[0] == PageState.FORM_STEP
