@@ -87,3 +87,6 @@ data/ats_categories.json
 data/vendor_research/
 data/mixed_*.json
 data/autopilot/
+
+# Recordings of manual applications hold personal data and session details
+data/recordings/
