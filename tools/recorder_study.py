@@ -282,16 +282,28 @@ def expectation(it: dict, v: tuple) -> dict | None:
     role = el.get("role") or ""
     if role in {"option", "menuitem", "listitem"} or v[0] in {"neutral", "list-option", "unknown"}:
         return None                                                       # parts of a widget, not controls the reader must list on their own
-    if el.get("expanded") is not None and role in {"button", "combobox", ""}:
+    if (el.get("expanded") is not None or (el.get("attrs") or {}).get("aria-haspopup") == "listbox") and role in {"button", "combobox", ""}:
         role = "combobox"                                                 # a trigger that opens a list is a dropdown field
     label = (el.get("group") if role in {"radio", "checkbox"} and el.get("group") else None) or _label(el)   # a radio answers a question: expect the question
+    named = re.match(r"^(?:\w+) '(.*?)'(?: \(|$)", v[1]) if v[0] == "field" else None
+    if named:
+        label = named.group(1)                                            # the reader's own name for it: the regression pins that, not the aria-label noise
     if not label:
         return None
     return {"step": it["step"], "label": label, "group": el.get("group", ""), "role": role, "kinds": sorted(_KIND_FOR_ROLE.get(role, set())) if role in _KIND_FOR_ROLE else [],
             "as": "field" if role in _KIND_FOR_ROLE else "action", "seen_when_recorded": v[0] in {"field", "option", "action"}}
 
 
-def promote(folder: str | Path, site: str, *, only_gaps: bool = False, facts: dict | None = None, dest: Path | None = None) -> list[Path]:
+_STYLE = re.compile(r'<style data-rec-from="(?:page|link|adopted)">.*?</style>', re.S)
+
+
+def slim(html: str) -> str:
+    """Drop the inlined stylesheet text (most of a saved page's size); elements the page hid keep their data-rec-hidden marker."""
+    return _STYLE.sub("", html).replace("<head>", "<head><style>[data-rec-hidden]{display:none!important}</style>", 1)
+
+
+def promote(folder: str | Path, site: str, *, only_gaps: bool = False, facts: dict | None = None, dest: Path | None = None,
+            steps: set[int] | None = None, slim_pages: bool = True) -> list[Path]:
     """One fixture per distinct page copy the person acted on: the DOM at that action (A###), or for older recordings the saved state."""
     folder = Path(folder)
     states, inter, judged = analyse(folder)
@@ -300,7 +312,7 @@ def promote(folder: str | Path, site: str, *, only_gaps: bool = False, facts: di
     groups: dict[str, dict] = {}
     for it, before, v in judged:
         e = expectation(it, v)
-        if not e or (only_gaps and e["seen_when_recorded"]):
+        if not e or (only_gaps and e["seen_when_recorded"]) or (steps and it["step"] not in steps):
             continue
         if it.get("dom_file") and (folder / "states" / it["dom_file"]).is_file():
             key, src = it["dom_file"][:-5], folder / "states" / it["dom_file"]
@@ -312,7 +324,8 @@ def promote(folder: str | Path, site: str, *, only_gaps: bool = False, facts: di
         g["interactions"].append(e)
     written = []
     for key, g in groups.items():
-        (dest / f"{key}.html").write_text(sanitize(g["src"].read_text(encoding="utf-8"), facts), encoding="utf-8")
+        page = sanitize(g["src"].read_text(encoding="utf-8"), facts)
+        (dest / f"{key}.html").write_text(slim(page) if slim_pages else page, encoding="utf-8")
         meta = {"state": key, "site": site, "url": g["url"], "engine_state_when_recorded": g["engine"], "interactions": g["interactions"]}
         (dest / f"{key}.json").write_text(json.dumps(meta, indent=1), encoding="utf-8")
         written += [dest / f"{key}.html", dest / f"{key}.json"]

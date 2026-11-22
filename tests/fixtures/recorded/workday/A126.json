@@ -1,0 +1,20 @@
+{
+ "state": "A126",
+ "site": "workday",
+ "url": "https://candescent.wd501.myworkdayjobs.com/en-US/Hiring/job/IN---Bengaluru---Office/Software-Engineer_R0002235/apply/applyManually",
+ "engine_state_when_recorded": "unknown",
+ "interactions": [
+  {
+   "step": 126,
+   "label": "Gender",
+   "group": "My Information",
+   "role": "combobox",
+   "kinds": [
+    "combobox",
+    "select"
+   ],
+   "as": "field",
+   "seen_when_recorded": true
+  }
+ ]
+}

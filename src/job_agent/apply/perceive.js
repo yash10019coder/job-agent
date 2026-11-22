@@ -72,13 +72,13 @@
   const containsControl = (el) => !!el.querySelector("input,select,textarea,[role=combobox],[role=listbox],button");
 
   // Closest preceding "question" text for controls that have no explicit label.
-  const precedingText = (el) => {
+  const precedingText = (el, max = 240) => {
     let node = el;
     for (let depth = 0; depth < 5 && node && node !== document.body; depth++) {
       let sib = node.previousElementSibling;
       while (sib) {
         const t = ownText(sib);
-        if (t && t.length <= 240 && !containsControl(sib)) return t;
+        if (t && t.length <= max && !containsControl(sib)) return t;
         sib = sib.previousElementSibling;
       }
       node = node.parentElement;
@@ -197,7 +197,11 @@
   };
   window.__agentFieldText = fieldText;
 
-  const PLACEHOLDER = /^(select|choose|please select|search|type to search|pick)\b[^a-z0-9]*$|^[-—–.]*$|make (a )?selection|select an? (option|value)|choose an? (option|value)/i;
+  const PLACEHOLDER = /^(select|choose|please select|search|type to search|pick)( one| an? [a-z]+)?\b[^a-z0-9]*$|^[-—–.]*$|make (a )?selection|select an? (option|value)|choose an? (option|value)/i;
+  // Typeahead multi-selects show what is chosen as chips, not in the input: the input's aria-describedby points at a hidden
+  // "N items selected, X" line ("0 items selected" when nothing is). That line is the value.
+  const chipValue = (el) => { const d = textOfIds(el.getAttribute("aria-describedby")); const m = /(\d+)\s+items?\s+selected(?:\s*[,:]\s*(.*))?/i.exec(d || "");
+    return m && m[1] !== "0" && m[2] ? clean(m[2]) : ""; };
   const comboValue = (el, label) => {
     if (el.value) return clean(el.value);
     let text = fieldText(el);
@@ -224,6 +228,27 @@
         addField({ id: stamp(el), kind: "combobox", label: name, help: helpOf(el), required: isRequired(el, name) || /\*/.test(textOfIds((el.getAttribute("aria-labelledby") || "").split(/\s+/)[0])),
           value: PLACEHOLDER.test(shown) ? "" : clip(shown, 80), options: opts, async_options: opts === null,
           invalid: el.getAttribute("aria-invalid") === "true", error: errorOf(el), section: sectionOf(el) });
+        continue;
+      }
+    }
+
+    // A dropdown built from a button: <button aria-haspopup="listbox">Select One</button> shows the chosen value or a placeholder and opens
+    // a list of options. It is a question to answer, not a button to press. The question is an explicit <label for>, aria-labelledby, or
+    // aria-label with the shown value and "Required" taken out ("How Did You Hear About Us? Select One Required"), else the text above it.
+    // Only inside the form (main content or a dialog): a language picker in the header or footer stays an action.
+    if ((tag === "button" || role === "button") && el.getAttribute("aria-haspopup") === "listbox" && el.getAttribute("aria-disabled") !== "true" && !el.disabled
+        && visible(el) && /^(main|dialog)$/.test(regionOf(el)) && !el.closest("[role=listbox],[role=option]")) {
+      const shown = clean(el.innerText), aria = el.getAttribute("aria-label") || "";
+      let q = el.labels && el.labels.length ? clean(Array.from(el.labels).map((l) => l.innerText).join(" ")) : "";
+      if (!q) { const t = textOfIds(el.getAttribute("aria-labelledby")); if (t && t.toLowerCase() !== shown.toLowerCase()) q = t; }
+      if (!q) q = clean((shown ? aria.split(shown).join(" ") : aria).replace(/\brequired\b/i, ""));
+      if (!q || q.toLowerCase() === shown.toLowerCase()) q = precedingText(el, 1500);   // questionnaire questions can be whole legal paragraphs; the label is clipped below
+      const star = /\*/.test(q) || /\brequired\b/i.test(aria);
+      q = clean(q.replace(/\*+/g, " "));
+      if (q && q.toLowerCase() !== shown.toLowerCase()) {
+        const opts = comboOptions(el);
+        addField({ id: stamp(el), kind: "combobox", label: clip(q, 400), help: helpOf(el), required: star || isRequired(el, q), value: PLACEHOLDER.test(shown) ? "" : clip(shown, 80),
+          options: opts, async_options: opts === null, invalid: el.getAttribute("aria-invalid") === "true", error: errorOf(el), section: sectionOf(el) });
         continue;
       }
     }
@@ -322,7 +347,7 @@
     else if (el.readOnly || /pick (a )?date|select (a )?date|choose (a )?date|mm\/dd|dd\/mm|yyyy/i.test(el.getAttribute("placeholder") || "")) kind = "date";
     addField({
       id: stamp(el), kind, label: fieldLabel, help: helpOf(el), required: isRequired(el, label),
-      value: kind === "file" ? (el.files && el.files.length ? el.files[0].name : "") : clean(el.value !== undefined && el.value !== "" ? el.value : el.getAttribute("contenteditable") === "true" ? el.innerText : ""),
+      value: kind === "file" ? (el.files && el.files.length ? el.files[0].name : "") : clean(el.value !== undefined && el.value !== "" ? el.value : el.getAttribute("contenteditable") === "true" ? el.innerText : chipValue(el)),
       options: null, placeholder: clip(el.getAttribute("placeholder"), 60), maxlength: el.maxLength > 0 ? el.maxLength : null,
       pattern: el.getAttribute("pattern") || null, accept: el.getAttribute("accept") || null, readonly: el.readOnly === true,
       invalid: el.getAttribute("aria-invalid") === "true" || !!(el.willValidate && !el.checkValidity() && el.value !== ""),

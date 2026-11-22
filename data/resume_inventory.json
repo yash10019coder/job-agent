@@ -1,434 +1,1269 @@
 {
   "contact": {
-    "name": "Omkar Chalak",
-    "email": "omkarchalak489@gmail.com",
-    "phone": "+91-9011127696",
-    "linkedin": "https://www.linkedin.com/in/omkar-chalak-6877a3205",
-    "github": "https://github.com/oryselias",
+    "name": "Yash Verma",
+    "email": "yashverma10019.work@gmail.com",
+    "phone": "+91 8957557113",
+    "linkedin": "https://www.linkedin.com/in/yash10019coder/",
+    "github": "https://github.com/yash10019coder/",
     "location": "India"
   },
   "lane_profiles": {
     "fullstack_backend": {
       "lane": "fullstack_backend",
-      "title": "Full-Stack / Backend Developer",
-      "headline": "Full-Stack / Backend Developer | Java Spring Boot, AWS, Web Apps, Services",
-      "summary": "Software engineer with production experience across backend services, web applications, and customer-facing product launches. Built product workflows at Rupeek and Samsung spanning Java Spring Boot, Node.js signaling, service integrations, React and Next.js frontends, and measurable user-impact improvements.",
+      "title": "Backend / Full-Stack Engineer",
+      "headline": "Backend Engineer | Distributed Systems, Databases & Cloud Infra (Java, Go, Spring Boot)",
+      "summary": "Backend engineer with production experience shipping systems at scale — an RBAC access-control system for 50k+ enterprise customers, multi-region CDC pipelines processing 5B+ inserts/updates, and 200x+ query performance gains on billion-row MySQL/ClickHouse tables. Comfortable across Java, Go, Node.js and Spring Boot, with a track record of zero-downtime migrations and production security hardening.",
       "role_order": [
-        "samsung",
-        "rupeek"
+        "browserstack",
+        "zus-sde-backend"
       ],
-      "preferred_bullets": [],
       "preferred_projects": [
-        "ev-mapper",
-        "ai-meeting",
-        "cloud-microservices-api"
-      ],
-      "preferred_achievements": [
-        "samsung-swc",
-        "codeforces"
+        "parking-lot-management",
+        "airline-ticketing-system",
+        "trip-feedback-system"
       ],
       "skills_priority": [
         "Languages",
-        "Backend",
-        "Cloud",
-        "Frameworks"
+        "Backend Frameworks",
+        "DevOps & Cloud",
+        "Databases & Testing"
+      ],
+      "preferred_achievements": [
+        "ach-1",
+        "ach-3"
       ]
     }
   },
   "education": {
     "school": "Indian Institute of Information Technology, Lucknow",
-    "degree": "Bachelor of Technology in Computer Science",
-    "location": "Lucknow, Uttar Pradesh",
-    "start": "Dec 2020",
-    "end": "2024",
-    "cgpa": "8.02/10"
+    "degree": "Bachelor of Information Technology",
+    "location": "Lucknow, India",
+    "start": "Apr 2020",
+    "end": "Apr 2024",
+    "cgpa": "8.32/10"
   },
   "skills": [
     {
       "name": "Languages",
       "items": [
         "Java",
+        "Go",
+        "Kotlin",
         "Python",
         "JavaScript",
-        "TypeScript",
-        "Go",
-        "SQL"
+        "SQL",
+        "Bash",
+        "C/C++"
       ],
       "priority": "high"
     },
     {
-      "name": "Backend",
+      "name": "Backend Frameworks",
       "items": [
         "Spring Boot",
-        "REST APIs",
-        "GraphQL",
-        "gRPC",
-        "WebSockets",
-        "Microservices",
-        "Node.js",
-        "Kafka",
-        "Redis"
+        "Gin",
+        "Express.js",
+        "REST/GraphQL APIs",
+        "RxJava",
+        "Dagger/Hilt"
       ],
       "priority": "high"
     },
     {
-      "name": "Cloud",
+      "name": "DevOps & Cloud",
       "items": [
-        "AWS",
-        "Azure",
         "Docker",
         "Kubernetes",
+        "GitHub Actions",
         "CI/CD",
-        "Jenkins"
+        "GCP",
+        "AWS",
+        "Linux",
+        "Helm",
+        "Prometheus/Grafana/Loki"
       ],
       "priority": "high"
     },
     {
-      "name": "Databases",
+      "name": "Databases & Testing",
       "items": [
-        "PostgreSQL",
+        "MySQL",
         "MongoDB",
-        "Elasticsearch"
+        "PostgreSQL",
+        "ClickHouse",
+        "Firebase",
+        "JUnit",
+        "Mockito",
+        "UIAutomator"
       ],
       "priority": "high"
     },
     {
-      "name": "Frameworks",
+      "name": "Tools & Libraries",
       "items": [
-        "React",
-        "Next.js",
-        "Django",
-        "FastAPI"
-      ],
-      "priority": "medium"
-    },
-    {
-      "name": "Systems",
-      "items": [
-        "WebRTC",
-        "Multithreading",
-        "Async I/O"
+        "Git",
+        "Retrofit/OkHttp",
+        "Gradle",
+        "Bazel",
+        "Android SDK"
       ],
       "priority": "medium"
     }
   ],
   "roles": [
     {
-      "id": "samsung",
-      "company": "Samsung R&D",
-      "title": "Software Engineer",
-      "location": "Noida, India",
-      "start": "Jul 2024",
+      "id": "browserstack",
+      "company": "BrowserStack",
+      "title": "SDE - Backend",
+      "location": "Mumbai (Mallard West)",
+      "start": "Apr 2025",
       "end": "Present",
       "tech_stack": [
+        "Ruby",
+        "Rails",
+        "Express",
+        "JavaScript",
+        "SpringBoot",
         "Java",
-        "Spring Boot",
-        "AWS",
-        "Node.js"
+        "MySQL",
+        "ClickHouse",
+        "AWS"
       ],
       "bullets": [
         {
-          "id": "samsung-cloud-tv",
-          "text": "Led Cloud TV Device feature development, migrating Node.js to Java Spring Boot to scale device connections by 40%. Engineered API Rate-Limiting middleware preventing DoS attacks with sub-200ms response time. Implemented horizontal auto-scaling for CTD module.",
+          "id": "bs-1",
+          "text": "Shipped an enterprise-grade RBAC access-control system (roles, hierarchies, 14 check-points), enabling organisation-wide permission management for 50k+ enterprise customers.",
           "lane_tags": [
             "fullstack_backend"
           ],
           "skills": [
-            "Java",
-            "Spring Boot",
+            "RBAC",
+            "Access Control",
+            "Backend"
+          ],
+          "metrics": [
+            "50k+ enterprise customers",
+            "14 check-points"
+          ],
+          "evidence_strength": "high",
+          "project_or_role_source": "BrowserStack"
+        },
+        {
+          "id": "bs-2",
+          "text": "Delivered multi-language SDK support across 5B+ API calls via client-aware routing, expanding platform reach to non-English enterprise markets.",
+          "lane_tags": [
+            "fullstack_backend"
+          ],
+          "skills": [
+            "SDK Development",
+            "API Routing"
+          ],
+          "metrics": [
+            "5B+ API calls"
+          ],
+          "evidence_strength": "high",
+          "project_or_role_source": "BrowserStack"
+        },
+        {
+          "id": "bs-3",
+          "text": "Consolidated 150M test runs and re-runs into accurate aggregate results (status, duration), eliminating duplicate entries.",
+          "lane_tags": [
+            "fullstack_backend"
+          ],
+          "skills": [
+            "Data Aggregation",
+            "Backend"
+          ],
+          "metrics": [
+            "150M test runs"
+          ],
+          "evidence_strength": "high",
+          "project_or_role_source": "BrowserStack"
+        },
+        {
+          "id": "bs-4",
+          "text": "Built CDC pipeline from MySQL to ClickHouse for a 10TB database, supporting 5B+ inserts/updates for real-time analytics, along with IAC provisioning for 35 Debezium CDC connectors with auto-sync, eliminating manual config drift across 4 regions.",
+          "lane_tags": [
+            "fullstack_backend"
+          ],
+          "skills": [
+            "CDC",
+            "MySQL",
+            "ClickHouse",
+            "IAC",
+            "Debezium"
+          ],
+          "metrics": [
+            "10TB database",
+            "5B+ inserts/updates",
+            "35 Debezium CDC connectors",
+            "4 regions"
+          ],
+          "evidence_strength": "high",
+          "project_or_role_source": "BrowserStack"
+        },
+        {
+          "id": "bs-5",
+          "text": "Launched BrowserStack's Australia AWS region to meet GRR/GDPR, now handling 360K requests/hour in production.",
+          "lane_tags": [
+            "fullstack_backend"
+          ],
+          "skills": [
             "AWS",
-            "API Design"
+            "GDPR Compliance",
+            "Infrastructure"
           ],
           "metrics": [
-            "40% more connections",
-            "200ms response"
+            "360K requests/hour"
           ],
           "evidence_strength": "high",
-          "project_or_role_source": "Samsung Cloud TV Device"
+          "project_or_role_source": "BrowserStack"
         },
         {
-          "id": "samsung-notification",
-          "text": "Architected real-time notification service broadcasting device state changes across workspaces, achieving 100% reduction in API calls during updates. Implemented multithreading for parallel message processing, improving efficiency by 30%.",
+          "id": "bs-6",
+          "text": "Halved per-session auth calls (2 → 1) for accessibility products via a lightweight config service, cutting 102K auth calls/day.",
           "lane_tags": [
             "fullstack_backend"
           ],
           "skills": [
-            "WebSocket",
-            "Multithreading",
-            "Real-time Systems"
+            "Auth",
+            "Backend",
+            "Microservices"
           ],
           "metrics": [
-            "100% API call reduction",
-            "30% efficiency"
+            "2→1 auth calls per session",
+            "102K auth calls/day cut"
           ],
           "evidence_strength": "high",
-          "project_or_role_source": "Samsung Notification Service"
+          "project_or_role_source": "BrowserStack"
         },
         {
-          "id": "samsung-webrtc",
-          "text": "Delivered WebRTC peer-to-peer file-sharing for smart TV browsers, reducing bandwidth dependency by 80%. Designed Node.js signaling service with native-app integration, optimizing transfer performance by 3x.",
+          "id": "bs-7",
+          "text": "Drove 208× query speed up (9.6s → 46ms) on a 524M-row analytics table via zero-downtime schema migrations across 4 regions.",
           "lane_tags": [
             "fullstack_backend"
           ],
           "skills": [
-            "WebRTC",
-            "Node.js"
+            "MySQL",
+            "Database Migration",
+            "Performance Optimization"
           ],
           "metrics": [
-            "80% bandwidth reduction",
-            "3x performance"
+            "208x speedup",
+            "9.6s to 46ms",
+            "524M rows",
+            "4 regions"
           ],
           "evidence_strength": "high",
-          "project_or_role_source": "Samsung WebRTC File Sharing"
+          "project_or_role_source": "BrowserStack"
         },
         {
-          "id": "samsung-rate-limiting",
-          "text": "Engineered custom API Rate-Limiting middleware with token bucket and sliding window algorithms for fair resource allocation across 10K+ concurrent device connections.",
+          "id": "bs-8",
+          "text": "Cut dashboard load from 4 min → 3s by indexing high-cardinality queries, directly unblocking a stalled enterprise deal.",
           "lane_tags": [
             "fullstack_backend"
           ],
           "skills": [
-            "Rate Limiting",
-            "Redis",
-            "Spring Boot"
+            "Database Indexing",
+            "Performance Optimization"
           ],
           "metrics": [
-            "10K+ connections"
+            "4min to 3s"
           ],
           "evidence_strength": "high",
-          "project_or_role_source": "Samsung Cloud TV Device"
+          "project_or_role_source": "BrowserStack"
         },
         {
-          "id": "samsung-scaling",
-          "text": "Conducted load testing and implemented horizontal auto-scaling, achieving 40% increase in device connections. Designed multi-region deployment reducing latency by 60%.",
+          "id": "bs-9",
+          "text": "Executed zero-downtime PK migrations on 3 tables of 1B+ rows (~1 TB, 2.9M rows/day) to prevent production outages.",
           "lane_tags": [
             "fullstack_backend"
           ],
           "skills": [
-            "Auto-scaling",
-            "AWS",
-            "Kubernetes"
+            "Database Migration",
+            "MySQL"
           ],
           "metrics": [
-            "40% more connections",
-            "60% latency reduction"
+            "1B+ rows",
+            "~1TB",
+            "2.9M rows/day"
           ],
-          "evidence_strength": "medium",
-          "project_or_role_source": "Samsung Cloud TV Device"
+          "evidence_strength": "high",
+          "project_or_role_source": "BrowserStack"
+        },
+        {
+          "id": "bs-10",
+          "text": "Offloaded heavy aggregate queries from MySQL to ClickHouse, stabilizing database CPU from 96% and enabling future growth.",
+          "lane_tags": [
+            "fullstack_backend"
+          ],
+          "skills": [
+            "ClickHouse",
+            "MySQL",
+            "Performance Optimization"
+          ],
+          "metrics": [
+            "96% CPU stabilized"
+          ],
+          "evidence_strength": "high",
+          "project_or_role_source": "BrowserStack"
+        },
+        {
+          "id": "bs-11",
+          "text": "Remediated SQL injection across 200+ APIs and shipped Static CI security scanning covering ~98% of production traffic.",
+          "lane_tags": [
+            "fullstack_backend"
+          ],
+          "skills": [
+            "Security",
+            "SQL Injection Remediation",
+            "CI/CD"
+          ],
+          "metrics": [
+            "200+ APIs",
+            "~98% traffic coverage"
+          ],
+          "evidence_strength": "high",
+          "project_or_role_source": "BrowserStack"
+        },
+        {
+          "id": "bs-12",
+          "text": "Resolved 2 critical vulnerabilities (RCE and SSRF bypass) and enabled TLS for database connections to harden production security.",
+          "lane_tags": [
+            "fullstack_backend"
+          ],
+          "skills": [
+            "Security",
+            "TLS",
+            "Vulnerability Remediation"
+          ],
+          "metrics": [
+            "2 critical vulnerabilities resolved"
+          ],
+          "evidence_strength": "high",
+          "project_or_role_source": "BrowserStack"
         }
       ]
     },
     {
-      "id": "rupeek",
-      "company": "Rupeek",
-      "title": "Software Engineering Intern",
-      "location": "Remote",
-      "start": "Feb 2024",
-      "end": "Jul 2024",
+      "id": "zus-sde-backend",
+      "company": "Zus (formerly 0chain)",
+      "title": "Software Development Engineer (Freelance)",
+      "location": "Cupertino, CA (Remote)",
+      "start": "Apr 2024",
+      "end": "Mar 2025",
       "tech_stack": [
-        "Next.js",
-        "TypeScript",
-        "Python",
-        "Microservices"
+        "Golang",
+        "GitHub Actions",
+        "Gin",
+        "Grafana",
+        "Helm",
+        "Kafka"
       ],
       "bullets": [
         {
-          "id": "rupeek-gold-card",
-          "text": "Developed India first gold-backed credit-card product workflows across React/TypeScript frontend and Python backend, driving 20% engagement increase and processing 2M+ USD daily transactions.",
+          "id": "zsb-1",
+          "text": "Spearheaded the UAT test suite for enterprise storage, reducing production bugs by 90% and significantly improving release quality.",
           "lane_tags": [
             "fullstack_backend"
           ],
           "skills": [
-            "Next.js",
-            "TypeScript",
-            "Python"
+            "Testing",
+            "QA",
+            "Golang"
           ],
           "metrics": [
-            "20% engagement",
-            "2M+ daily transactions"
+            "90% bug reduction"
           ],
           "evidence_strength": "high",
-          "project_or_role_source": "Rupeek internship"
+          "project_or_role_source": "Zus (formerly 0chain)"
         },
         {
-          "id": "rupeek-product-delivery",
-          "text": "Shipped customer-facing flows across Next.js, TypeScript, Python for 50K+ monthly active users, improving coordination between UI, backend, and product requirements.",
+          "id": "zsb-2",
+          "text": "Refactored and migrated GoSDK, reducing app size by 50%, while assisting cross-platform teams in the transition.",
           "lane_tags": [
             "fullstack_backend"
           ],
           "skills": [
-            "Next.js",
-            "TypeScript",
-            "Python"
+            "Golang",
+            "SDK Development"
           ],
           "metrics": [
-            "50K+ monthly users"
+            "50% app size reduction"
           ],
+          "evidence_strength": "high",
+          "project_or_role_source": "Zus (formerly 0chain)"
+        },
+        {
+          "id": "zsb-3",
+          "text": "Benchmarked S3-compatible storage for 500 million bulk files and 40 TB large files, achieving sub-100ms latency on both Enterprise and Standard allocations.",
+          "lane_tags": [
+            "fullstack_backend"
+          ],
+          "skills": [
+            "Storage Systems",
+            "Benchmarking",
+            "S3"
+          ],
+          "metrics": [
+            "500M bulk files",
+            "40TB large files",
+            "sub-100ms latency"
+          ],
+          "evidence_strength": "high",
+          "project_or_role_source": "Zus (formerly 0chain)"
+        },
+        {
+          "id": "zsb-4",
+          "text": "Load-tested streaming videos using JMeter, optimizing performance based on varying data sets and Erasure Coding (EC) parity nodes for efficient allocation.",
+          "lane_tags": [
+            "fullstack_backend"
+          ],
+          "skills": [
+            "JMeter",
+            "Load Testing",
+            "Erasure Coding"
+          ],
+          "metrics": [],
           "evidence_strength": "medium",
-          "project_or_role_source": "Rupeek internship"
+          "project_or_role_source": "Zus (formerly 0chain)"
         },
         {
-          "id": "rupeek-microservices",
-          "text": "Designed microservices architecture for financial workflows, integrating payment gateways and third-party APIs. Reduced downtime by 40% through circuit breaker patterns.",
+          "id": "zsb-5",
+          "text": "Developed automated workflows for view change and dynamic removal of Sharders/Miners, boosting developer efficiency by over 90%.",
           "lane_tags": [
             "fullstack_backend"
           ],
           "skills": [
-            "Microservices",
-            "Python",
-            "API Integration"
+            "Automation",
+            "Distributed Systems"
           ],
           "metrics": [
-            "40% downtime reduction"
+            "90%+ efficiency boost"
           ],
           "evidence_strength": "high",
-          "project_or_role_source": "Rupeek internship"
+          "project_or_role_source": "Zus (formerly 0chain)"
         },
         {
-          "id": "rupeek-testing",
-          "text": "Boosted code coverage by 25% writing 100+ unit and integration tests using Pytest, integrating automated checks into CI/CD pipeline.",
+          "id": "zsb-6",
+          "text": "Built an automated alert system for missing network blocks and integrated build tags into Slack using Python scripts, BeautifulSoup, Webhooks, and Block Kit.",
           "lane_tags": [
             "fullstack_backend"
           ],
           "skills": [
             "Python",
-            "Pytest",
+            "Automation",
+            "Slack Integration"
+          ],
+          "metrics": [],
+          "evidence_strength": "medium",
+          "project_or_role_source": "Zus (formerly 0chain)"
+        },
+        {
+          "id": "zsb-7",
+          "text": "Enhanced multi-wallet support to improve concurrency handling in load tests, while refactoring legacy load test code with a unified GoSDK for streamlined performance.",
+          "lane_tags": [
+            "fullstack_backend"
+          ],
+          "skills": [
+            "Golang",
+            "Concurrency",
+            "Load Testing"
+          ],
+          "metrics": [],
+          "evidence_strength": "medium",
+          "project_or_role_source": "Zus (formerly 0chain)"
+        }
+      ]
+    },
+    {
+      "id": "zus-android",
+      "company": "Zus (formerly 0chain)",
+      "title": "Android Engineer (Freelance)",
+      "location": "Cupertino, CA (Remote)",
+      "start": "Feb 2022",
+      "end": "Mar 2024",
+      "tech_stack": [
+        "Kotlin",
+        "Java",
+        "AndroidSDK",
+        "GitHub Actions"
+      ],
+      "bullets": [
+        {
+          "id": "za-1",
+          "text": "Architected two Android apps, Bolt (crypto wallet) and Vult (decentralized storage platform), increasing the Android user base by 20% for decentralized storage using ZCN crypto.",
+          "lane_tags": [],
+          "skills": [
+            "Android",
+            "Kotlin",
+            "Architecture"
+          ],
+          "metrics": [
+            "20% user base increase"
+          ],
+          "evidence_strength": "high",
+          "project_or_role_source": "Zus (formerly 0chain)"
+        },
+        {
+          "id": "za-2",
+          "text": "Led and mentored two junior developers, enhancing code quality by 40% and ensuring 95% on-time delivery through effective Scrum leadership.",
+          "lane_tags": [],
+          "skills": [
+            "Leadership",
+            "Mentoring",
+            "Scrum"
+          ],
+          "metrics": [
+            "40% code quality improvement",
+            "95% on-time delivery"
+          ],
+          "evidence_strength": "high",
+          "project_or_role_source": "Zus (formerly 0chain)"
+        },
+        {
+          "id": "za-3",
+          "text": "Designed and implemented release pipelines for Android apps, reducing manual effort and accelerating release cycles by 70%.",
+          "lane_tags": [],
+          "skills": [
+            "CI/CD",
+            "Android",
+            "Release Engineering"
+          ],
+          "metrics": [
+            "70% faster release cycles"
+          ],
+          "evidence_strength": "high",
+          "project_or_role_source": "Zus (formerly 0chain)"
+        },
+        {
+          "id": "za-4",
+          "text": "Developed an Android app with Split Key Functionality to act as an intermediary between the app and the blockchain, enabling double-signing of transactions via Bluetooth.",
+          "lane_tags": [],
+          "skills": [
+            "Android",
+            "Bluetooth",
+            "Security",
+            "Blockchain"
+          ],
+          "metrics": [],
+          "evidence_strength": "medium",
+          "project_or_role_source": "Zus (formerly 0chain)"
+        }
+      ]
+    },
+    {
+      "id": "gsoc-oppia",
+      "company": "Google Summer of Code — Oppia Foundation",
+      "title": "GSOC",
+      "location": "Remote",
+      "start": "Jun 2021",
+      "end": "Sept 2022",
+      "tech_stack": [
+        "Kotlin",
+        "GitHub Actions",
+        "JUnit",
+        "UIAutomator",
+        "Gradle",
+        "Bazel",
+        "AndroidSDK"
+      ],
+      "bullets": [
+        {
+          "id": "gsoc-1",
+          "text": "Designed and architected a robust CI/CD infrastructure to streamline build processes and enhance deployment efficiency.",
+          "lane_tags": [],
+          "skills": [
+            "CI/CD",
+            "Android"
+          ],
+          "metrics": [],
+          "evidence_strength": "medium",
+          "project_or_role_source": "Google Summer of Code — Oppia Foundation"
+        },
+        {
+          "id": "gsoc-2",
+          "text": "Implemented automated build triggers for alpha, beta, and test releases, seamlessly signing and uploading binaries to Google Drive, GCP Bucket, and Google Play Store tracks.",
+          "lane_tags": [],
+          "skills": [
+            "CI/CD",
+            "Android Release",
+            "GCP"
+          ],
+          "metrics": [],
+          "evidence_strength": "medium",
+          "project_or_role_source": "Google Summer of Code — Oppia Foundation"
+        },
+        {
+          "id": "gsoc-3",
+          "text": "Developed an intelligent cherry-picking workflow that autonomously merges selected changes into the appropriate flavor branch.",
+          "lane_tags": [],
+          "skills": [
+            "Git",
+            "Automation"
+          ],
+          "metrics": [],
+          "evidence_strength": "medium",
+          "project_or_role_source": "Google Summer of Code — Oppia Foundation"
+        },
+        {
+          "id": "gsoc-4",
+          "text": "Engineered an automated logging system that tracks each build and release step, updating GitHub issues with workflow triggers and contextual comments.",
+          "lane_tags": [],
+          "skills": [
+            "Automation",
+            "GitHub Actions"
+          ],
+          "metrics": [],
+          "evidence_strength": "medium",
+          "project_or_role_source": "Google Summer of Code — Oppia Foundation"
+        },
+        {
+          "id": "gsoc-5",
+          "text": "Spearheaded Android Release Automation, integrating streamlined processes for signing, building, testing, and publishing applications to Google Play.",
+          "lane_tags": [],
+          "skills": [
+            "Android",
+            "Release Automation"
+          ],
+          "metrics": [],
+          "evidence_strength": "medium",
+          "project_or_role_source": "Google Summer of Code — Oppia Foundation"
+        },
+        {
+          "id": "gsoc-6",
+          "text": "Authored custom Kotlin scripts to simplify essential tasks such as generating AAB bundles, securely signing artifacts, and automating Google Play uploads.",
+          "lane_tags": [],
+          "skills": [
+            "Kotlin",
+            "Android",
+            "Automation"
+          ],
+          "metrics": [],
+          "evidence_strength": "medium",
+          "project_or_role_source": "Google Summer of Code — Oppia Foundation"
+        },
+        {
+          "id": "gsoc-7",
+          "text": "Leveraged GitHub Actions in conjunction with custom Kotlin scripts executed via Bazel to optimize CD pipelines for alpha, beta, and nightly releases on scheduled cron jobs.",
+          "lane_tags": [],
+          "skills": [
+            "GitHub Actions",
+            "Bazel",
             "CI/CD"
           ],
-          "metrics": [
-            "25% code coverage"
-          ],
+          "metrics": [],
           "evidence_strength": "medium",
-          "project_or_role_source": "Rupeek internship"
+          "project_or_role_source": "Google Summer of Code — Oppia Foundation"
+        }
+      ]
+    },
+    {
+      "id": "oppia-opensource",
+      "company": "Oppia Foundation",
+      "title": "Open Source Contributor - Android",
+      "location": "Mountain View, CA (Remote)",
+      "start": "June 2021",
+      "end": "April 2022",
+      "tech_stack": [
+        "Kotlin",
+        "Bazel",
+        "Gradle",
+        "Espresso",
+        "Robolectric",
+        "UIAutomator",
+        "JUnit"
+      ],
+      "bullets": [
+        {
+          "id": "oo-1",
+          "text": "Contributed to the migration of the build system from Gradle to Bazel, achieving a 10x improvement in build speeds.",
+          "lane_tags": [],
+          "skills": [
+            "Bazel",
+            "Gradle",
+            "Build Systems"
+          ],
+          "metrics": [
+            "10x build speed improvement"
+          ],
+          "evidence_strength": "high",
+          "project_or_role_source": "Oppia Foundation"
+        },
+        {
+          "id": "oo-2",
+          "text": "Developed modular fragments encapsulated within standalone activities, ensuring seamless functionality across mobile and tablet devices with support for multiple screen sizes.",
+          "lane_tags": [],
+          "skills": [
+            "Android",
+            "UI Development"
+          ],
+          "metrics": [],
+          "evidence_strength": "medium",
+          "project_or_role_source": "Oppia Foundation"
+        },
+        {
+          "id": "oo-3",
+          "text": "Implemented MVVM (Model-View-ViewModel) and MVP (Model-View-Presenter) architectures to structure and optimize all activities and fragments.",
+          "lane_tags": [],
+          "skills": [
+            "Android Architecture",
+            "MVVM",
+            "MVP"
+          ],
+          "metrics": [],
+          "evidence_strength": "medium",
+          "project_or_role_source": "Oppia Foundation"
+        },
+        {
+          "id": "oo-4",
+          "text": "Authored over 70+ Unit Tests, 20+ Instrumentation, and End-to-End tests using Espresso, Robolectric, and UIAutomator, with JUnit as the test runner for Android.",
+          "lane_tags": [],
+          "skills": [
+            "Testing",
+            "Espresso",
+            "JUnit",
+            "Android"
+          ],
+          "metrics": [
+            "70+ Unit Tests",
+            "20+ Instrumentation tests"
+          ],
+          "evidence_strength": "high",
+          "project_or_role_source": "Oppia Foundation"
+        },
+        {
+          "id": "oo-5",
+          "text": "Mentored and onboarded 3+ students in the Android repository, guiding them to become active collaborators.",
+          "lane_tags": [],
+          "skills": [
+            "Mentoring",
+            "Leadership"
+          ],
+          "metrics": [
+            "3+ students mentored"
+          ],
+          "evidence_strength": "high",
+          "project_or_role_source": "Oppia Foundation"
+        },
+        {
+          "id": "oo-6",
+          "text": "Enhanced project documentation by creating a comprehensive GitHub Wiki on Protobuf, significantly improving understanding and adoption of the Protobuf library within the repository.",
+          "lane_tags": [],
+          "skills": [
+            "Documentation",
+            "Protobuf"
+          ],
+          "metrics": [],
+          "evidence_strength": "medium",
+          "project_or_role_source": "Oppia Foundation"
+        }
+      ]
+    },
+    {
+      "id": "gnome-foundation",
+      "company": "Gnome Foundation",
+      "title": "Open Source Contributor",
+      "location": "Remote",
+      "start": "Sept 2021",
+      "end": "Feb 2022",
+      "tech_stack": [
+        "C",
+        "XML",
+        "GTK+"
+      ],
+      "bullets": [
+        {
+          "id": "gf-1",
+          "text": "Added a new feature in the path-bar of Nautilus file manager, improving user efficiency by 20% by enabling seamless opening of folders and files.",
+          "lane_tags": [],
+          "skills": [
+            "C",
+            "GTK+"
+          ],
+          "metrics": [
+            "20% efficiency improvement"
+          ],
+          "evidence_strength": "high",
+          "project_or_role_source": "Gnome Foundation"
+        },
+        {
+          "id": "gf-2",
+          "text": "Designed and implemented a new button using XML, enhancing user interaction by 15% through improved interface functionality.",
+          "lane_tags": [],
+          "skills": [
+            "XML",
+            "UI"
+          ],
+          "metrics": [
+            "15% interaction improvement"
+          ],
+          "evidence_strength": "high",
+          "project_or_role_source": "Gnome Foundation"
+        },
+        {
+          "id": "gf-3",
+          "text": "Refactored and optimized UI components in Nautilus, reducing render time by 30% and improving overall navigation fluidity.",
+          "lane_tags": [],
+          "skills": [
+            "C",
+            "Performance Optimization"
+          ],
+          "metrics": [
+            "30% render time reduction"
+          ],
+          "evidence_strength": "high",
+          "project_or_role_source": "Gnome Foundation"
+        },
+        {
+          "id": "gf-4",
+          "text": "Implemented keyboard shortcuts for quick folder navigation, enhancing accessibility and workflow efficiency.",
+          "lane_tags": [],
+          "skills": [
+            "Accessibility",
+            "UI"
+          ],
+          "metrics": [],
+          "evidence_strength": "medium",
+          "project_or_role_source": "Gnome Foundation"
+        },
+        {
+          "id": "gf-5",
+          "text": "Integrated drag-and-drop support for seamless file organization, significantly improving user experience in Nautilus.",
+          "lane_tags": [],
+          "skills": [
+            "UI",
+            "UX"
+          ],
+          "metrics": [],
+          "evidence_strength": "medium",
+          "project_or_role_source": "Gnome Foundation"
+        }
+      ]
+    },
+    {
+      "id": "bshapp",
+      "company": "BSHAPP",
+      "title": "Android Freelance Developer",
+      "location": "Andhra Pradesh",
+      "start": "May 2021",
+      "end": "Jun 2021",
+      "tech_stack": [
+        "Kotlin",
+        "Retrofit",
+        "OkHttp",
+        "Jetpack Navigation"
+      ],
+      "bullets": [
+        {
+          "id": "bshapp-1",
+          "text": "Added support for multiple languages, expanding the app's user base by 30% and enhancing accessibility in diverse markets.",
+          "lane_tags": [],
+          "skills": [
+            "Android",
+            "Localization"
+          ],
+          "metrics": [
+            "30% user base growth"
+          ],
+          "evidence_strength": "high",
+          "project_or_role_source": "BSHAPP"
+        },
+        {
+          "id": "bshapp-2",
+          "text": "Implemented Jetpack Navigation with single activity and multi-fragment architecture, improving app performance by 25%.",
+          "lane_tags": [],
+          "skills": [
+            "Android",
+            "Jetpack Navigation"
+          ],
+          "metrics": [
+            "25% performance improvement"
+          ],
+          "evidence_strength": "high",
+          "project_or_role_source": "BSHAPP"
+        },
+        {
+          "id": "bshapp-3",
+          "text": "Integrated REST API with Retrofit, reducing data retrieval time by 20% and improving HTTP request efficiency.",
+          "lane_tags": [],
+          "skills": [
+            "Retrofit",
+            "REST API",
+            "Android"
+          ],
+          "metrics": [
+            "20% faster data retrieval"
+          ],
+          "evidence_strength": "high",
+          "project_or_role_source": "BSHAPP"
+        },
+        {
+          "id": "bshapp-4",
+          "text": "Optimized network caching mechanisms using OkHttp, significantly reducing redundant API calls and enhancing data load speeds.",
+          "lane_tags": [],
+          "skills": [
+            "OkHttp",
+            "Caching",
+            "Android"
+          ],
+          "metrics": [],
+          "evidence_strength": "medium",
+          "project_or_role_source": "BSHAPP"
+        },
+        {
+          "id": "bshapp-5",
+          "text": "Refactored legacy codebase to adopt Kotlin Coroutines for asynchronous processing, leading to a 40% improvement in app responsiveness.",
+          "lane_tags": [],
+          "skills": [
+            "Kotlin Coroutines",
+            "Android"
+          ],
+          "metrics": [
+            "40% responsiveness improvement"
+          ],
+          "evidence_strength": "high",
+          "project_or_role_source": "BSHAPP"
+        },
+        {
+          "id": "bshapp-6",
+          "text": "Enhanced security by implementing encrypted shared preferences and biometric authentication, strengthening data protection and user privacy.",
+          "lane_tags": [],
+          "skills": [
+            "Security",
+            "Android",
+            "Biometric Auth"
+          ],
+          "metrics": [],
+          "evidence_strength": "medium",
+          "project_or_role_source": "BSHAPP"
         }
       ]
     }
   ],
   "projects": [
     {
-      "id": "cloud-microservices-api",
-      "name": "Cloud-Native Microservices Platform",
-      "url": "https://github.com/oryselias",
+      "id": "parking-lot-management",
+      "name": "Parking Lot Management System",
+      "url": "https://github.com/yash10019coder/ParkingLotBackend",
       "tech_stack": [
-        "Java",
-        "Spring Boot",
-        "Docker",
-        "Kubernetes",
-        "AWS"
+        "Node.js",
+        "Express.js",
+        "MongoDB",
+        "Winston",
+        "Jest"
       ],
       "bullets": [
         {
-          "id": "cloud-microservices-core",
-          "text": "Architected scalable microservices platform on AWS Kubernetes, handling 10K+ daily requests with 99.9% uptime.",
+          "id": "plm-1",
+          "text": "Developed a RESTful API using Node.js, Express.js, and MongoDB to manage parking spaces. Integrated Winston for logging and conducted unit and integration testing with Jest.",
           "lane_tags": [
             "fullstack_backend"
           ],
           "skills": [
-            "AWS",
-            "Kubernetes",
-            "Docker",
-            "Microservices"
-          ],
-          "metrics": [
-            "10K+ daily requests",
-            "99.9% uptime"
-          ],
-          "evidence_strength": "high",
-          "project_or_role_source": "Cloud-Native Microservices"
-        },
-        {
-          "id": "cloud-api-design",
-          "text": "Implemented RESTful APIs with rate limiting, authentication, and automated CI/CD pipelines using GitHub Actions and Jenkins.",
-          "lane_tags": [
-            "fullstack_backend"
-          ],
-          "skills": [
-            "REST APIs",
-            "CI/CD",
-            "Jenkins",
-            "Authentication"
+            "Node.js",
+            "Express.js",
+            "MongoDB",
+            "Testing"
           ],
           "metrics": [],
-          "evidence_strength": "high",
-          "project_or_role_source": "Cloud-Native Microservices"
+          "evidence_strength": "medium",
+          "project_or_role_source": "Parking Lot Management System"
         }
       ]
     },
     {
-      "id": "ai-meeting",
-      "name": "AI-Powered Meeting Summarization",
-      "url": "https://github.com/oryselias/Minutes-of-Meeting",
+      "id": "airline-ticketing-system",
+      "name": "Airline Ticketing System",
+      "url": "https://github.com/yash10019coder/airline-ticketing-system",
       "tech_stack": [
-        "React",
-        "JavaScript",
-        "Django",
-        "SQL"
-      ],
-      "bullets": [
-        {
-          "id": "ai-meeting-search",
-          "text": "Built web platform consolidating Google Meet summaries, reducing information retrieval time by 40% through intelligent search.",
-          "lane_tags": [
-            "fullstack_backend"
-          ],
-          "skills": [
-            "React",
-            "Django",
-            "SQL",
-            "Search UX"
-          ],
-          "metrics": [
-            "40% faster retrieval"
-          ],
-          "evidence_strength": "high",
-          "project_or_role_source": "AI-Powered Meeting Summarization"
-        }
-      ]
-    },
-    {
-      "id": "ev-mapper",
-      "name": "EVMapper",
-      "url": "https://github.com/oryselias/EVMapper",
-      "tech_stack": [
-        "Java",
         "Spring Boot",
-        "PostgreSQL",
-        "React"
+        "Java",
+        "Docker"
       ],
       "bullets": [
         {
-          "id": "ev-mapper-backend",
-          "text": "Built full-stack EV charging station locator with Spring Boot 3 and PostgreSQL/PostGIS, enabling geospatial proximity queries and real-time availability tracking.",
+          "id": "ats-1",
+          "text": "Built using Spring Boot in MVC architecture where a user can book tickets, query flights and cancel tickets, also Dockerized.",
           "lane_tags": [
             "fullstack_backend"
           ],
           "skills": [
-            "Java",
             "Spring Boot",
-            "PostgreSQL",
-            "REST APIs"
+            "Java",
+            "Docker"
           ],
           "metrics": [],
-          "evidence_strength": "high",
-          "project_or_role_source": "EVMapper"
+          "evidence_strength": "medium",
+          "project_or_role_source": "Airline Ticketing System"
+        }
+      ]
+    },
+    {
+      "id": "trip-feedback-system",
+      "name": "Trip Feedback System",
+      "url": "https://github.com/yash10019coder/TravelSpringBoot",
+      "tech_stack": [
+        "Spring Framework",
+        "Java"
+      ],
+      "bullets": [
+        {
+          "id": "tfs-1",
+          "text": "Designed a feedback system for Travelers and Transport Managers with secure feedback submission and user authentication, using Spring Framework.",
+          "lane_tags": [
+            "fullstack_backend"
+          ],
+          "skills": [
+            "Spring Framework",
+            "Java",
+            "Auth"
+          ],
+          "metrics": [],
+          "evidence_strength": "medium",
+          "project_or_role_source": "Trip Feedback System"
+        }
+      ]
+    },
+    {
+      "id": "festify",
+      "name": "Festify",
+      "url": "https://github.com/yash10019coder/festify-android",
+      "tech_stack": [
+        "Android",
+        "Node.js",
+        "MongoDB"
+      ],
+      "bullets": [
+        {
+          "id": "festify-1",
+          "text": "Hackathon and event management multi-module Android app with NodeJs backend and MongoDB database.",
+          "lane_tags": [
+            "fullstack_backend"
+          ],
+          "skills": [
+            "Android",
+            "Node.js",
+            "MongoDB"
+          ],
+          "metrics": [],
+          "evidence_strength": "medium",
+          "project_or_role_source": "Festify"
+        }
+      ]
+    },
+    {
+      "id": "hello-world",
+      "name": "Hello World",
+      "url": "https://github.com/0chain/HelloWorld-Android",
+      "tech_stack": [
+        "Android",
+        "Kotlin",
+        "0Chain SDK"
+      ],
+      "bullets": [
+        {
+          "id": "hw-1",
+          "text": "Android application showcasing 0Chain blockchain storage SDK, designed in Kotlin.",
+          "lane_tags": [],
+          "skills": [
+            "Android",
+            "Kotlin",
+            "Blockchain"
+          ],
+          "metrics": [],
+          "evidence_strength": "medium",
+          "project_or_role_source": "Hello World"
+        }
+      ]
+    },
+    {
+      "id": "wake-lock",
+      "name": "Wake-Lock",
+      "url": "https://github.com/yash10019coder/Wake-Lock",
+      "tech_stack": [
+        "Android",
+        "Kotlin"
+      ],
+      "bullets": [
+        {
+          "id": "wl-1",
+          "text": "Runs a sticky service in the background which adds a partial wake lock to your screen.",
+          "lane_tags": [],
+          "skills": [
+            "Android",
+            "Background Services"
+          ],
+          "metrics": [],
+          "evidence_strength": "low",
+          "project_or_role_source": "Wake-Lock"
+        }
+      ]
+    },
+    {
+      "id": "automated-window-manager",
+      "name": "Automated Window Manager",
+      "url": "https://github.com/yash10019coder/AutomatedWindowManager",
+      "tech_stack": [
+        "Linux",
+        "CLI"
+      ],
+      "bullets": [
+        {
+          "id": "awm-1",
+          "text": "A CLI tool to automate window management in Linux.",
+          "lane_tags": [],
+          "skills": [
+            "Linux",
+            "CLI Tooling"
+          ],
+          "metrics": [],
+          "evidence_strength": "low",
+          "project_or_role_source": "Automated Window Manager"
+        }
+      ]
+    },
+    {
+      "id": "backup-system-ubuntu",
+      "name": "Backup System Ubuntu",
+      "url": "https://github.com/yash10019coder/backup-system-ubuntu",
+      "tech_stack": [
+        "Bash",
+        "Ubuntu"
+      ],
+      "bullets": [
+        {
+          "id": "bsu-1",
+          "text": "A bash script to back up apt, snap, and other config files.",
+          "lane_tags": [],
+          "skills": [
+            "Bash",
+            "Linux"
+          ],
+          "metrics": [],
+          "evidence_strength": "low",
+          "project_or_role_source": "Backup System Ubuntu"
+        }
+      ]
+    },
+    {
+      "id": "gui-automator",
+      "name": "GUI-Automator",
+      "url": "https://github.com/yash10019coder/Gui-Automator",
+      "tech_stack": [
+        "Python",
+        "Google Drive API"
+      ],
+      "bullets": [
+        {
+          "id": "ga-1",
+          "text": "Python script for downloading, sorting, and extracting files from Google Drive.",
+          "lane_tags": [
+            "fullstack_backend"
+          ],
+          "skills": [
+            "Python",
+            "Automation"
+          ],
+          "metrics": [],
+          "evidence_strength": "low",
+          "project_or_role_source": "GUI-Automator"
+        }
+      ]
+    },
+    {
+      "id": "whatsapp-clone",
+      "name": "What's App Clone",
+      "url": "https://github.com/yash10019coder/Whats-App",
+      "tech_stack": [
+        "Android",
+        "Kotlin"
+      ],
+      "bullets": [
+        {
+          "id": "wac-1",
+          "text": "Android chat app featuring Google and email authentication.",
+          "lane_tags": [],
+          "skills": [
+            "Android",
+            "Auth"
+          ],
+          "metrics": [],
+          "evidence_strength": "low",
+          "project_or_role_source": "What's App Clone"
+        }
+      ]
+    },
+    {
+      "id": "video-chatting",
+      "name": "Video Chatting",
+      "url": "https://github.com/yash10019coder/Video-Chatting",
+      "tech_stack": [
+        "Android",
+        "Jitsi Meet API"
+      ],
+      "bullets": [
+        {
+          "id": "vc-1",
+          "text": "Android app for video conferencing using Jitsi Meet API with a secure server setup.",
+          "lane_tags": [],
+          "skills": [
+            "Android",
+            "Jitsi Meet API",
+            "Security"
+          ],
+          "metrics": [],
+          "evidence_strength": "low",
+          "project_or_role_source": "Video Chatting"
+        }
+      ]
+    },
+    {
+      "id": "my-resume",
+      "name": "My Resume",
+      "url": "https://github.com/yash10019coder/resume",
+      "tech_stack": [
+        "GitHub Actions",
+        "GCP"
+      ],
+      "bullets": [
+        {
+          "id": "mr-1",
+          "text": "Automated deployment of resume updates using GitHub Actions and GCP to Google Drive.",
+          "lane_tags": [
+            "fullstack_backend"
+          ],
+          "skills": [
+            "GitHub Actions",
+            "GCP",
+            "Automation"
+          ],
+          "metrics": [],
+          "evidence_strength": "low",
+          "project_or_role_source": "My Resume"
         }
       ]
     }
   ],
   "achievements": [
     {
-      "id": "codeforces",
-      "title": "Codeforces Specialist",
-      "detail": "Max rating 1532",
-      "lane_tags": [
-        "fullstack_backend"
-      ],
-      "link": "https://codeforces.com/profile/segment_trACk"
+      "id": "ach-1",
+      "title": "700+ DSA Problems Solved",
+      "detail": "Practised over 700+ DSA problems on Leetcode.",
+      "lane_tags": [],
+      "link": null
     },
     {
-      "id": "samsung-swc",
-      "title": "Samsung SWC",
-      "detail": "Cleared Advance and Professional Software Competency Tests",
+      "id": "ach-2",
+      "title": "Oppia Foundation Member",
+      "detail": "Member of Oppia Foundation for 2 years.",
+      "lane_tags": [],
+      "link": null
+    },
+    {
+      "id": "ach-3",
+      "title": "30 Days of Google Cloud",
+      "detail": "Completed Cloud Engineering tracks — 30 Days of Google Cloud Program.",
       "lane_tags": [
         "fullstack_backend"
       ],

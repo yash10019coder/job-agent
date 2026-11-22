@@ -1,0 +1,20 @@
+{
+ "state": "A019",
+ "site": "workday",
+ "url": "https://candescent.wd501.myworkdayjobs.com/en-US/Hiring/job/IN---Bengaluru---Office/Software-Engineer_R0002235/apply/applyManually",
+ "engine_state_when_recorded": "form_step",
+ "interactions": [
+  {
+   "step": 19,
+   "label": "How Did You Hear About Us?",
+   "group": "How Did You Hear About Us?* Select One",
+   "role": "combobox",
+   "kinds": [
+    "combobox",
+    "select"
+   ],
+   "as": "field",
+   "seen_when_recorded": true
+  }
+ ]
+}

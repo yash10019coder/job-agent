@@ -2,7 +2,7 @@
 
   record_apply.py record [--name N] [--seconds S] [--no-screenshots]   attach to the agent browser and record until Ctrl+C
   record_apply.py study DIR                                              gap report: which controls the engine's reader missed, answer differences, overlays
-  record_apply.py promote DIR --site NAME [--only-gaps]                  write sanitised fixtures for tests/test_apply_recorded.py
+  record_apply.py promote DIR --site NAME [--only-gaps] [--steps 19,105]  write sanitised, slimmed fixtures for tests/test_apply_recorded.py
 
 What is saved, and the privacy limits, are described in tools/recorder_capture.py. Recordings stay in data/recordings/ (git-ignored).
 """
@@ -43,7 +43,7 @@ if __name__ == "__main__":
     sub = ap.add_subparsers(dest="cmd", required=True)
     r = sub.add_parser("record"); r.add_argument("--name", default="apply"); r.add_argument("--seconds", type=float, default=0); r.add_argument("--no-screenshots", action="store_true")
     st = sub.add_parser("study"); st.add_argument("folder")
-    pr = sub.add_parser("promote"); pr.add_argument("folder"); pr.add_argument("--site", required=True); pr.add_argument("--only-gaps", action="store_true")
+    pr = sub.add_parser("promote"); pr.add_argument("folder"); pr.add_argument("--site", required=True); pr.add_argument("--only-gaps", action="store_true"); pr.add_argument("--steps", default="", help="comma-separated step numbers to promote (default: all)"); pr.add_argument("--full", action="store_true", help="keep the inlined stylesheets")
     a = ap.parse_args()
     if a.cmd == "record":
         try:
@@ -55,5 +55,5 @@ if __name__ == "__main__":
         print(study(a.folder))
     else:
         from recorder_study import promote
-        for p in promote(a.folder, a.site, only_gaps=a.only_gaps, facts=_facts()):
+        for p in promote(a.folder, a.site, only_gaps=a.only_gaps, facts=_facts(), steps={int(x) for x in a.steps.split(",") if x.strip()} or None, slim_pages=not a.full):
             print("wrote", p.relative_to(ROOT))

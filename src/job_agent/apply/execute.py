@@ -12,7 +12,7 @@ from datetime import date, datetime
 
 from playwright.async_api import Page
 
-from job_agent.apply.perceive import FieldModel, Option, Perception, Settler
+from job_agent.apply.perceive import FieldModel, Option, Perception, Settler, perceive
 
 
 @dataclass
@@ -48,12 +48,17 @@ def closest_options(wanted: str, options: list[Option], n: int = 15) -> list[Opt
     return [labels[k] for k in dict.fromkeys([*contains, *near])][:n]
 
 
-_CURRENT_JS = "(el) => el.value !== undefined && el.value !== null && el.isContentEditable !== true ? el.value : el.innerText"
+_CURRENT_JS = """(el) => { const v = el.value !== undefined && el.value !== null && el.isContentEditable !== true ? el.value : el.innerText;
+  if (v) return v;
+  const root = el.getRootNode && el.getRootNode(), d = (el.getAttribute && el.getAttribute('aria-describedby') || '').split(/\\s+/).filter(Boolean)
+    .map((i) => ((root && root.getElementById ? root.getElementById(i) : null) || document.getElementById(i))).filter(Boolean).map((n) => n.textContent || '').join(' ');
+  const m = /(\\d+)\\s+items?\\s+selected(?:\\s*[,:]\\s*(.*))?/i.exec(d);   // a typeahead multi-select keeps its choice as a chip: "1 item selected, India (+91)"
+  return m && m[1] !== '0' && m[2] ? m[2] : v; }"""
 
 
 async def _current(loc) -> str:
     """Current text of an input, textarea or contenteditable (rich-text editors have no .value)."""
-    return (await loc.evaluate(_CURRENT_JS)).strip()
+    return (await loc.evaluate(_CURRENT_JS, timeout=3000)).strip()
 
 
 _NOW_WORDS = re.compile(r"^(immediate(ly)?|asap|now|as soon as possible|right away|today|no notice.*|within .*)$", re.I)
@@ -177,7 +182,10 @@ async def pick_suggestion(page: Page, perception: Perception, field: FieldModel,
         await loc.fill("")
         await frame.evaluate(_MARK_PRE_JS)
         await loc.press_sequentially(query, delay=80)
-        rows = await _collect_rows(page, loc, max_ticks=80)  # up to ~8s for the search request, then wait for the list to settle
+        rows = await _collect_rows(page, loc, max_ticks=40)  # up to ~4s for the search request, then wait for the list to settle
+        if not rows and await loc.evaluate("(el) => el.getAttribute('enterkeyhint') === 'search' || el.type === 'search' || /search/i.test(el.getAttribute('placeholder') || '')", timeout=3000):
+            await page.keyboard.press("Enter")                  # a search box: the list only appears once the search is submitted
+            rows = await _collect_rows(page, loc, max_ticks=80)
         if not rows:
             return ActionResult(False, "no suggestion list appeared after typing")
         best = max(rows, key=lambda r: _overlap(value, r["text"]))
@@ -215,7 +223,7 @@ async def fill_text(page: Page, perception: Perception, field: FieldModel, value
             await loc.press_sequentially(value, delay=15)
         await page.wait_for_timeout(DWELL_MS)  # give the site time to show suggestions / validate before we leave the box
         chose = False
-        rows = await _collect_rows(page, loc, max_ticks=20) if await loc.evaluate(_SUGGEST_JS) else []
+        rows = await _collect_rows(page, loc, max_ticks=20) if await loc.evaluate(_SUGGEST_JS, timeout=3000) else []
         if rows:  # the site offered suggestions: take the matching one instead of leaving unconfirmed typed text
             best = max(rows, key=lambda r: _overlap(value, r["text"]))
             if _overlap(value, best["text"]) >= 0.5:
@@ -226,6 +234,15 @@ async def fill_text(page: Page, perception: Perception, field: FieldModel, value
         await page.wait_for_timeout(300)  # blur handlers may clear a value that was not picked from a suggestion list
         actual = await _current(loc)
     except Exception as error:
+        # The page may have replaced the box while we typed (a framework re-render): the stamp is gone but the typed value is usually in the
+        # new box. Look for the same question in a fresh read before calling it a failure.
+        try:
+            occurrence = sum(1 for g in perception.model.fields[: perception.model.fields.index(field)] if g.key == field.key)
+            fresh = [g for g in (await perceive(page)).model.fields if g.key == field.key]
+            if len(fresh) > occurrence and value.strip() and re.sub(r"[^a-z0-9]", "", fresh[occurrence].value.lower()) == re.sub(r"[^a-z0-9]", "", value.lower()):
+                return ActionResult(True, "ok")
+        except Exception:
+            pass
         return ActionResult(False, f"fill failed: {error}")
     same = re.sub(r"[^a-z0-9]", "", actual.lower()) == re.sub(r"[^a-z0-9]", "", value.lower())  # inputs may reformat (phone masks)
     if chose and not same and actual.strip() and _overlap(value, actual) >= 0.5:

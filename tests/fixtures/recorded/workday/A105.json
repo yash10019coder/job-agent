@@ -1,0 +1,20 @@
+{
+ "state": "A105",
+ "site": "workday",
+ "url": "https://candescent.wd501.myworkdayjobs.com/en-US/Hiring/job/IN---Bengaluru---Office/Software-Engineer_R0002235/apply/applyManually",
+ "engine_state_when_recorded": "unknown",
+ "interactions": [
+  {
+   "step": 105,
+   "label": "Are you willing to relocate?",
+   "group": "Are you willing to relocate?* No",
+   "role": "combobox",
+   "kinds": [
+    "combobox",
+    "select"
+   ],
+   "as": "field",
+   "seen_when_recorded": true
+  }
+ ]
+}
