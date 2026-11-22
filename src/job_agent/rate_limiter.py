@@ -242,12 +242,23 @@ class RateLimiter:
         
         return True, "OK"
     
+    # Multi-tenant job boards: the host is shared by every company, so the first path segment is the tenant.
+    _TENANT_HOSTS = {"job-boards.greenhouse.io", "boards.greenhouse.io", "jobs.lever.co", "jobs.ashbyhq.com",
+                     "apply.workable.com", "jobs.smartrecruiters.com", "jobs.eu.lever.co"}
+
     def _extract_domain(self, url: str) -> str:
-        """Extract domain from URL"""
+        """Identify the company site: the host, plus the tenant segment on shared job boards.
+
+        (Host alone made one Greenhouse application block every other Greenhouse company for 24h.)"""
         from urllib.parse import urlparse
         try:
-            return urlparse(url).netloc
-        except:
+            parsed = urlparse(url)
+            host = parsed.netloc
+            if host in self._TENANT_HOSTS:
+                tenant = next((seg for seg in parsed.path.split("/") if seg), "")
+                return f"{host}/{tenant}" if tenant else host
+            return host
+        except Exception:
             return url
     
     def record_application(
@@ -350,3 +361,10 @@ def get_rate_limiter(config: Optional[RateLimitConfig] = None) -> RateLimiter:
     if _global_limiter is None:
         _global_limiter = RateLimiter(config)
     return _global_limiter
+
+
+class OpenRateLimiter(RateLimiter):
+    """Records applications but never refuses one (user-approved: no per-company / hourly / daily limits)."""
+
+    def can_apply(self, url: str) -> tuple[bool, str]:
+        return True, "OK (limits disabled)"

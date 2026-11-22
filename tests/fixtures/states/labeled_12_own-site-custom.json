@@ -1,0 +1,863 @@
+{
+ "name": "labeled_12_own-site-custom",
+ "url": "https://www.rubrik.com/company/careers/departments/job.8317294?gh_jid=8317294",
+ "status": 200,
+ "frame_hosts": [],
+ "from_url": "https://www.rubrik.com/company/careers/departments/job.8317294?gh_jid=8317294",
+ "expect_state": "form_step",
+ "labels": {
+  "1 Entry type": "Company page + Apply stays on the same site",
+  "2 Gate (account)": "none (no account needed)",
+  "3 Extra checks": "none",
+  "4 Form fields visible": "yes - fields visible now",
+  "5 Steps": "single step",
+  "6 Vendor": "own site / custom"
+ },
+ "expect_application_form": true,
+ "expect_listing": false,
+ "model": {
+  "url": "https://www.rubrik.com/company/careers/departments/job.8317294?gh_jid=8317294",
+  "title": "Senior Renewals Operations Analyst",
+  "headings": [
+   "Senior Renewals Operations Analyst",
+   "Job Summary",
+   "Join Us in Securing and Accelerating the World's AI Transformation",
+   "Inclusion @ Rubrik",
+   "Equal Opportunity Employer/Veterans/Disabled",
+   "Apply For This Job"
+  ],
+  "alerts": [],
+  "fields": [
+   {
+    "id": "f0-n21",
+    "kind": "text",
+    "label": "First Name",
+    "help": "",
+    "required": true,
+    "value": "",
+    "options": null,
+    "async_options": false,
+    "placeholder": "",
+    "maxlength": null,
+    "pattern": null,
+    "accept": null,
+    "invalid": false,
+    "error": "",
+    "section": "Apply For This Job",
+    "frame": 0,
+    "readonly": false,
+    "cards": false
+   },
+   {
+    "id": "f0-n22",
+    "kind": "text",
+    "label": "Last Name",
+    "help": "",
+    "required": true,
+    "value": "",
+    "options": null,
+    "async_options": false,
+    "placeholder": "",
+    "maxlength": null,
+    "pattern": null,
+    "accept": null,
+    "invalid": false,
+    "error": "",
+    "section": "Apply For This Job",
+    "frame": 0,
+    "readonly": false,
+    "cards": false
+   },
+   {
+    "id": "f0-n23",
+    "kind": "text",
+    "label": "Preferred First Name",
+    "help": "",
+    "required": false,
+    "value": "",
+    "options": null,
+    "async_options": false,
+    "placeholder": "",
+    "maxlength": null,
+    "pattern": null,
+    "accept": null,
+    "invalid": false,
+    "error": "",
+    "section": "Apply For This Job",
+    "frame": 0,
+    "readonly": false,
+    "cards": false
+   },
+   {
+    "id": "f0-n24",
+    "kind": "text",
+    "label": "Email",
+    "help": "",
+    "required": true,
+    "value": "",
+    "options": null,
+    "async_options": false,
+    "placeholder": "",
+    "maxlength": null,
+    "pattern": null,
+    "accept": null,
+    "invalid": false,
+    "error": "",
+    "section": "Apply For This Job",
+    "frame": 0,
+    "readonly": false,
+    "cards": false
+   },
+   {
+    "id": "f0-n25",
+    "kind": "text",
+    "label": "Phone",
+    "help": "",
+    "required": true,
+    "value": "",
+    "options": null,
+    "async_options": false,
+    "placeholder": "",
+    "maxlength": null,
+    "pattern": null,
+    "accept": null,
+    "invalid": false,
+    "error": "",
+    "section": "Apply For This Job",
+    "frame": 0,
+    "readonly": false,
+    "cards": false
+   },
+   {
+    "id": "f0-n26",
+    "kind": "file",
+    "label": "Resume/CV Attach file",
+    "help": "",
+    "required": false,
+    "value": "",
+    "options": null,
+    "async_options": false,
+    "placeholder": "",
+    "maxlength": null,
+    "pattern": null,
+    "accept": null,
+    "invalid": false,
+    "error": "",
+    "section": "Apply For This Job",
+    "frame": 0,
+    "readonly": false,
+    "cards": false
+   },
+   {
+    "id": "f0-n28",
+    "kind": "file",
+    "label": "Cover Letter Attach file",
+    "help": "",
+    "required": false,
+    "value": "",
+    "options": null,
+    "async_options": false,
+    "placeholder": "",
+    "maxlength": null,
+    "pattern": null,
+    "accept": null,
+    "invalid": false,
+    "error": "",
+    "section": "Apply For This Job",
+    "frame": 0,
+    "readonly": false,
+    "cards": false
+   },
+   {
+    "id": "f0-n30",
+    "kind": "text",
+    "label": "LinkedIn Profile",
+    "help": "",
+    "required": false,
+    "value": "",
+    "options": null,
+    "async_options": false,
+    "placeholder": "",
+    "maxlength": null,
+    "pattern": null,
+    "accept": null,
+    "invalid": false,
+    "error": "",
+    "section": "Apply For This Job",
+    "frame": 0,
+    "readonly": false,
+    "cards": false
+   },
+   {
+    "id": "f0-n31",
+    "kind": "text",
+    "label": "Website",
+    "help": "",
+    "required": false,
+    "value": "",
+    "options": null,
+    "async_options": false,
+    "placeholder": "",
+    "maxlength": null,
+    "pattern": null,
+    "accept": null,
+    "invalid": false,
+    "error": "",
+    "section": "Apply For This Job",
+    "frame": 0,
+    "readonly": false,
+    "cards": false
+   },
+   {
+    "id": "f0-n32",
+    "kind": "text",
+    "label": "Please Review the NDA and indicate your agreement by typing your full name below",
+    "help": "",
+    "required": true,
+    "value": "",
+    "options": null,
+    "async_options": false,
+    "placeholder": "",
+    "maxlength": null,
+    "pattern": null,
+    "accept": null,
+    "invalid": false,
+    "error": "",
+    "section": "Apply For This Job",
+    "frame": 0,
+    "readonly": false,
+    "cards": false
+   },
+   {
+    "id": "f0-n34",
+    "kind": "select",
+    "label": "See Rubrik\u2019s Candidate Privacy Notice here.",
+    "help": "",
+    "required": false,
+    "value": "",
+    "options": [
+     {
+      "id": "",
+      "label": "Yes",
+      "value": "757685456"
+     }
+    ],
+    "async_options": false,
+    "placeholder": "",
+    "maxlength": null,
+    "pattern": null,
+    "accept": null,
+    "invalid": false,
+    "error": "",
+    "section": "Apply For This Job",
+    "frame": 0,
+    "readonly": false,
+    "cards": false
+   },
+   {
+    "id": "f0-n35",
+    "kind": "select",
+    "label": "Are you currently or have you ever been employed by Rubrik or contracted to provide services to Rubrik?",
+    "help": "",
+    "required": true,
+    "value": "",
+    "options": [
+     {
+      "id": "",
+      "label": "I have never been employed by Rubrik or contracted to provide services to Rubrik",
+      "value": "757685457"
+     },
+     {
+      "id": "",
+      "label": "I am currently a full/part-time employee for Rubrik",
+      "value": "757685458"
+     },
+     {
+      "id": "",
+      "label": "I am a currently a contractor for Rubrik",
+      "value": "757685459"
+     },
+     {
+      "id": "",
+      "label": "I was previously a full/part-time employee for Rubrik",
+      "value": "757685460"
+     },
+     {
+      "id": "",
+      "label": "I was previously a contractor for Rubrik",
+      "value": "757685461"
+     }
+    ],
+    "async_options": false,
+    "placeholder": "",
+    "maxlength": null,
+    "pattern": null,
+    "accept": null,
+    "invalid": false,
+    "error": "",
+    "section": "Apply For This Job",
+    "frame": 0,
+    "readonly": false,
+    "cards": false
+   },
+   {
+    "id": "f0-n36",
+    "kind": "text",
+    "label": "What is the name of your current employer?",
+    "help": "",
+    "required": true,
+    "value": "",
+    "options": null,
+    "async_options": false,
+    "placeholder": "",
+    "maxlength": null,
+    "pattern": null,
+    "accept": null,
+    "invalid": false,
+    "error": "",
+    "section": "Apply For This Job",
+    "frame": 0,
+    "readonly": false,
+    "cards": false
+   },
+   {
+    "id": "f0-n37",
+    "kind": "select",
+    "label": "Are you currently or have you ever been employed by Rubrik or contracted to provide services to Rubrik?",
+    "help": "",
+    "required": true,
+    "value": "",
+    "options": [
+     {
+      "id": "",
+      "label": "I have never been employed by Rubrik or contracted to provide services to Rubrik",
+      "value": "757685462"
+     },
+     {
+      "id": "",
+      "label": "I am currently a full/part-time employee for Rubrik",
+      "value": "757685463"
+     },
+     {
+      "id": "",
+      "label": "I am a currently a contractor for Rubrik",
+      "value": "757685464"
+     },
+     {
+      "id": "",
+      "label": "I was previously a full/part-time employee for Rubrik",
+      "value": "757685465"
+     },
+     {
+      "id": "",
+      "label": "I was previously a contractor for Rubrik",
+      "value": "757685466"
+     }
+    ],
+    "async_options": false,
+    "placeholder": "",
+    "maxlength": null,
+    "pattern": null,
+    "accept": null,
+    "invalid": false,
+    "error": "",
+    "section": "Apply For This Job",
+    "frame": 0,
+    "readonly": false,
+    "cards": false
+   },
+   {
+    "id": "f0-n38",
+    "kind": "text",
+    "label": "Location",
+    "help": "",
+    "required": true,
+    "value": "",
+    "options": null,
+    "async_options": false,
+    "placeholder": "Enter a location",
+    "maxlength": null,
+    "pattern": null,
+    "accept": null,
+    "invalid": false,
+    "error": "",
+    "section": "Apply For This Job",
+    "frame": 0,
+    "readonly": false,
+    "cards": false
+   }
+  ],
+  "actions": [
+   {
+    "id": "f0-n1",
+    "kind": "link",
+    "label": "Skip to Main Content",
+    "primary": false,
+    "disabled": false,
+    "frame": 0
+   },
+   {
+    "id": "f0-n2",
+    "kind": "link",
+    "label": "Rubrik Logo",
+    "primary": false,
+    "disabled": false,
+    "frame": 0
+   },
+   {
+    "id": "f0-n3",
+    "kind": "link",
+    "label": "Products",
+    "primary": false,
+    "disabled": false,
+    "frame": 0
+   },
+   {
+    "id": "f0-n4",
+    "kind": "link",
+    "label": "Solutions",
+    "primary": false,
+    "disabled": false,
+    "frame": 0
+   },
+   {
+    "id": "f0-n5",
+    "kind": "link",
+    "label": "Knowledge Hub",
+    "primary": false,
+    "disabled": false,
+    "frame": 0
+   },
+   {
+    "id": "f0-n6",
+    "kind": "link",
+    "label": "About Us",
+    "primary": false,
+    "disabled": false,
+    "frame": 0
+   },
+   {
+    "id": "f0-n7",
+    "kind": "link",
+    "label": "Partners",
+    "primary": false,
+    "disabled": false,
+    "frame": 0
+   },
+   {
+    "id": "f0-n8",
+    "kind": "link",
+    "label": "Zero Labs",
+    "primary": false,
+    "disabled": false,
+    "frame": 0
+   },
+   {
+    "id": "f0-n9",
+    "kind": "link",
+    "label": "CXO",
+    "primary": false,
+    "disabled": false,
+    "frame": 0
+   },
+   {
+    "id": "f0-n10",
+    "kind": "link",
+    "label": "Support",
+    "primary": false,
+    "disabled": false,
+    "frame": 0
+   },
+   {
+    "id": "f0-n11",
+    "kind": "button",
+    "label": "Search",
+    "primary": false,
+    "disabled": false,
+    "frame": 0
+   },
+   {
+    "id": "f0-n12",
+    "kind": "link",
+    "label": "Watch Demo Now",
+    "primary": false,
+    "disabled": false,
+    "frame": 0
+   },
+   {
+    "id": "f0-n13",
+    "kind": "link",
+    "label": "Departments",
+    "primary": false,
+    "disabled": false,
+    "frame": 0
+   },
+   {
+    "id": "f0-n14",
+    "kind": "link",
+    "label": "Linkedin",
+    "primary": false,
+    "disabled": false,
+    "frame": 0
+   },
+   {
+    "id": "f0-n15",
+    "kind": "link",
+    "label": "X (formerly Twitter)",
+    "primary": false,
+    "disabled": false,
+    "frame": 0
+   },
+   {
+    "id": "f0-n16",
+    "kind": "link",
+    "label": "Instagram",
+    "primary": false,
+    "disabled": false,
+    "frame": 0
+   },
+   {
+    "id": "f0-n17",
+    "kind": "link",
+    "label": "Rubrik.com",
+    "primary": false,
+    "disabled": false,
+    "frame": 0
+   },
+   {
+    "id": "f0-n18",
+    "kind": "link",
+    "label": "hr@rubrik.com",
+    "primary": false,
+    "disabled": false,
+    "frame": 0
+   },
+   {
+    "id": "f0-n19",
+    "kind": "link",
+    "label": "EEO IS THE LAW",
+    "primary": false,
+    "disabled": false,
+    "frame": 0
+   },
+   {
+    "id": "f0-n20",
+    "kind": "link",
+    "label": "NOTIFICATION OF EMPLOYEE RIGHTS UNDER FEDERAL LABOR LAWS",
+    "primary": false,
+    "disabled": false,
+    "frame": 0
+   },
+   {
+    "id": "f0-n27",
+    "kind": "button",
+    "label": "Paste",
+    "primary": false,
+    "disabled": false,
+    "frame": 0
+   },
+   {
+    "id": "f0-n29",
+    "kind": "button",
+    "label": "Paste",
+    "primary": false,
+    "disabled": false,
+    "frame": 0
+   },
+   {
+    "id": "f0-n33",
+    "kind": "link",
+    "label": "here.",
+    "primary": false,
+    "disabled": false,
+    "frame": 0
+   },
+   {
+    "id": "f0-n39",
+    "kind": "button",
+    "label": "Submit",
+    "primary": true,
+    "disabled": false,
+    "frame": 0
+   },
+   {
+    "id": "f0-n40",
+    "kind": "link",
+    "label": "here.",
+    "primary": false,
+    "disabled": false,
+    "frame": 0
+   },
+   {
+    "id": "f0-n41",
+    "kind": "link",
+    "label": "linkedin",
+    "primary": false,
+    "disabled": false,
+    "frame": 0
+   },
+   {
+    "id": "f0-n42",
+    "kind": "link",
+    "label": "twitter",
+    "primary": false,
+    "disabled": false,
+    "frame": 0
+   },
+   {
+    "id": "f0-n43",
+    "kind": "link",
+    "label": "facebook",
+    "primary": false,
+    "disabled": false,
+    "frame": 0
+   },
+   {
+    "id": "f0-n44",
+    "kind": "link",
+    "label": "youtube",
+    "primary": false,
+    "disabled": false,
+    "frame": 0
+   },
+   {
+    "id": "f0-n45",
+    "kind": "link",
+    "label": "instagram",
+    "primary": false,
+    "disabled": false,
+    "frame": 0
+   },
+   {
+    "id": "f0-n46",
+    "kind": "link",
+    "label": "Contact Sales",
+    "primary": false,
+    "disabled": false,
+    "frame": 0
+   },
+   {
+    "id": "f0-n47",
+    "kind": "link",
+    "label": "Company",
+    "primary": false,
+    "disabled": false,
+    "frame": 0
+   },
+   {
+    "id": "f0-n48",
+    "kind": "link",
+    "label": "Leadership",
+    "primary": false,
+    "disabled": false,
+    "frame": 0
+   },
+   {
+    "id": "f0-n49",
+    "kind": "link",
+    "label": "Investor Relations",
+    "primary": false,
+    "disabled": false,
+    "frame": 0
+   },
+   {
+    "id": "f0-n50",
+    "kind": "link",
+    "label": "Newsroom & Press Releases",
+    "primary": false,
+    "disabled": false,
+    "frame": 0
+   },
+   {
+    "id": "f0-n51",
+    "kind": "link",
+    "label": "Careers at Rubrik",
+    "primary": false,
+    "disabled": false,
+    "frame": 0
+   },
+   {
+    "id": "f0-n52",
+    "kind": "link",
+    "label": "Blog",
+    "primary": false,
+    "disabled": false,
+    "frame": 0
+   },
+   {
+    "id": "f0-n53",
+    "kind": "link",
+    "label": "Why Rubrik",
+    "primary": false,
+    "disabled": false,
+    "frame": 0
+   },
+   {
+    "id": "f0-n54",
+    "kind": "link",
+    "label": "Products",
+    "primary": false,
+    "disabled": false,
+    "frame": 0
+   },
+   {
+    "id": "f0-n55",
+    "kind": "link",
+    "label": "Solutions",
+    "primary": false,
+    "disabled": false,
+    "frame": 0
+   },
+   {
+    "id": "f0-n56",
+    "kind": "link",
+    "label": "Partners",
+    "primary": false,
+    "disabled": false,
+    "frame": 0
+   },
+   {
+    "id": "f0-n57",
+    "kind": "link",
+    "label": "CXO",
+    "primary": false,
+    "disabled": false,
+    "frame": 0
+   },
+   {
+    "id": "f0-n58",
+    "kind": "link",
+    "label": "Customers",
+    "primary": false,
+    "disabled": false,
+    "frame": 0
+   },
+   {
+    "id": "f0-n59",
+    "kind": "link",
+    "label": "Resources",
+    "primary": false,
+    "disabled": false,
+    "frame": 0
+   },
+   {
+    "id": "f0-n60",
+    "kind": "link",
+    "label": "Cyber Recovery",
+    "primary": false,
+    "disabled": false,
+    "frame": 0
+   },
+   {
+    "id": "f0-n61",
+    "kind": "link",
+    "label": "Backup & Recovery",
+    "primary": false,
+    "disabled": false,
+    "frame": 0
+   },
+   {
+    "id": "f0-n62",
+    "kind": "link",
+    "label": "Ransomware Recovery",
+    "primary": false,
+    "disabled": false,
+    "frame": 0
+   },
+   {
+    "id": "f0-n63",
+    "kind": "link",
+    "label": "Cloud Disaster Recovery",
+    "primary": false,
+    "disabled": false,
+    "frame": 0
+   },
+   {
+    "id": "f0-n64",
+    "kind": "link",
+    "label": "Cloud Database Backup and Recovery Service",
+    "primary": false,
+    "disabled": false,
+    "frame": 0
+   },
+   {
+    "id": "f0-n65",
+    "kind": "link",
+    "label": "SaaS Backups",
+    "primary": false,
+    "disabled": false,
+    "frame": 0
+   },
+   {
+    "id": "f0-n66",
+    "kind": "button",
+    "label": "English",
+    "primary": false,
+    "disabled": false,
+    "frame": 0
+   },
+   {
+    "id": "f0-n67",
+    "kind": "link",
+    "label": "Legal",
+    "primary": false,
+    "disabled": false,
+    "frame": 0
+   },
+   {
+    "id": "f0-n68",
+    "kind": "link",
+    "label": "Privacy Policy",
+    "primary": false,
+    "disabled": false,
+    "frame": 0
+   },
+   {
+    "id": "f0-n69",
+    "kind": "link",
+    "label": "Terms of Use",
+    "primary": false,
+    "disabled": false,
+    "frame": 0
+   },
+   {
+    "id": "f0-n70",
+    "kind": "link",
+    "label": "Cookie Policy",
+    "primary": false,
+    "disabled": false,
+    "frame": 0
+   },
+   {
+    "id": "f0-n71",
+    "kind": "link",
+    "label": "Trust",
+    "primary": false,
+    "disabled": false,
+    "frame": 0
+   },
+   {
+    "id": "f0-n72",
+    "kind": "link",
+    "label": "Do not sell or share my personal information",
+    "primary": false,
+    "disabled": false,
+    "frame": 0
+   },
+   {
+    "id": "f0-n73",
+    "kind": "link",
+    "label": "Do not share my sensitive information",
+    "primary": false,
+    "disabled": false,
+    "frame": 0
+   }
+  ],
+  "text_digest": "Skip to Main Content Products Solutions Knowledge Hub About Us Partners Zero Labs CXO Support Watch Demo Now Senior Renewals Operations Analyst Bangalore, India Office Departments Job Summary Senior Renewals Operations Analyst Location: Bangalore India Shift Timing: 2:00 PM- 11:00 PM Willing to work Night shift as and when required (Quarter-ends, Month-ends etc) About the role:The Senior Renewal Operations Analyst will serve as the first point of contact for Renewal Sales Representatives, reporting directly to the Renewal Operations Manager. This role is critical in ensuring that all upcoming renewals from our installed base are accurately forecasted in the pipeline. The ideal candidate will provide essential support to the Renewals team, addressing system constraints and diligently managing transaction workloads to assist with renewal bookings on time. What you\u2019ll be doing: Maintain CRM",
+  "unparsed": []
+ },
+ "acceptable": [
+  "form_step"
+ ],
+ "label_source": "page_text_reviewed"
+}

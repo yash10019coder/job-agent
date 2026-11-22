@@ -1,0 +1,11 @@
+<!doctype html><html><head><title>Create account</title></head><body><main><h1>Create your account</h1><div id=err></div>
+<label for=fn>First name</label><input id=fn><label for=ln>Last name</label><input id=ln>
+<label for=em>Email</label><input id=em type=email><label for=pw>Password</label><input id=pw type=password><label for=cf>Confirm password</label><input id=cf type=password>
+<input type=checkbox id=ag><label for=ag>I agree to the privacy policy</label><button id=nx>Create account</button></main><script>
+document.getElementById('nx').onclick=()=>{const pw=document.getElementById('pw').value, cf=document.getElementById('cf').value, errs=[];
+ if(false){document.getElementById('err').innerHTML='<div role=alert>An account with this email already exists</div>';return;}
+ if(!document.getElementById('em').value||!document.getElementById('fn').value) errs.push('Name and email are required.');
+ if(pw.length<12||pw!==cf) errs.push('Password must be at least 12 characters and match.');
+ if(!document.getElementById('ag').checked) errs.push('Please accept the privacy policy.');
+ if(errs.length){document.getElementById('err').innerHTML='<div role=alert>'+errs.join(' ')+'</div>';return;} location.href='auth_code.html'; };
+</script></body></html>

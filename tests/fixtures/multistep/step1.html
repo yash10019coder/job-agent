@@ -1,0 +1,7 @@
+<!doctype html><html><head><title>Your details</title></head><body><main><h1>Your details</h1><div id="err"></div>
+<label for=fn>First name</label><input id=fn required><label for=ln>Last name</label><input id=ln required>
+<label for=em>Email</label><input id=em type=email required><label for=ph>Phone</label><input id=ph type=tel>
+<button id=nx>Next</button></main><script>
+document.getElementById('nx').onclick=()=>{const miss=['fn','ln','em'].filter(i=>!document.getElementById(i).value);
+ if(miss.length){document.getElementById('err').innerHTML='<div role=alert>Please complete all required fields</div>';return;}
+ location.href='step2.html';};</script></body></html>

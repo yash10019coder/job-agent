@@ -1,0 +1,20 @@
+{
+ "state": "A117",
+ "site": "workday",
+ "url": "https://candescent.wd501.myworkdayjobs.com/en-US/Hiring/job/IN---Bengaluru---Office/Software-Engineer_R0002235/apply/applyManually",
+ "engine_state_when_recorded": "unknown",
+ "interactions": [
+  {
+   "step": 117,
+   "label": "Are you subject to a non-compete agreement, a non-",
+   "group": "Are you subject to a non-compete agreement, a non-solicitation agreement, or any other pot",
+   "role": "combobox",
+   "kinds": [
+    "combobox",
+    "select"
+   ],
+   "as": "field",
+   "seen_when_recorded": true
+  }
+ ]
+}

@@ -1,0 +1,19 @@
+<!doctype html><html><head><meta charset="utf-8"><title>Application - Repair test</title></head><body><main>
+<h1>Application</h1>
+<form onsubmit="return false">
+<div class="field"><label for="fn">First name *</label><input id="fn" required></div>
+<div class="field"><label for="em">Email *</label><input id="em" type="email" required></div>
+<div class="field"><label for="cc">Country code</label>
+ <select id="cc"><option value="">Select</option><option>+1 US</option><option>+44 UK</option><option>+49 DE</option><option>+61 AU</option><option>+81 JP</option><option>+91 IN</option></select></div>
+<div class="field" id="phw"><label for="ph">Phone number *</label><input id="ph" type="tel" required>
+ <span class="e" hidden>Enter a valid number</span></div>
+<div class="field" id="ctw"><label for="ct">Current CTC (digits only) *</label><input id="ct" required>
+ <span class="e" hidden>Enter digits only</span></div>
+<button type="submit">Next</button>
+</form></main>
+<script>
+function check(id, wrap, bad) { const el = document.getElementById(id), w = document.getElementById(wrap), e = w.querySelector('.e');
+  el.addEventListener('blur', () => { const b = el.value && bad(el.value); e.hidden = !b; el.setAttribute('aria-invalid', b ? 'true' : 'false'); }); }
+check('ph', 'phw', v => /^\+/.test(v.trim()) || /\D/.test(v.replace(/\s/g, '')));   // national digits only: the code is separate
+check('ct', 'ctw', v => /\D/.test(v));
+</script></body></html>

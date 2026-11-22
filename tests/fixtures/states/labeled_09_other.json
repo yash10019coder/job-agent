@@ -1,0 +1,525 @@
+{
+ "name": "labeled_09_other",
+ "url": "https://careers.hubinternational.com/us/en/job/R0039444/Payroll-Specialist-II",
+ "status": 200,
+ "frame_hosts": [],
+ "from_url": "https://careers.hubinternational.com/us/en/job/R0039444",
+ "expect_state": "closed",
+ "labels": {
+  "1 Entry type": "Company page + Apply leads to the ATS",
+  "2 Gate (account)": "none (no account needed)",
+  "3 Extra checks": "none",
+  "4 Form fields visible": "yes - fields visible now",
+  "5 Steps": "multi-step",
+  "6 Vendor": "other"
+ },
+ "expect_application_form": false,
+ "expect_listing": false,
+ "model": {
+  "url": "https://careers.hubinternational.com/us/en/job/R0039444/Payroll-Specialist-II",
+  "title": "Job Filled in Location | Explore Categories at HUB International",
+  "headings": [
+   "",
+   "Payroll Specialist II",
+   "Description",
+   "Get notified for similar jobs",
+   "Share the opportunity",
+   "follow us"
+  ],
+  "alerts": [],
+  "fields": [
+   {
+    "id": "f0-n16",
+    "kind": "email",
+    "label": "Email address Email address",
+    "help": "",
+    "required": true,
+    "value": "",
+    "options": null,
+    "async_options": false,
+    "placeholder": "name@email.com",
+    "maxlength": null,
+    "pattern": null,
+    "accept": null,
+    "invalid": false,
+    "error": "",
+    "section": "Get notified for similar jobs",
+    "frame": 0,
+    "readonly": false,
+    "cards": false
+   },
+   {
+    "id": "f0-n17",
+    "kind": "checkbox",
+    "label": "EOE including Disability/Protected Veterans We endeavor to make this website accessible to any and all users. If you would like to contact us regarding the accessibility of our website or need assistance completing the application process, please contact the Recruiting Team at HUBRecruiting@hubinternational.com . This contact information is for accommodation requests only; do not use this contact information to inquire about the status of applications. \u00a9 2024 HUB International Limited. All rights reserved. Privacy Policy & Terms Conditions BCBSIL Machine Readable Files If you feel you have received communications from someone impersonating a Hub International Recruiter or find a job posting that cannot be verified by our career site, please email us to report this instance HUBRecruiting@hubinternational.com. Please be aware that we will never ask for payment or send a payment as a part of the recruitment or onboarding process.",
+    "help": "",
+    "required": true,
+    "value": "",
+    "options": null,
+    "async_options": false,
+    "placeholder": "",
+    "maxlength": null,
+    "pattern": null,
+    "accept": null,
+    "invalid": false,
+    "error": "",
+    "section": "Get notified for similar jobs",
+    "frame": 0,
+    "readonly": false,
+    "cards": false
+   },
+   {
+    "id": "f0-n55",
+    "kind": "text",
+    "label": "Chatbot User Input Box With Send Button",
+    "help": "",
+    "required": false,
+    "value": "",
+    "options": null,
+    "async_options": false,
+    "placeholder": "Ask anything",
+    "maxlength": null,
+    "pattern": null,
+    "accept": null,
+    "invalid": false,
+    "error": "",
+    "section": "",
+    "frame": 0,
+    "readonly": false,
+    "cards": false
+   }
+  ],
+  "actions": [
+   {
+    "id": "f0-n1",
+    "kind": "link",
+    "label": "Cookie Settings",
+    "primary": false,
+    "disabled": false,
+    "frame": 0
+   },
+   {
+    "id": "f0-n2",
+    "kind": "button",
+    "label": "Allow",
+    "primary": false,
+    "disabled": false,
+    "frame": 0
+   },
+   {
+    "id": "f0-n3",
+    "kind": "link",
+    "label": "Skip to main content",
+    "primary": false,
+    "disabled": false,
+    "frame": 0
+   },
+   {
+    "id": "f0-n4",
+    "kind": "link",
+    "label": "Company Logo",
+    "primary": false,
+    "disabled": false,
+    "frame": 0
+   },
+   {
+    "id": "f0-n5",
+    "kind": "button",
+    "label": "Career Opportunities",
+    "primary": false,
+    "disabled": false,
+    "frame": 0
+   },
+   {
+    "id": "f0-n6",
+    "kind": "button",
+    "label": "Working at HUB",
+    "primary": false,
+    "disabled": false,
+    "frame": 0
+   },
+   {
+    "id": "f0-n7",
+    "kind": "link",
+    "label": "Returning Candidates",
+    "primary": false,
+    "disabled": false,
+    "frame": 0
+   },
+   {
+    "id": "f0-n8",
+    "kind": "button",
+    "label": "English",
+    "primary": false,
+    "disabled": false,
+    "frame": 0
+   },
+   {
+    "id": "f0-n9",
+    "kind": "link",
+    "label": "Saved jobs (0)",
+    "primary": false,
+    "disabled": false,
+    "frame": 0
+   },
+   {
+    "id": "f0-n10",
+    "kind": "link",
+    "label": "Join Our Talent Community",
+    "primary": false,
+    "disabled": false,
+    "frame": 0
+   },
+   {
+    "id": "f0-n11",
+    "kind": "link",
+    "label": "Apply Now",
+    "primary": true,
+    "disabled": false,
+    "frame": 0
+   },
+   {
+    "id": "f0-n12",
+    "kind": "button",
+    "label": "Save",
+    "primary": false,
+    "disabled": false,
+    "frame": 0
+   },
+   {
+    "id": "f0-n13",
+    "kind": "link",
+    "label": "Our Recruiting Process | Applicant Notices: E-Verify Program",
+    "primary": false,
+    "disabled": false,
+    "frame": 0
+   },
+   {
+    "id": "f0-n14",
+    "kind": "link",
+    "label": "Apply Now",
+    "primary": true,
+    "disabled": false,
+    "frame": 0
+   },
+   {
+    "id": "f0-n15",
+    "kind": "button",
+    "label": "Save",
+    "primary": false,
+    "disabled": false,
+    "frame": 0
+   },
+   {
+    "id": "f0-n18",
+    "kind": "link",
+    "label": "Privacy Policy",
+    "primary": false,
+    "disabled": false,
+    "frame": 0
+   },
+   {
+    "id": "f0-n19",
+    "kind": "link",
+    "label": "Terms Conditions",
+    "primary": false,
+    "disabled": false,
+    "frame": 0
+   },
+   {
+    "id": "f0-n20",
+    "kind": "link",
+    "label": "BCBSIL Machine Readable Files",
+    "primary": false,
+    "disabled": false,
+    "frame": 0
+   },
+   {
+    "id": "f0-n21",
+    "kind": "button",
+    "label": "Submit",
+    "primary": true,
+    "disabled": false,
+    "frame": 0
+   },
+   {
+    "id": "f0-n22",
+    "kind": "button",
+    "label": "Manage Alerts",
+    "primary": false,
+    "disabled": false,
+    "frame": 0
+   },
+   {
+    "id": "f0-n23",
+    "kind": "button",
+    "label": "Get Started",
+    "primary": false,
+    "disabled": false,
+    "frame": 0
+   },
+   {
+    "id": "f0-n24",
+    "kind": "button",
+    "label": "Share via Facebook",
+    "primary": false,
+    "disabled": false,
+    "frame": 0
+   },
+   {
+    "id": "f0-n25",
+    "kind": "button",
+    "label": "Share via twitter",
+    "primary": false,
+    "disabled": false,
+    "frame": 0
+   },
+   {
+    "id": "f0-n26",
+    "kind": "button",
+    "label": "Share via linkedin",
+    "primary": false,
+    "disabled": false,
+    "frame": 0
+   },
+   {
+    "id": "f0-n27",
+    "kind": "link",
+    "label": "Personal Information",
+    "primary": false,
+    "disabled": false,
+    "frame": 0
+   },
+   {
+    "id": "f0-n28",
+    "kind": "link",
+    "label": "Career Site Cookie Settings",
+    "primary": false,
+    "disabled": false,
+    "frame": 0
+   },
+   {
+    "id": "f0-n29",
+    "kind": "link",
+    "label": "Explore Office Locations",
+    "primary": false,
+    "disabled": false,
+    "frame": 0
+   },
+   {
+    "id": "f0-n30",
+    "kind": "link",
+    "label": "Blog",
+    "primary": false,
+    "disabled": false,
+    "frame": 0
+   },
+   {
+    "id": "f0-n31",
+    "kind": "link",
+    "label": "Products",
+    "primary": false,
+    "disabled": false,
+    "frame": 0
+   },
+   {
+    "id": "f0-n32",
+    "kind": "link",
+    "label": "Industries",
+    "primary": false,
+    "disabled": false,
+    "frame": 0
+   },
+   {
+    "id": "f0-n33",
+    "kind": "link",
+    "label": "Programs & Associations",
+    "primary": false,
+    "disabled": false,
+    "frame": 0
+   },
+   {
+    "id": "f0-n34",
+    "kind": "link",
+    "label": "About HUB",
+    "primary": false,
+    "disabled": false,
+    "frame": 0
+   },
+   {
+    "id": "f0-n35",
+    "kind": "link",
+    "label": "Management",
+    "primary": false,
+    "disabled": false,
+    "frame": 0
+   },
+   {
+    "id": "f0-n36",
+    "kind": "link",
+    "label": "Caring and Giving",
+    "primary": false,
+    "disabled": false,
+    "frame": 0
+   },
+   {
+    "id": "f0-n37",
+    "kind": "link",
+    "label": "Mergers & Acquisitions",
+    "primary": false,
+    "disabled": false,
+    "frame": 0
+   },
+   {
+    "id": "f0-n38",
+    "kind": "link",
+    "label": "Press Releases",
+    "primary": false,
+    "disabled": false,
+    "frame": 0
+   },
+   {
+    "id": "f0-n39",
+    "kind": "link",
+    "label": "Careers",
+    "primary": false,
+    "disabled": false,
+    "frame": 0
+   },
+   {
+    "id": "f0-n40",
+    "kind": "link",
+    "label": "Wholesale",
+    "primary": false,
+    "disabled": false,
+    "frame": 0
+   },
+   {
+    "id": "f0-n41",
+    "kind": "link",
+    "label": "facebook",
+    "primary": false,
+    "disabled": false,
+    "frame": 0
+   },
+   {
+    "id": "f0-n42",
+    "kind": "link",
+    "label": "linkedIn",
+    "primary": false,
+    "disabled": false,
+    "frame": 0
+   },
+   {
+    "id": "f0-n43",
+    "kind": "link",
+    "label": "twitter",
+    "primary": false,
+    "disabled": false,
+    "frame": 0
+   },
+   {
+    "id": "f0-n44",
+    "kind": "link",
+    "label": "instagram",
+    "primary": false,
+    "disabled": false,
+    "frame": 0
+   },
+   {
+    "id": "f0-n45",
+    "kind": "link",
+    "label": "Privacy Policy",
+    "primary": false,
+    "disabled": false,
+    "frame": 0
+   },
+   {
+    "id": "f0-n46",
+    "kind": "link",
+    "label": "Terms & Conditions",
+    "primary": false,
+    "disabled": false,
+    "frame": 0
+   },
+   {
+    "id": "f0-n47",
+    "kind": "link",
+    "label": "BCBSIL Machine Readable Files",
+    "primary": false,
+    "disabled": false,
+    "frame": 0
+   },
+   {
+    "id": "f0-n48",
+    "kind": "button",
+    "label": "Clear Conversation",
+    "primary": false,
+    "disabled": false,
+    "frame": 0
+   },
+   {
+    "id": "f0-n49",
+    "kind": "button",
+    "label": "Mute/Unmute Chatbot Sounds",
+    "primary": false,
+    "disabled": false,
+    "frame": 0
+   },
+   {
+    "id": "f0-n50",
+    "kind": "button",
+    "label": "Close Chatbot Window",
+    "primary": false,
+    "disabled": false,
+    "frame": 0
+   },
+   {
+    "id": "f0-n51",
+    "kind": "link",
+    "label": "privacy policy",
+    "primary": false,
+    "disabled": false,
+    "frame": 0
+   },
+   {
+    "id": "f0-n52",
+    "kind": "button",
+    "label": "I'm interested",
+    "primary": false,
+    "disabled": false,
+    "frame": 0
+   },
+   {
+    "id": "f0-n53",
+    "kind": "button",
+    "label": "Similar Jobs",
+    "primary": false,
+    "disabled": false,
+    "frame": 0
+   },
+   {
+    "id": "f0-n54",
+    "kind": "button",
+    "label": "More Options",
+    "primary": false,
+    "disabled": false,
+    "frame": 0
+   },
+   {
+    "id": "f0-n56",
+    "kind": "button",
+    "label": "send",
+    "primary": false,
+    "disabled": true,
+    "frame": 0
+   }
+  ],
+  "text_digest": "We use cookies to offer you a better browsing experience, analyze site traffic, and personalize content. Read about how we use cookies and how you can control them by visiting our Cookie Settings page. Allow Skip to main content Career Opportunities Working at HUB Returning Candidates English Saved jobs (0) - Join Our Talent Community Attention Job Applicants: Integrity is a core value of HUB and is at the center of everything we do. HUB applies the highest ethical standards to our relationships with employees, clients, and carrier partners. We expect all job applicants to act with the same standard of integrity. Accordingly, providing false or misleading information, or omitting information, during the application and hiring process, including the information shared through a resume, job application and/or background check, may result in immediate disqualification from the hiring proces",
+  "unparsed": []
+ },
+ "acceptable": [
+  "closed"
+ ],
+ "label_source": "page_text_reviewed"
+}

@@ -1,0 +1,129 @@
+{
+ "name": "labeled_05_schoolspring",
+ "url": "https://www.schoolspring.com/jobdetail?jobId=5980236",
+ "status": 200,
+ "frame_hosts": [],
+ "from_url": "https://www.SchoolSpring.com/jobdetail?jobId=5980236",
+ "expect_state": "account_choice",
+ "labels": {
+  "1 Entry type": "ATS page (link goes straight to the ATS)",
+  "2 Gate (account)": "login+signup",
+  "3 Extra checks": "email code",
+  "4 Form fields visible": "no - need more clicks",
+  "5 Steps": "cannot tell yet",
+  "6 Vendor": "schoolspring"
+ },
+ "expect_application_form": false,
+ "expect_listing": false,
+ "model": {
+  "url": "https://www.schoolspring.com/jobdetail?jobId=5980236",
+  "title": "Teaching jobs, educator jobs, school jobs | SchoolSpring",
+  "headings": [],
+  "alerts": [],
+  "fields": [],
+  "actions": [
+   {
+    "id": "f0-n1",
+    "kind": "link",
+    "label": "SchoolSpring",
+    "primary": false,
+    "disabled": false,
+    "frame": 0
+   },
+   {
+    "id": "f0-n2",
+    "kind": "link",
+    "label": "Help (opens in a new tab)",
+    "primary": false,
+    "disabled": false,
+    "frame": 0
+   },
+   {
+    "id": "f0-n3",
+    "kind": "link",
+    "label": "Sign In / Register",
+    "primary": false,
+    "disabled": false,
+    "frame": 0
+   },
+   {
+    "id": "f0-n4",
+    "kind": "link",
+    "label": "click here",
+    "primary": false,
+    "disabled": false,
+    "frame": 0
+   },
+   {
+    "id": "f0-n5",
+    "kind": "button",
+    "label": "Close",
+    "primary": false,
+    "disabled": false,
+    "frame": 0
+   },
+   {
+    "id": "f0-n6",
+    "kind": "button",
+    "label": "Sign in/Register",
+    "primary": false,
+    "disabled": false,
+    "frame": 0
+   },
+   {
+    "id": "f0-n7",
+    "kind": "link",
+    "label": "Find a Job",
+    "primary": false,
+    "disabled": false,
+    "frame": 0
+   },
+   {
+    "id": "f0-n8",
+    "kind": "link",
+    "label": "Post a Job",
+    "primary": false,
+    "disabled": false,
+    "frame": 0
+   },
+   {
+    "id": "f0-n9",
+    "kind": "link",
+    "label": "Contact",
+    "primary": false,
+    "disabled": false,
+    "frame": 0
+   },
+   {
+    "id": "f0-n10",
+    "kind": "link",
+    "label": "Site Map",
+    "primary": false,
+    "disabled": false,
+    "frame": 0
+   },
+   {
+    "id": "f0-n11",
+    "kind": "link",
+    "label": "Privacy Supplement",
+    "primary": false,
+    "disabled": false,
+    "frame": 0
+   },
+   {
+    "id": "f0-n12",
+    "kind": "link",
+    "label": "Terms of Use",
+    "primary": false,
+    "disabled": false,
+    "frame": 0
+   }
+  ],
+  "text_digest": "SchoolSpring Skip To Main Sign In / Register Welcome to the new SchoolSpring experience If you are a returning applicant from the old experience, follow these steps to access your account: Visit the Sign-in/Register page. Click Sign up to create a new account with the same email address that you used on the old SchoolSpring login. Verify your email address. To sign in as an employer, simply click on the \"Sign in as an employer\" link on the login page or click here If you have any questions or encounter any issues, please reach out to our support team. 150 Parkshore Dr. Folsom, CA 95630 \u00a9 2026 PowerSchool. All Rights Reserved Find a Job|Post a Job|Contact|Site Map|Privacy Supplement|Terms of Use",
+  "unparsed": []
+ },
+ "acceptable": [
+  "account_choice"
+ ],
+ "label_source": "page_text_reviewed"
+}

@@ -1,0 +1,269 @@
+{
+ "name": "labeled_18_unknown",
+ "url": "https://careers.lakeshore.edu/jobs/1261/job?utm_source=indeed_integration&iis=Job%20Board&iisn=Indeed&indeed-apply-token=73a2d2b2a8d6d5c0a62696875eaebd669103652d3f0c2cd5445d3e66b1592b0f",
+ "status": 200,
+ "frame_hosts": [],
+ "from_url": "https://careers.lakeshore.edu/jobs/1261/job?utm_source=indeed_integration&iis=Job%20Board&iisn=Indeed&indeed-apply-token=73a2d2b2a8d6d5c0a62696875eaebd669103652d3f0c2cd5445d3e66b1592b0f",
+ "expect_state": "closed",
+ "labels": {
+  "1 Entry type": "Dead / closed posting",
+  "2 Gate (account)": null,
+  "3 Extra checks": null,
+  "4 Form fields visible": null,
+  "5 Steps": null,
+  "6 Vendor": null
+ },
+ "expect_application_form": false,
+ "expect_listing": false,
+ "model": {
+  "url": "https://careers.lakeshore.edu/jobs/1261/job?utm_source=indeed_integration&iis=Job%20Board&iisn=Indeed&indeed-apply-token=73a2d2b2a8d6d5c0a62696875eaebd669103652d3f0c2cd5445d3e66b1592b0f",
+  "title": "LakeShore College Careers",
+  "headings": [
+   "404",
+   "The page you are looking for no longer exists.",
+   "EEO Statement"
+  ],
+  "alerts": [],
+  "fields": [],
+  "actions": [
+   {
+    "id": "f0-n1",
+    "kind": "link",
+    "label": "Programs & Courses",
+    "primary": false,
+    "disabled": false,
+    "frame": 0
+   },
+   {
+    "id": "f0-n2",
+    "kind": "link",
+    "label": "Admissions",
+    "primary": false,
+    "disabled": false,
+    "frame": 0
+   },
+   {
+    "id": "f0-n3",
+    "kind": "link",
+    "label": "Paying for College",
+    "primary": false,
+    "disabled": false,
+    "frame": 0
+   },
+   {
+    "id": "f0-n4",
+    "kind": "link",
+    "label": "Student Experience",
+    "primary": false,
+    "disabled": false,
+    "frame": 0
+   },
+   {
+    "id": "f0-n5",
+    "kind": "link",
+    "label": "Business & Industry",
+    "primary": false,
+    "disabled": false,
+    "frame": 0
+   },
+   {
+    "id": "f0-n6",
+    "kind": "link",
+    "label": "About",
+    "primary": false,
+    "disabled": false,
+    "frame": 0
+   },
+   {
+    "id": "f0-n7",
+    "kind": "link",
+    "label": "Programs & Courses",
+    "primary": false,
+    "disabled": false,
+    "frame": 0
+   },
+   {
+    "id": "f0-n8",
+    "kind": "link",
+    "label": "Admissions",
+    "primary": false,
+    "disabled": false,
+    "frame": 0
+   },
+   {
+    "id": "f0-n9",
+    "kind": "link",
+    "label": "Paying for College",
+    "primary": false,
+    "disabled": false,
+    "frame": 0
+   },
+   {
+    "id": "f0-n10",
+    "kind": "link",
+    "label": "Student Experience",
+    "primary": false,
+    "disabled": false,
+    "frame": 0
+   },
+   {
+    "id": "f0-n11",
+    "kind": "link",
+    "label": "Business & Industry",
+    "primary": false,
+    "disabled": false,
+    "frame": 0
+   },
+   {
+    "id": "f0-n12",
+    "kind": "link",
+    "label": "About",
+    "primary": false,
+    "disabled": false,
+    "frame": 0
+   },
+   {
+    "id": "f0-n13",
+    "kind": "link",
+    "label": "here",
+    "primary": false,
+    "disabled": false,
+    "frame": 0
+   },
+   {
+    "id": "f0-n14",
+    "kind": "link",
+    "label": "WWW.LAKESHORE.EDU",
+    "primary": false,
+    "disabled": false,
+    "frame": 0
+   },
+   {
+    "id": "f0-n15",
+    "kind": "link",
+    "label": "1.888.468.6582",
+    "primary": false,
+    "disabled": false,
+    "frame": 0
+   },
+   {
+    "id": "f0-n16",
+    "kind": "link",
+    "label": "920.693.1000 TTY 711",
+    "primary": false,
+    "disabled": false,
+    "frame": 0
+   },
+   {
+    "id": "f0-n17",
+    "kind": "link",
+    "label": "HLC-Accredited",
+    "primary": false,
+    "disabled": false,
+    "frame": 0
+   },
+   {
+    "id": "f0-n18",
+    "kind": "link",
+    "label": "Equal Opportunity Statement",
+    "primary": false,
+    "disabled": false,
+    "frame": 0
+   },
+   {
+    "id": "f0-n19",
+    "kind": "link",
+    "label": "Consumer Disclosure Information",
+    "primary": false,
+    "disabled": false,
+    "frame": 0
+   },
+   {
+    "id": "f0-n20",
+    "kind": "link",
+    "label": "Privacy Policy",
+    "primary": false,
+    "disabled": false,
+    "frame": 0
+   },
+   {
+    "id": "f0-n21",
+    "kind": "link",
+    "label": "WTCS",
+    "primary": false,
+    "disabled": false,
+    "frame": 0
+   },
+   {
+    "id": "f0-n22",
+    "kind": "link",
+    "label": "Search",
+    "primary": false,
+    "disabled": false,
+    "frame": 0
+   },
+   {
+    "id": "f0-n23",
+    "kind": "link",
+    "label": "Staff",
+    "primary": false,
+    "disabled": false,
+    "frame": 0
+   },
+   {
+    "id": "f0-n24",
+    "kind": "link",
+    "label": "Events",
+    "primary": false,
+    "disabled": false,
+    "frame": 0
+   },
+   {
+    "id": "f0-n25",
+    "kind": "link",
+    "label": "News",
+    "primary": false,
+    "disabled": false,
+    "frame": 0
+   },
+   {
+    "id": "f0-n26",
+    "kind": "link",
+    "label": "Employment",
+    "primary": false,
+    "disabled": false,
+    "frame": 0
+   },
+   {
+    "id": "f0-n27",
+    "kind": "link",
+    "label": "Media",
+    "primary": false,
+    "disabled": false,
+    "frame": 0
+   },
+   {
+    "id": "f0-n28",
+    "kind": "link",
+    "label": "How to Apply",
+    "primary": false,
+    "disabled": false,
+    "frame": 0
+   },
+   {
+    "id": "f0-n29",
+    "kind": "link",
+    "label": "Public Records Request",
+    "primary": false,
+    "disabled": false,
+    "frame": 0
+   }
+  ],
+  "text_digest": "Skip to Main Content Programs & Courses Admissions Paying for College Student Experience Business & Industry About Programs & Courses Admissions Paying for College Student Experience Business & Industry About 404 The page you are looking for no longer exists. We\u2019re sorry, but it looks like this job may be no longer available or does not exist. Please click here to perform a new job search. EEO Statement Lakeshore College does not discriminate on the basis of race, creed, color, national origin, ancestry, religion, sex, disability, age, sexual orientation, genetic testing, lack of English skills, arrest or conviction record, political affiliation, veteran status, parental status, marital status, pregnancy or other protected categories, in its services, employment, programs, and/or educational programs and activities, including but not limited to admissions, access and participation. The c",
+  "unparsed": []
+ },
+ "acceptable": [
+  "closed"
+ ],
+ "label_source": "page_text_reviewed"
+}

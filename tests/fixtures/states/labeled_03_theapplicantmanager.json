@@ -1,0 +1,2580 @@
+{
+ "name": "labeled_03_theapplicantmanager",
+ "url": "https://theapplicantmanager.com/jobs?pos=aq1102&src=Indeed",
+ "status": 200,
+ "frame_hosts": [],
+ "from_url": "https://theapplicantmanager.com/jobs?pos=aq1102&src=Indeed",
+ "expect_state": "form_step",
+ "labels": {
+  "1 Entry type": "ATS page (link goes straight to the ATS)",
+  "2 Gate (account)": "none (no account needed)",
+  "3 Extra checks": "none",
+  "4 Form fields visible": "yes - fields visible now",
+  "5 Steps": "single step",
+  "6 Vendor": "theapplicantmanager"
+ },
+ "expect_application_form": true,
+ "expect_listing": false,
+ "model": {
+  "url": "https://theapplicantmanager.com/jobs?pos=aq1102&src=Indeed",
+  "title": "ARGO- Human Resources Director (Richardson, TX)",
+  "headings": [
+   "Human Resources Director (Richardson, TX)",
+   "Personal Information",
+   "Attachments",
+   "Other Information"
+  ],
+  "alerts": [],
+  "fields": [
+   {
+    "id": "f0-n3",
+    "kind": "text",
+    "label": "First name",
+    "help": "",
+    "required": false,
+    "value": "",
+    "options": null,
+    "async_options": false,
+    "placeholder": "",
+    "maxlength": 50,
+    "pattern": null,
+    "accept": null,
+    "invalid": false,
+    "error": "",
+    "section": "Personal Information",
+    "frame": 0,
+    "readonly": false,
+    "cards": false
+   },
+   {
+    "id": "f0-n4",
+    "kind": "text",
+    "label": "Last name",
+    "help": "",
+    "required": false,
+    "value": "",
+    "options": null,
+    "async_options": false,
+    "placeholder": "",
+    "maxlength": 50,
+    "pattern": null,
+    "accept": null,
+    "invalid": false,
+    "error": "",
+    "section": "Personal Information",
+    "frame": 0,
+    "readonly": false,
+    "cards": false
+   },
+   {
+    "id": "f0-n5",
+    "kind": "text",
+    "label": "Email",
+    "help": "",
+    "required": false,
+    "value": "",
+    "options": null,
+    "async_options": false,
+    "placeholder": "",
+    "maxlength": 50,
+    "pattern": null,
+    "accept": null,
+    "invalid": false,
+    "error": "",
+    "section": "Personal Information",
+    "frame": 0,
+    "readonly": false,
+    "cards": false
+   },
+   {
+    "id": "f0-n6",
+    "kind": "text",
+    "label": "Address",
+    "help": "",
+    "required": false,
+    "value": "",
+    "options": null,
+    "async_options": false,
+    "placeholder": "",
+    "maxlength": 50,
+    "pattern": null,
+    "accept": null,
+    "invalid": false,
+    "error": "",
+    "section": "Personal Information",
+    "frame": 0,
+    "readonly": false,
+    "cards": false
+   },
+   {
+    "id": "f0-n7",
+    "kind": "text",
+    "label": "City",
+    "help": "",
+    "required": false,
+    "value": "",
+    "options": null,
+    "async_options": false,
+    "placeholder": "",
+    "maxlength": 50,
+    "pattern": null,
+    "accept": null,
+    "invalid": false,
+    "error": "",
+    "section": "Personal Information",
+    "frame": 0,
+    "readonly": false,
+    "cards": false
+   },
+   {
+    "id": "f0-n8",
+    "kind": "select",
+    "label": "State",
+    "help": "",
+    "required": false,
+    "value": "",
+    "options": [
+     {
+      "id": "",
+      "label": "Alabama",
+      "value": "AL"
+     },
+     {
+      "id": "",
+      "label": "Alaska",
+      "value": "AK"
+     },
+     {
+      "id": "",
+      "label": "Arizona",
+      "value": "AZ"
+     },
+     {
+      "id": "",
+      "label": "Arkansas",
+      "value": "AR"
+     },
+     {
+      "id": "",
+      "label": "California",
+      "value": "CA"
+     },
+     {
+      "id": "",
+      "label": "Colorado",
+      "value": "CO"
+     },
+     {
+      "id": "",
+      "label": "Connecticut",
+      "value": "CT"
+     },
+     {
+      "id": "",
+      "label": "Delaware",
+      "value": "DE"
+     },
+     {
+      "id": "",
+      "label": "District Of Columbia",
+      "value": "DC"
+     },
+     {
+      "id": "",
+      "label": "Florida",
+      "value": "FL"
+     },
+     {
+      "id": "",
+      "label": "Georgia",
+      "value": "GA"
+     },
+     {
+      "id": "",
+      "label": "Hawaii",
+      "value": "HI"
+     },
+     {
+      "id": "",
+      "label": "Idaho",
+      "value": "ID"
+     },
+     {
+      "id": "",
+      "label": "Illinois",
+      "value": "IL"
+     },
+     {
+      "id": "",
+      "label": "Indiana",
+      "value": "IN"
+     },
+     {
+      "id": "",
+      "label": "Iowa",
+      "value": "IA"
+     },
+     {
+      "id": "",
+      "label": "Kansas",
+      "value": "KS"
+     },
+     {
+      "id": "",
+      "label": "Kentucky",
+      "value": "KY"
+     },
+     {
+      "id": "",
+      "label": "Louisiana",
+      "value": "LA"
+     },
+     {
+      "id": "",
+      "label": "Maine",
+      "value": "ME"
+     },
+     {
+      "id": "",
+      "label": "Maryland",
+      "value": "MD"
+     },
+     {
+      "id": "",
+      "label": "Massachusetts",
+      "value": "MA"
+     },
+     {
+      "id": "",
+      "label": "Michigan",
+      "value": "MI"
+     },
+     {
+      "id": "",
+      "label": "Minnesota",
+      "value": "MN"
+     },
+     {
+      "id": "",
+      "label": "Mississippi",
+      "value": "MS"
+     },
+     {
+      "id": "",
+      "label": "Missouri",
+      "value": "MO"
+     },
+     {
+      "id": "",
+      "label": "Montana",
+      "value": "MT"
+     },
+     {
+      "id": "",
+      "label": "Nebraska",
+      "value": "NE"
+     },
+     {
+      "id": "",
+      "label": "Nevada",
+      "value": "NV"
+     },
+     {
+      "id": "",
+      "label": "New Hampshire",
+      "value": "NH"
+     },
+     {
+      "id": "",
+      "label": "New Jersey",
+      "value": "NJ"
+     },
+     {
+      "id": "",
+      "label": "New Mexico",
+      "value": "NM"
+     },
+     {
+      "id": "",
+      "label": "New York",
+      "value": "NY"
+     },
+     {
+      "id": "",
+      "label": "North Carolina",
+      "value": "NC"
+     },
+     {
+      "id": "",
+      "label": "North Dakota",
+      "value": "ND"
+     },
+     {
+      "id": "",
+      "label": "Ohio",
+      "value": "OH"
+     },
+     {
+      "id": "",
+      "label": "Oklahoma",
+      "value": "OK"
+     },
+     {
+      "id": "",
+      "label": "Oregon",
+      "value": "OR"
+     },
+     {
+      "id": "",
+      "label": "Pennsylvania",
+      "value": "PA"
+     },
+     {
+      "id": "",
+      "label": "Rhode Island",
+      "value": "RI"
+     },
+     {
+      "id": "",
+      "label": "South Carolina",
+      "value": "SC"
+     },
+     {
+      "id": "",
+      "label": "South Dakota",
+      "value": "SD"
+     },
+     {
+      "id": "",
+      "label": "Tennessee",
+      "value": "TN"
+     },
+     {
+      "id": "",
+      "label": "Texas",
+      "value": "TX"
+     },
+     {
+      "id": "",
+      "label": "Utah",
+      "value": "UT"
+     },
+     {
+      "id": "",
+      "label": "Vermont",
+      "value": "VT"
+     },
+     {
+      "id": "",
+      "label": "Virginia",
+      "value": "VA"
+     },
+     {
+      "id": "",
+      "label": "Washington",
+      "value": "WA"
+     },
+     {
+      "id": "",
+      "label": "West Virginia",
+      "value": "WV"
+     },
+     {
+      "id": "",
+      "label": "Wisconsin",
+      "value": "WI"
+     },
+     {
+      "id": "",
+      "label": "Wyoming",
+      "value": "WY"
+     },
+     {
+      "id": "",
+      "label": "American Samoa",
+      "value": "AS"
+     },
+     {
+      "id": "",
+      "label": "Guam",
+      "value": "GU"
+     },
+     {
+      "id": "",
+      "label": "N. Mariana Islands",
+      "value": "MP"
+     },
+     {
+      "id": "",
+      "label": "Puerto Rico",
+      "value": "PR"
+     },
+     {
+      "id": "",
+      "label": "U.S. Virgin Islands",
+      "value": "VI"
+     },
+     {
+      "id": "",
+      "label": "U.S. Minor Islands",
+      "value": "UM"
+     },
+     {
+      "id": "",
+      "label": "---",
+      "value": "---"
+     },
+     {
+      "id": "",
+      "label": "Alberta",
+      "value": "AB"
+     },
+     {
+      "id": "",
+      "label": "British Columbia",
+      "value": "BC"
+     },
+     {
+      "id": "",
+      "label": "Manitoba",
+      "value": "MB"
+     },
+     {
+      "id": "",
+      "label": "New Brunswick",
+      "value": "NB"
+     },
+     {
+      "id": "",
+      "label": "Newfoundland",
+      "value": "NF"
+     },
+     {
+      "id": "",
+      "label": "Northwest Territories",
+      "value": "NT"
+     },
+     {
+      "id": "",
+      "label": "Nova Scotia",
+      "value": "NS"
+     },
+     {
+      "id": "",
+      "label": "Nunavut",
+      "value": "NU"
+     },
+     {
+      "id": "",
+      "label": "Ontario",
+      "value": "ON"
+     },
+     {
+      "id": "",
+      "label": "Prince Edward Island",
+      "value": "PE"
+     },
+     {
+      "id": "",
+      "label": "Quebec",
+      "value": "QC"
+     },
+     {
+      "id": "",
+      "label": "Saskatchewan",
+      "value": "SK"
+     },
+     {
+      "id": "",
+      "label": "Yukon Territory",
+      "value": "YT"
+     }
+    ],
+    "async_options": false,
+    "placeholder": "",
+    "maxlength": null,
+    "pattern": null,
+    "accept": null,
+    "invalid": false,
+    "error": "",
+    "section": "Personal Information",
+    "frame": 0,
+    "readonly": false,
+    "cards": false
+   },
+   {
+    "id": "f0-n9",
+    "kind": "text",
+    "label": "Zip code",
+    "help": "",
+    "required": false,
+    "value": "",
+    "options": null,
+    "async_options": false,
+    "placeholder": "",
+    "maxlength": 50,
+    "pattern": null,
+    "accept": null,
+    "invalid": false,
+    "error": "",
+    "section": "Personal Information",
+    "frame": 0,
+    "readonly": false,
+    "cards": false
+   },
+   {
+    "id": "f0-n10",
+    "kind": "select",
+    "label": "Country",
+    "help": "",
+    "required": false,
+    "value": "",
+    "options": [
+     {
+      "id": "",
+      "label": "United States of America",
+      "value": "US"
+     },
+     {
+      "id": "",
+      "label": "Canada",
+      "value": "CA"
+     },
+     {
+      "id": "",
+      "label": "Afghanistan",
+      "value": "AF"
+     },
+     {
+      "id": "",
+      "label": "Aland Islands",
+      "value": "AX"
+     },
+     {
+      "id": "",
+      "label": "Albania",
+      "value": "AL"
+     },
+     {
+      "id": "",
+      "label": "Algeria",
+      "value": "DZ"
+     },
+     {
+      "id": "",
+      "label": "American Samoa",
+      "value": "AS"
+     },
+     {
+      "id": "",
+      "label": "Andorra",
+      "value": "AD"
+     },
+     {
+      "id": "",
+      "label": "Angola",
+      "value": "AO"
+     },
+     {
+      "id": "",
+      "label": "Anguilla",
+      "value": "AI"
+     },
+     {
+      "id": "",
+      "label": "Antarctica",
+      "value": "AQ"
+     },
+     {
+      "id": "",
+      "label": "Antigua and Barbuda",
+      "value": "AG"
+     },
+     {
+      "id": "",
+      "label": "Argentina",
+      "value": "AR"
+     },
+     {
+      "id": "",
+      "label": "Armenia",
+      "value": "AM"
+     },
+     {
+      "id": "",
+      "label": "Aruba",
+      "value": "AW"
+     },
+     {
+      "id": "",
+      "label": "Australia",
+      "value": "AU"
+     },
+     {
+      "id": "",
+      "label": "Austria",
+      "value": "AT"
+     },
+     {
+      "id": "",
+      "label": "Azerbaijan",
+      "value": "AZ"
+     },
+     {
+      "id": "",
+      "label": "Bahamas",
+      "value": "BS"
+     },
+     {
+      "id": "",
+      "label": "Bahrain",
+      "value": "BH"
+     },
+     {
+      "id": "",
+      "label": "Bangladesh",
+      "value": "BD"
+     },
+     {
+      "id": "",
+      "label": "Barbados",
+      "value": "BB"
+     },
+     {
+      "id": "",
+      "label": "Belarus",
+      "value": "BY"
+     },
+     {
+      "id": "",
+      "label": "Belgium",
+      "value": "BE"
+     },
+     {
+      "id": "",
+      "label": "Belize",
+      "value": "BZ"
+     },
+     {
+      "id": "",
+      "label": "Benin",
+      "value": "BJ"
+     },
+     {
+      "id": "",
+      "label": "Bermuda",
+      "value": "BM"
+     },
+     {
+      "id": "",
+      "label": "Bhutan",
+      "value": "BT"
+     },
+     {
+      "id": "",
+      "label": "Bolivia",
+      "value": "BO"
+     },
+     {
+      "id": "",
+      "label": "Bonaire",
+      "value": "BQ"
+     },
+     {
+      "id": "",
+      "label": "Bosnia and Herzegovina",
+      "value": "BA"
+     },
+     {
+      "id": "",
+      "label": "Botswana",
+      "value": "BW"
+     },
+     {
+      "id": "",
+      "label": "Bouvet Island",
+      "value": "BV"
+     },
+     {
+      "id": "",
+      "label": "Brazil",
+      "value": "BR"
+     },
+     {
+      "id": "",
+      "label": "British Indian Ocean Territory",
+      "value": "IO"
+     },
+     {
+      "id": "",
+      "label": "Brunei Darussalam",
+      "value": "BN"
+     },
+     {
+      "id": "",
+      "label": "Bulgaria",
+      "value": "BG"
+     },
+     {
+      "id": "",
+      "label": "Burkina Faso",
+      "value": "BF"
+     },
+     {
+      "id": "",
+      "label": "Burundi",
+      "value": "BI"
+     },
+     {
+      "id": "",
+      "label": "Cabo Verde",
+      "value": "CV"
+     },
+     {
+      "id": "",
+      "label": "Cambodia",
+      "value": "KH"
+     },
+     {
+      "id": "",
+      "label": "Cameroon",
+      "value": "CM"
+     },
+     {
+      "id": "",
+      "label": "Cayman Islands",
+      "value": "KY"
+     },
+     {
+      "id": "",
+      "label": "Central African Republic",
+      "value": "CF"
+     },
+     {
+      "id": "",
+      "label": "Chad",
+      "value": "TD"
+     },
+     {
+      "id": "",
+      "label": "Chile",
+      "value": "CL"
+     },
+     {
+      "id": "",
+      "label": "China",
+      "value": "CN"
+     },
+     {
+      "id": "",
+      "label": "Christmas Island",
+      "value": "CX"
+     },
+     {
+      "id": "",
+      "label": "Cocos (Keeling) Islands",
+      "value": "CC"
+     },
+     {
+      "id": "",
+      "label": "Colombia",
+      "value": "CO"
+     },
+     {
+      "id": "",
+      "label": "Comoros",
+      "value": "KM"
+     },
+     {
+      "id": "",
+      "label": "Congo (Democratic Republic of the)",
+      "value": "CD"
+     },
+     {
+      "id": "",
+      "label": "Congo",
+      "value": "CG"
+     },
+     {
+      "id": "",
+      "label": "Cook Islands",
+      "value": "CK"
+     },
+     {
+      "id": "",
+      "label": "Costa Rica",
+      "value": "CR"
+     },
+     {
+      "id": "",
+      "label": "Cote d'Ivoire",
+      "value": "CI"
+     },
+     {
+      "id": "",
+      "label": "Croatia",
+      "value": "HR"
+     },
+     {
+      "id": "",
+      "label": "Cuba",
+      "value": "CU"
+     },
+     {
+      "id": "",
+      "label": "Curacao",
+      "value": "CW"
+     },
+     {
+      "id": "",
+      "label": "Cyprus",
+      "value": "CY"
+     },
+     {
+      "id": "",
+      "label": "Czech Republic",
+      "value": "CZ"
+     },
+     {
+      "id": "",
+      "label": "Denmark",
+      "value": "DK"
+     },
+     {
+      "id": "",
+      "label": "Djibouti",
+      "value": "DJ"
+     },
+     {
+      "id": "",
+      "label": "Dominica",
+      "value": "DM"
+     },
+     {
+      "id": "",
+      "label": "Dominican Republic",
+      "value": "DO"
+     },
+     {
+      "id": "",
+      "label": "Ecuador",
+      "value": "EC"
+     },
+     {
+      "id": "",
+      "label": "Egypt",
+      "value": "EG"
+     },
+     {
+      "id": "",
+      "label": "El Salvador",
+      "value": "SV"
+     },
+     {
+      "id": "",
+      "label": "Equatorial Guinea",
+      "value": "GQ"
+     },
+     {
+      "id": "",
+      "label": "Eritrea",
+      "value": "ER"
+     },
+     {
+      "id": "",
+      "label": "Estonia",
+      "value": "EE"
+     },
+     {
+      "id": "",
+      "label": "Ethiopia",
+      "value": "ET"
+     },
+     {
+      "id": "",
+      "label": "Falkland Islands",
+      "value": "FK"
+     },
+     {
+      "id": "",
+      "label": "Faroe Islands",
+      "value": "FO"
+     },
+     {
+      "id": "",
+      "label": "Fiji",
+      "value": "FJ"
+     },
+     {
+      "id": "",
+      "label": "Finland",
+      "value": "FI"
+     },
+     {
+      "id": "",
+      "label": "France",
+      "value": "FR"
+     },
+     {
+      "id": "",
+      "label": "French Guiana",
+      "value": "GF"
+     },
+     {
+      "id": "",
+      "label": "French Polynesia",
+      "value": "PF"
+     },
+     {
+      "id": "",
+      "label": "French Southern Territories",
+      "value": "TF"
+     },
+     {
+      "id": "",
+      "label": "Gabon",
+      "value": "GA"
+     },
+     {
+      "id": "",
+      "label": "Gambia",
+      "value": "GM"
+     },
+     {
+      "id": "",
+      "label": "Georgia",
+      "value": "GE"
+     },
+     {
+      "id": "",
+      "label": "Germany",
+      "value": "DE"
+     },
+     {
+      "id": "",
+      "label": "Ghana",
+      "value": "GH"
+     },
+     {
+      "id": "",
+      "label": "Gibraltar",
+      "value": "GI"
+     },
+     {
+      "id": "",
+      "label": "Greece",
+      "value": "GR"
+     },
+     {
+      "id": "",
+      "label": "Greenland",
+      "value": "GL"
+     },
+     {
+      "id": "",
+      "label": "Grenada",
+      "value": "GD"
+     },
+     {
+      "id": "",
+      "label": "Guadeloupe",
+      "value": "GP"
+     },
+     {
+      "id": "",
+      "label": "Guam",
+      "value": "GU"
+     },
+     {
+      "id": "",
+      "label": "Guatemala",
+      "value": "GT"
+     },
+     {
+      "id": "",
+      "label": "Guernsey",
+      "value": "GG"
+     },
+     {
+      "id": "",
+      "label": "Guinea",
+      "value": "GN"
+     },
+     {
+      "id": "",
+      "label": "Guinea-Bissau",
+      "value": "GW"
+     },
+     {
+      "id": "",
+      "label": "Guyana",
+      "value": "GY"
+     },
+     {
+      "id": "",
+      "label": "Haiti",
+      "value": "HT"
+     },
+     {
+      "id": "",
+      "label": "Heard and McDonald Islands",
+      "value": "HM"
+     },
+     {
+      "id": "",
+      "label": "Holy See",
+      "value": "VA"
+     },
+     {
+      "id": "",
+      "label": "Honduras",
+      "value": "HN"
+     },
+     {
+      "id": "",
+      "label": "Hong Kong",
+      "value": "HK"
+     },
+     {
+      "id": "",
+      "label": "Hungary",
+      "value": "HU"
+     },
+     {
+      "id": "",
+      "label": "Iceland",
+      "value": "IS"
+     },
+     {
+      "id": "",
+      "label": "India",
+      "value": "IN"
+     },
+     {
+      "id": "",
+      "label": "Indonesia",
+      "value": "ID"
+     },
+     {
+      "id": "",
+      "label": "Iran (Islamic Republic of)",
+      "value": "IR"
+     },
+     {
+      "id": "",
+      "label": "Iraq",
+      "value": "IQ"
+     },
+     {
+      "id": "",
+      "label": "Ireland",
+      "value": "IE"
+     },
+     {
+      "id": "",
+      "label": "Isle of Man",
+      "value": "IM"
+     },
+     {
+      "id": "",
+      "label": "Israel",
+      "value": "IL"
+     },
+     {
+      "id": "",
+      "label": "Italy",
+      "value": "IT"
+     },
+     {
+      "id": "",
+      "label": "Jamaica",
+      "value": "JM"
+     },
+     {
+      "id": "",
+      "label": "Japan",
+      "value": "JP"
+     },
+     {
+      "id": "",
+      "label": "Jersey",
+      "value": "JE"
+     },
+     {
+      "id": "",
+      "label": "Jordan",
+      "value": "JO"
+     },
+     {
+      "id": "",
+      "label": "Kazakhstan",
+      "value": "KZ"
+     },
+     {
+      "id": "",
+      "label": "Kenya",
+      "value": "KE"
+     },
+     {
+      "id": "",
+      "label": "Kiribati",
+      "value": "KI"
+     },
+     {
+      "id": "",
+      "label": "Korea (North)",
+      "value": "KP"
+     },
+     {
+      "id": "",
+      "label": "Korea (South)",
+      "value": "KR"
+     },
+     {
+      "id": "",
+      "label": "Kuwait",
+      "value": "KW"
+     },
+     {
+      "id": "",
+      "label": "Kyrgyzstan",
+      "value": "KG"
+     },
+     {
+      "id": "",
+      "label": "Lao People's Democratic Republic",
+      "value": "LA"
+     },
+     {
+      "id": "",
+      "label": "Latvia",
+      "value": "LV"
+     },
+     {
+      "id": "",
+      "label": "Lebanon",
+      "value": "LB"
+     },
+     {
+      "id": "",
+      "label": "Lesotho",
+      "value": "LS"
+     },
+     {
+      "id": "",
+      "label": "Liberia",
+      "value": "LR"
+     },
+     {
+      "id": "",
+      "label": "Libya",
+      "value": "LY"
+     },
+     {
+      "id": "",
+      "label": "Liechtenstein",
+      "value": "LI"
+     },
+     {
+      "id": "",
+      "label": "Lithuania",
+      "value": "LT"
+     },
+     {
+      "id": "",
+      "label": "Luxembourg",
+      "value": "LU"
+     },
+     {
+      "id": "",
+      "label": "Macao",
+      "value": "MO"
+     },
+     {
+      "id": "",
+      "label": "Macedonia",
+      "value": "MK"
+     },
+     {
+      "id": "",
+      "label": "Madagascar",
+      "value": "MG"
+     },
+     {
+      "id": "",
+      "label": "Malawi",
+      "value": "MW"
+     },
+     {
+      "id": "",
+      "label": "Malaysia",
+      "value": "MY"
+     },
+     {
+      "id": "",
+      "label": "Maldives",
+      "value": "MV"
+     },
+     {
+      "id": "",
+      "label": "Mali",
+      "value": "ML"
+     },
+     {
+      "id": "",
+      "label": "Malta",
+      "value": "MT"
+     },
+     {
+      "id": "",
+      "label": "Marshall Islands",
+      "value": "MH"
+     },
+     {
+      "id": "",
+      "label": "Martinique",
+      "value": "MQ"
+     },
+     {
+      "id": "",
+      "label": "Mauritania",
+      "value": "MR"
+     },
+     {
+      "id": "",
+      "label": "Mauritius",
+      "value": "MU"
+     },
+     {
+      "id": "",
+      "label": "Mayotte",
+      "value": "YT"
+     },
+     {
+      "id": "",
+      "label": "Mexico",
+      "value": "MX"
+     },
+     {
+      "id": "",
+      "label": "Micronesia",
+      "value": "FM"
+     },
+     {
+      "id": "",
+      "label": "Moldova",
+      "value": "MD"
+     },
+     {
+      "id": "",
+      "label": "Monaco",
+      "value": "MC"
+     },
+     {
+      "id": "",
+      "label": "Mongolia",
+      "value": "MN"
+     },
+     {
+      "id": "",
+      "label": "Montenegro",
+      "value": "ME"
+     },
+     {
+      "id": "",
+      "label": "Montserrat",
+      "value": "MS"
+     },
+     {
+      "id": "",
+      "label": "Morocco",
+      "value": "MA"
+     },
+     {
+      "id": "",
+      "label": "Mozambique",
+      "value": "MZ"
+     },
+     {
+      "id": "",
+      "label": "Myanmar",
+      "value": "MM"
+     },
+     {
+      "id": "",
+      "label": "Namibia",
+      "value": "NA"
+     },
+     {
+      "id": "",
+      "label": "Nauru",
+      "value": "NR"
+     },
+     {
+      "id": "",
+      "label": "Nepal",
+      "value": "NP"
+     },
+     {
+      "id": "",
+      "label": "The Netherlands",
+      "value": "NL"
+     },
+     {
+      "id": "",
+      "label": "New Caledonia",
+      "value": "NC"
+     },
+     {
+      "id": "",
+      "label": "New Zealand",
+      "value": "NZ"
+     },
+     {
+      "id": "",
+      "label": "Nicaragua",
+      "value": "NI"
+     },
+     {
+      "id": "",
+      "label": "Niger",
+      "value": "NE"
+     },
+     {
+      "id": "",
+      "label": "Nigeria",
+      "value": "NG"
+     },
+     {
+      "id": "",
+      "label": "Niue",
+      "value": "NU"
+     },
+     {
+      "id": "",
+      "label": "Norfolk Island",
+      "value": "NF"
+     },
+     {
+      "id": "",
+      "label": "Northern Mariana Islands",
+      "value": "MP"
+     },
+     {
+      "id": "",
+      "label": "Norway",
+      "value": "NO"
+     },
+     {
+      "id": "",
+      "label": "Oman",
+      "value": "OM"
+     },
+     {
+      "id": "",
+      "label": "Pakistan",
+      "value": "PK"
+     },
+     {
+      "id": "",
+      "label": "Palau",
+      "value": "PW"
+     },
+     {
+      "id": "",
+      "label": "Palestine, State of",
+      "value": "PS"
+     },
+     {
+      "id": "",
+      "label": "Panama",
+      "value": "PA"
+     },
+     {
+      "id": "",
+      "label": "Papua New Guinea",
+      "value": "PG"
+     },
+     {
+      "id": "",
+      "label": "Paraguay",
+      "value": "PY"
+     },
+     {
+      "id": "",
+      "label": "Peru",
+      "value": "PE"
+     },
+     {
+      "id": "",
+      "label": "Philippines",
+      "value": "PH"
+     },
+     {
+      "id": "",
+      "label": "Pitcairn",
+      "value": "PN"
+     },
+     {
+      "id": "",
+      "label": "Poland",
+      "value": "PL"
+     },
+     {
+      "id": "",
+      "label": "Portugal",
+      "value": "PT"
+     },
+     {
+      "id": "",
+      "label": "Puerto Rico",
+      "value": "PR"
+     },
+     {
+      "id": "",
+      "label": "Qatar",
+      "value": "QA"
+     },
+     {
+      "id": "",
+      "label": "Reunion",
+      "value": "RE"
+     },
+     {
+      "id": "",
+      "label": "Romania",
+      "value": "RO"
+     },
+     {
+      "id": "",
+      "label": "Russian Federation",
+      "value": "RU"
+     },
+     {
+      "id": "",
+      "label": "Rwanda",
+      "value": "RW"
+     },
+     {
+      "id": "",
+      "label": "Saint Bartholemy",
+      "value": "BL"
+     },
+     {
+      "id": "",
+      "label": "Saint Helena",
+      "value": "SH"
+     },
+     {
+      "id": "",
+      "label": "Saint Kitts and Nevis",
+      "value": "KN"
+     },
+     {
+      "id": "",
+      "label": "Saint Lucia",
+      "value": "LC"
+     },
+     {
+      "id": "",
+      "label": "Saint Martin (French part)",
+      "value": "MF"
+     },
+     {
+      "id": "",
+      "label": "Saint Pierre and Miquelon",
+      "value": "PM"
+     },
+     {
+      "id": "",
+      "label": "Saint Vincent and the Grenadines",
+      "value": "VC"
+     },
+     {
+      "id": "",
+      "label": "Samoa",
+      "value": "WS"
+     },
+     {
+      "id": "",
+      "label": "San Marino",
+      "value": "SM"
+     },
+     {
+      "id": "",
+      "label": "Sao Tome and Principe",
+      "value": "ST"
+     },
+     {
+      "id": "",
+      "label": "Saudi Arabia",
+      "value": "SA"
+     },
+     {
+      "id": "",
+      "label": "Senegal",
+      "value": "SN"
+     },
+     {
+      "id": "",
+      "label": "Serbia",
+      "value": "RS"
+     },
+     {
+      "id": "",
+      "label": "Seychelles",
+      "value": "SC"
+     },
+     {
+      "id": "",
+      "label": "Sierra Leone",
+      "value": "SL"
+     },
+     {
+      "id": "",
+      "label": "Singapore",
+      "value": "SG"
+     },
+     {
+      "id": "",
+      "label": "Sint Maarten (Dutch part)",
+      "value": "SX"
+     },
+     {
+      "id": "",
+      "label": "Slovakia",
+      "value": "SK"
+     },
+     {
+      "id": "",
+      "label": "Slovenia",
+      "value": "SI"
+     },
+     {
+      "id": "",
+      "label": "Solomon Islands",
+      "value": "SB"
+     },
+     {
+      "id": "",
+      "label": "Somalia",
+      "value": "SO"
+     },
+     {
+      "id": "",
+      "label": "South Africa",
+      "value": "ZA"
+     },
+     {
+      "id": "",
+      "label": "South Georgia",
+      "value": "GS"
+     },
+     {
+      "id": "",
+      "label": "South Sudan",
+      "value": "SS"
+     },
+     {
+      "id": "",
+      "label": "Spain",
+      "value": "ES"
+     },
+     {
+      "id": "",
+      "label": "Sri Lanka",
+      "value": "LK"
+     },
+     {
+      "id": "",
+      "label": "Sudan",
+      "value": "SD"
+     },
+     {
+      "id": "",
+      "label": "Suriname",
+      "value": "SR"
+     },
+     {
+      "id": "",
+      "label": "Svalbard and Jan Mayen",
+      "value": "SJ"
+     },
+     {
+      "id": "",
+      "label": "Swaziland",
+      "value": "SZ"
+     },
+     {
+      "id": "",
+      "label": "Sweden",
+      "value": "SE"
+     },
+     {
+      "id": "",
+      "label": "Switzerland",
+      "value": "CH"
+     },
+     {
+      "id": "",
+      "label": "Syrian Arab Republic",
+      "value": "SY"
+     },
+     {
+      "id": "",
+      "label": "Taiwan (Province of China)",
+      "value": "TW"
+     },
+     {
+      "id": "",
+      "label": "Tajikistan",
+      "value": "TJ"
+     },
+     {
+      "id": "",
+      "label": "Tanzania, United Republic of",
+      "value": "TZ"
+     },
+     {
+      "id": "",
+      "label": "Thailand",
+      "value": "TH"
+     },
+     {
+      "id": "",
+      "label": "Timor-Leste",
+      "value": "TL"
+     },
+     {
+      "id": "",
+      "label": "Togo",
+      "value": "TG"
+     },
+     {
+      "id": "",
+      "label": "Tokelau",
+      "value": "TK"
+     },
+     {
+      "id": "",
+      "label": "Tonga",
+      "value": "TO"
+     },
+     {
+      "id": "",
+      "label": "Trinidad and Tobago",
+      "value": "TT"
+     },
+     {
+      "id": "",
+      "label": "Tunisia",
+      "value": "TN"
+     },
+     {
+      "id": "",
+      "label": "Turkey",
+      "value": "TR"
+     },
+     {
+      "id": "",
+      "label": "Turkmenistan",
+      "value": "TM"
+     },
+     {
+      "id": "",
+      "label": "Turks and Caicos Islands",
+      "value": "TC"
+     },
+     {
+      "id": "",
+      "label": "Tuvalu",
+      "value": "TV"
+     },
+     {
+      "id": "",
+      "label": "Uganda",
+      "value": "UG"
+     },
+     {
+      "id": "",
+      "label": "Ukraine",
+      "value": "UA"
+     },
+     {
+      "id": "",
+      "label": "United Arab Emirates",
+      "value": "AE"
+     },
+     {
+      "id": "",
+      "label": "United Kingdom",
+      "value": "GB"
+     },
+     {
+      "id": "",
+      "label": "US Minor Outlying Islands",
+      "value": "UM"
+     },
+     {
+      "id": "",
+      "label": "Uruguay",
+      "value": "UY"
+     },
+     {
+      "id": "",
+      "label": "Uzbekistan",
+      "value": "UZ"
+     },
+     {
+      "id": "",
+      "label": "Vanuatu",
+      "value": "VU"
+     },
+     {
+      "id": "",
+      "label": "Venezuela",
+      "value": "VE"
+     },
+     {
+      "id": "",
+      "label": "Viet Nam",
+      "value": "VN"
+     },
+     {
+      "id": "",
+      "label": "Virgin Islands (British)",
+      "value": "VG"
+     },
+     {
+      "id": "",
+      "label": "Virgin Islands (U.S.)",
+      "value": "VI"
+     },
+     {
+      "id": "",
+      "label": "Wallis and Futuna",
+      "value": "WF"
+     },
+     {
+      "id": "",
+      "label": "Western Sahara",
+      "value": "EH"
+     },
+     {
+      "id": "",
+      "label": "Yemen",
+      "value": "YE"
+     },
+     {
+      "id": "",
+      "label": "Zambia",
+      "value": "ZM"
+     },
+     {
+      "id": "",
+      "label": "Zimbabwe",
+      "value": "ZW"
+     },
+     {
+      "id": "",
+      "label": "United Kingdom",
+      "value": "UK"
+     }
+    ],
+    "async_options": false,
+    "placeholder": "",
+    "maxlength": null,
+    "pattern": null,
+    "accept": null,
+    "invalid": false,
+    "error": "",
+    "section": "Personal Information",
+    "frame": 0,
+    "readonly": false,
+    "cards": false
+   },
+   {
+    "id": "f0-n11",
+    "kind": "text",
+    "label": "Phone number",
+    "help": "",
+    "required": false,
+    "value": "",
+    "options": null,
+    "async_options": false,
+    "placeholder": "",
+    "maxlength": 50,
+    "pattern": null,
+    "accept": null,
+    "invalid": false,
+    "error": "",
+    "section": "Personal Information",
+    "frame": 0,
+    "readonly": false,
+    "cards": false
+   },
+   {
+    "id": "f0-n12",
+    "kind": "file",
+    "label": "Attach your Resume Attach",
+    "help": "",
+    "required": false,
+    "value": "",
+    "options": null,
+    "async_options": false,
+    "placeholder": "",
+    "maxlength": null,
+    "pattern": null,
+    "accept": null,
+    "invalid": false,
+    "error": "",
+    "section": "Attachments",
+    "frame": 0,
+    "readonly": false,
+    "cards": false
+   },
+   {
+    "id": "f0-n15",
+    "kind": "file",
+    "label": "App pers post 16",
+    "help": "",
+    "required": false,
+    "value": "",
+    "options": null,
+    "async_options": false,
+    "placeholder": "",
+    "maxlength": null,
+    "pattern": null,
+    "accept": null,
+    "invalid": false,
+    "error": "",
+    "section": "Attachments",
+    "frame": 0,
+    "readonly": false,
+    "cards": false
+   },
+   {
+    "id": "f0-n17",
+    "kind": "file",
+    "label": "College transcripts are required for recent graduates with less than 18 months of professional experience. (Unofficial is OK) Attach",
+    "help": "",
+    "required": false,
+    "value": "",
+    "options": null,
+    "async_options": false,
+    "placeholder": "",
+    "maxlength": null,
+    "pattern": null,
+    "accept": null,
+    "invalid": false,
+    "error": "",
+    "section": "Attachments",
+    "frame": 0,
+    "readonly": false,
+    "cards": false
+   },
+   {
+    "id": "f0-n20",
+    "kind": "radio_group",
+    "label": "Would you like to complete an Employment Application after submitting this form?",
+    "help": "",
+    "required": false,
+    "value": "",
+    "options": [
+     {
+      "id": "f0-n20",
+      "label": "Yes",
+      "value": null
+     },
+     {
+      "id": "f0-n21",
+      "label": "No",
+      "value": null
+     }
+    ],
+    "async_options": false,
+    "placeholder": "",
+    "maxlength": null,
+    "pattern": null,
+    "accept": null,
+    "invalid": false,
+    "error": "",
+    "section": "Attachments",
+    "frame": 0,
+    "readonly": false,
+    "cards": false
+   },
+   {
+    "id": "f0-n23",
+    "kind": "radio_group",
+    "label": "Are you legally authorized to work in the United States?",
+    "help": "",
+    "required": false,
+    "value": "",
+    "options": [
+     {
+      "id": "f0-n23",
+      "label": "Yes",
+      "value": null
+     },
+     {
+      "id": "f0-n24",
+      "label": "No",
+      "value": null
+     }
+    ],
+    "async_options": false,
+    "placeholder": "",
+    "maxlength": null,
+    "pattern": null,
+    "accept": null,
+    "invalid": false,
+    "error": "",
+    "section": "Other Information",
+    "frame": 0,
+    "readonly": false,
+    "cards": false
+   },
+   {
+    "id": "f0-n26",
+    "kind": "radio_group",
+    "label": "Will you now or in the future require immigration sponsorship for employment visa status?",
+    "help": "",
+    "required": false,
+    "value": "",
+    "options": [
+     {
+      "id": "f0-n26",
+      "label": "Yes",
+      "value": null
+     },
+     {
+      "id": "f0-n27",
+      "label": "No",
+      "value": null
+     }
+    ],
+    "async_options": false,
+    "placeholder": "",
+    "maxlength": null,
+    "pattern": null,
+    "accept": null,
+    "invalid": false,
+    "error": "",
+    "section": "Other Information",
+    "frame": 0,
+    "readonly": false,
+    "cards": false
+   },
+   {
+    "id": "f0-n29",
+    "kind": "radio_group",
+    "label": "Are you currently able to work on-site in the Richardson Texas office Monday through Friday?",
+    "help": "",
+    "required": false,
+    "value": "",
+    "options": [
+     {
+      "id": "f0-n29",
+      "label": "Yes",
+      "value": null
+     },
+     {
+      "id": "f0-n30",
+      "label": "No",
+      "value": null
+     }
+    ],
+    "async_options": false,
+    "placeholder": "",
+    "maxlength": null,
+    "pattern": null,
+    "accept": null,
+    "invalid": false,
+    "error": "",
+    "section": "Other Information",
+    "frame": 0,
+    "readonly": false,
+    "cards": false
+   },
+   {
+    "id": "f0-n31",
+    "kind": "select",
+    "label": "How did you hear about this position?",
+    "help": "",
+    "required": false,
+    "value": "Indeed",
+    "options": [
+     {
+      "id": "",
+      "label": "AARP.jobs",
+      "value": "AARP.jobs"
+     },
+     {
+      "id": "",
+      "label": "Accounting Principles",
+      "value": "Accounting Principles"
+     },
+     {
+      "id": "",
+      "label": "Agency",
+      "value": "Agency"
+     },
+     {
+      "id": "",
+      "label": "Ajilon",
+      "value": "Ajilon"
+     },
+     {
+      "id": "",
+      "label": "Argo Careers Page",
+      "value": "Argo Careers Page"
+     },
+     {
+      "id": "",
+      "label": "ARGO website",
+      "value": "ARGO website"
+     },
+     {
+      "id": "",
+      "label": "Babich & Associates",
+      "value": "Babich & Associates"
+     },
+     {
+      "id": "",
+      "label": "Brilliant Staffing",
+      "value": "Brilliant Staffing"
+     },
+     {
+      "id": "",
+      "label": "Career Builder",
+      "value": "Career Builder"
+     },
+     {
+      "id": "",
+      "label": "Career Fair",
+      "value": "Career Fair"
+     },
+     {
+      "id": "",
+      "label": "College Job Fair - Texas State University",
+      "value": "College Job Fair - Texas State University"
+     },
+     {
+      "id": "",
+      "label": "College Job Fair - University of North Texas",
+      "value": "College Job Fair - University of North Texas"
+     },
+     {
+      "id": "",
+      "label": "College Job Fair - University of Texas at Arlington",
+      "value": "College Job Fair - University of Texas at Arlington"
+     },
+     {
+      "id": "",
+      "label": "College Job Fair - University of Texas at Austin",
+      "value": "College Job Fair - University of Texas at Austin"
+     },
+     {
+      "id": "",
+      "label": "College Job Fair - University of Texas at Dallas",
+      "value": "College Job Fair - University of Texas at Dallas"
+     },
+     {
+      "id": "",
+      "label": "Creative Circle",
+      "value": "Creative Circle"
+     },
+     {
+      "id": "",
+      "label": "Cyber Coders",
+      "value": "Cyber Coders"
+     },
+     {
+      "id": "",
+      "label": "Dice",
+      "value": "Dice"
+     },
+     {
+      "id": "",
+      "label": "Direct DM From Talent Acquisition",
+      "value": "Direct DM From Talent Acquisition"
+     },
+     {
+      "id": "",
+      "label": "Driving by location in Richardson",
+      "value": "Driving by location in Richardson"
+     },
+     {
+      "id": "",
+      "label": "email",
+      "value": "email"
+     },
+     {
+      "id": "",
+      "label": "Employee referral",
+      "value": "Employee referral"
+     },
+     {
+      "id": "",
+      "label": "Facebook",
+      "value": "Facebook"
+     },
+     {
+      "id": "",
+      "label": "Financial Additions",
+      "value": "Financial Additions"
+     },
+     {
+      "id": "",
+      "label": "Former Employee",
+      "value": "Former Employee"
+     },
+     {
+      "id": "",
+      "label": "Former Employee - Referral",
+      "value": "Former Employee - Referral"
+     },
+     {
+      "id": "",
+      "label": "Former Intern",
+      "value": "Former Intern"
+     },
+     {
+      "id": "",
+      "label": "Geektastichiring",
+      "value": "Geektastichiring"
+     },
+     {
+      "id": "",
+      "label": "GetWork.com",
+      "value": "GetWork.com"
+     },
+     {
+      "id": "",
+      "label": "Glassdoor",
+      "value": "Glassdoor"
+     },
+     {
+      "id": "",
+      "label": "Handshake",
+      "value": "Handshake"
+     },
+     {
+      "id": "",
+      "label": "handshake",
+      "value": "handshake"
+     },
+     {
+      "id": "",
+      "label": "High Profile",
+      "value": "High Profile"
+     },
+     {
+      "id": "",
+      "label": "HiredNurses.com",
+      "value": "HiredNurses.com"
+     },
+     {
+      "id": "",
+      "label": "iHire.com",
+      "value": "iHire.com"
+     },
+     {
+      "id": "",
+      "label": "iHireAccounting",
+      "value": "iHireAccounting"
+     },
+     {
+      "id": "",
+      "label": "iHireHR",
+      "value": "iHireHR"
+     },
+     {
+      "id": "",
+      "label": "iHireMarketing",
+      "value": "iHireMarketing"
+     },
+     {
+      "id": "",
+      "label": "iHireQualityControl",
+      "value": "iHireQualityControl"
+     },
+     {
+      "id": "",
+      "label": "iHireTechnology",
+      "value": "iHireTechnology"
+     },
+     {
+      "id": "",
+      "label": "in-deed",
+      "value": "in-deed"
+     },
+     {
+      "id": "",
+      "label": "Indeed",
+      "value": "Indeed"
+     },
+     {
+      "id": "",
+      "label": "iTemp Inc",
+      "value": "iTemp Inc"
+     },
+     {
+      "id": "",
+      "label": "Jobcase",
+      "value": "Jobcase"
+     },
+     {
+      "id": "",
+      "label": "JobLeads.com",
+      "value": "JobLeads.com"
+     },
+     {
+      "id": "",
+      "label": "JobRadars.com",
+      "value": "JobRadars.com"
+     },
+     {
+      "id": "",
+      "label": "JobRapido",
+      "value": "JobRapido"
+     },
+     {
+      "id": "",
+      "label": "Jooble",
+      "value": "Jooble"
+     },
+     {
+      "id": "",
+      "label": "JuJu",
+      "value": "JuJu"
+     },
+     {
+      "id": "",
+      "label": "Kforce",
+      "value": "Kforce"
+     },
+     {
+      "id": "",
+      "label": "Lensa",
+      "value": "Lensa"
+     },
+     {
+      "id": "",
+      "label": "levels.fyi",
+      "value": "levels.fyi"
+     },
+     {
+      "id": "",
+      "label": "LHH Recruitment Solutions",
+      "value": "LHH Recruitment Solutions"
+     },
+     {
+      "id": "",
+      "label": "LinkedIn",
+      "value": "LinkedIn"
+     },
+     {
+      "id": "",
+      "label": "LinkUp",
+      "value": "LinkUp"
+     },
+     {
+      "id": "",
+      "label": "Lucas Group",
+      "value": "Lucas Group"
+     },
+     {
+      "id": "",
+      "label": "Military.com",
+      "value": "Military.com"
+     },
+     {
+      "id": "",
+      "label": "Monster",
+      "value": "Monster"
+     },
+     {
+      "id": "",
+      "label": "MyJobHelper",
+      "value": "MyJobHelper"
+     },
+     {
+      "id": "",
+      "label": "myjobhelper",
+      "value": "myjobhelper"
+     },
+     {
+      "id": "",
+      "label": "Networking/Cold Call",
+      "value": "Networking/Cold Call"
+     },
+     {
+      "id": "",
+      "label": "Neuvoo",
+      "value": "Neuvoo"
+     },
+     {
+      "id": "",
+      "label": "NextStep Recruiting",
+      "value": "NextStep Recruiting"
+     },
+     {
+      "id": "",
+      "label": "Office365",
+      "value": "Office365"
+     },
+     {
+      "id": "",
+      "label": "Parker & Lynch",
+      "value": "Parker & Lynch"
+     },
+     {
+      "id": "",
+      "label": "PrideStaff",
+      "value": "PrideStaff"
+     },
+     {
+      "id": "",
+      "label": "Recruit.net",
+      "value": "Recruit.net"
+     },
+     {
+      "id": "",
+      "label": "RiseSmart",
+      "value": "RiseSmart"
+     },
+     {
+      "id": "",
+      "label": "Robert Half",
+      "value": "Robert Half"
+     },
+     {
+      "id": "",
+      "label": "Salesjobs",
+      "value": "Salesjobs"
+     },
+     {
+      "id": "",
+      "label": "SHRM",
+      "value": "SHRM"
+     },
+     {
+      "id": "",
+      "label": "Southlake Focus Group",
+      "value": "Southlake Focus Group"
+     },
+     {
+      "id": "",
+      "label": "StartWire",
+      "value": "StartWire"
+     },
+     {
+      "id": "",
+      "label": "Talent.com",
+      "value": "Talent.com"
+     },
+     {
+      "id": "",
+      "label": "Techcyn",
+      "value": "Techcyn"
+     },
+     {
+      "id": "",
+      "label": "TheLadders",
+      "value": "TheLadders"
+     },
+     {
+      "id": "",
+      "label": "The Parker Group",
+      "value": "The Parker Group"
+     },
+     {
+      "id": "",
+      "label": "Thomas Edwards Group",
+      "value": "Thomas Edwards Group"
+     },
+     {
+      "id": "",
+      "label": "TN.gov",
+      "value": "TN.gov"
+     },
+     {
+      "id": "",
+      "label": "Unity Search",
+      "value": "Unity Search"
+     },
+     {
+      "id": "",
+      "label": "Upward.careers",
+      "value": "Upward.careers"
+     },
+     {
+      "id": "",
+      "label": "VIP Recruiting",
+      "value": "VIP Recruiting"
+     },
+     {
+      "id": "",
+      "label": "Virtual Vocations",
+      "value": "Virtual Vocations"
+     },
+     {
+      "id": "",
+      "label": "Web Search",
+      "value": "Web Search"
+     },
+     {
+      "id": "",
+      "label": "web search",
+      "value": "web search"
+     },
+     {
+      "id": "",
+      "label": "Work in Texas",
+      "value": "Work in Texas"
+     },
+     {
+      "id": "",
+      "label": "Yahoo",
+      "value": "Yahoo"
+     },
+     {
+      "id": "",
+      "label": "ZipRecruiter",
+      "value": "ZipRecruiter"
+     },
+     {
+      "id": "",
+      "label": "Other",
+      "value": "Other"
+     }
+    ],
+    "async_options": false,
+    "placeholder": "",
+    "maxlength": null,
+    "pattern": null,
+    "accept": null,
+    "invalid": false,
+    "error": "",
+    "section": "Other Information",
+    "frame": 0,
+    "readonly": false,
+    "cards": false
+   },
+   {
+    "id": "f0-n32",
+    "kind": "textarea",
+    "label": "Desired annual salary?",
+    "help": "",
+    "required": false,
+    "value": "",
+    "options": null,
+    "async_options": false,
+    "placeholder": "",
+    "maxlength": 1024,
+    "pattern": null,
+    "accept": null,
+    "invalid": false,
+    "error": "",
+    "section": "Other Information",
+    "frame": 0,
+    "readonly": false,
+    "cards": false
+   },
+   {
+    "id": "f0-n33",
+    "kind": "textarea",
+    "label": "Do you have a preferred name you go by?",
+    "help": "",
+    "required": false,
+    "value": "",
+    "options": null,
+    "async_options": false,
+    "placeholder": "",
+    "maxlength": 1024,
+    "pattern": null,
+    "accept": null,
+    "invalid": false,
+    "error": "",
+    "section": "Other Information",
+    "frame": 0,
+    "readonly": false,
+    "cards": false
+   }
+  ],
+  "actions": [
+   {
+    "id": "f0-n1",
+    "kind": "link",
+    "label": "Careers",
+    "primary": false,
+    "disabled": false,
+    "frame": 0
+   },
+   {
+    "id": "f0-n2",
+    "kind": "button",
+    "label": "Subscribe",
+    "primary": false,
+    "disabled": false,
+    "frame": 0
+   },
+   {
+    "id": "f0-n13",
+    "kind": "link",
+    "label": "Dropbox",
+    "primary": false,
+    "disabled": false,
+    "frame": 0
+   },
+   {
+    "id": "f0-n14",
+    "kind": "button",
+    "label": "Paste",
+    "primary": false,
+    "disabled": false,
+    "frame": 0
+   },
+   {
+    "id": "f0-n16",
+    "kind": "link",
+    "label": "Dropbox",
+    "primary": false,
+    "disabled": false,
+    "frame": 0
+   },
+   {
+    "id": "f0-n18",
+    "kind": "link",
+    "label": "Dropbox",
+    "primary": false,
+    "disabled": false,
+    "frame": 0
+   },
+   {
+    "id": "f0-n34",
+    "kind": "button",
+    "label": "Apply",
+    "primary": true,
+    "disabled": false,
+    "frame": 0
+   },
+   {
+    "id": "f0-n35",
+    "kind": "link",
+    "label": "Privacy Policy",
+    "primary": false,
+    "disabled": false,
+    "frame": 0
+   }
+  ],
+  "text_digest": "Skip to application form Human Resources Director (Richardson, TX) ARGO is a leading provider of software and analytics solutions for both the financial services and healthcare industries. ARGO transforms business processes for financial service providers and healthcare organizations using proven business models and software innovation informed by real customer challenges, breakthrough technology, and rich analytics. JOB SUMMARY Lead the Human Resources function by developing and executing people strategies that support Argo's business objectives and culture. Responsible for the overall leadership, management, and effectiveness of Human Resources including employee relations, talent acquisition, compensation, performance management, organizational development, compliance, employee engagement, and HR operations. Serve as a trusted advisor to executive leadership while ensuring Human Resou",
+  "unparsed": []
+ },
+ "acceptable": [
+  "form_step"
+ ],
+ "label_source": "page_text_reviewed"
+}

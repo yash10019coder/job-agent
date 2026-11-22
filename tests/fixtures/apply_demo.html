@@ -1,0 +1,72 @@
+<!doctype html>
+<html><head><meta charset="utf-8"><title>Apply - Backend Engineer</title>
+<style>.err{color:red}.hidden{display:none}[role=listbox]{border:1px solid #999;padding:0;margin:0;list-style:none}[role=option]{padding:4px;cursor:pointer}</style></head>
+<body>
+<h1>Backend Engineer</h1>
+<form id="f" onsubmit="return false"><div id="top"></div>
+  <h2>Personal information</h2>
+  <div><label for="fn">First name *</label><input id="fn" name="first_name" required></div>
+  <div><label for="em">Email *</label><input id="em" name="email" type="email" required></div>
+  <div><span>Phone number</span><div><input name="phone" type="tel" placeholder="+91 XXXXXXXXXX"></div></div>
+  <div><label for="cv">Resume/CV *</label><input id="cv" name="resume" type="file" accept=".pdf" required></div>
+
+  <h2>Questions</h2>
+  <fieldset><legend>Are you legally authorized to work in India? *</legend>
+    <label><input type="radio" name="auth" value="yes"> Yes</label>
+    <label><input type="radio" name="auth" value="no"> No</label></fieldset>
+  <fieldset><legend>Will you require visa sponsorship? *</legend>
+    <label><input type="radio" name="spons" value="yes" onchange="toggleVisa()"> Yes</label>
+    <label><input type="radio" name="spons" value="no" onchange="toggleVisa()"> No</label></fieldset>
+  <div id="visa" class="hidden"><label for="vt">Which visa type? *</label><input id="vt" name="visa_type"></div>
+
+  <div>
+    <label id="src-l" for="src">How did you hear about us? *</label>
+    <div class="select-box">
+      <input id="src" role="combobox" aria-expanded="false" aria-controls="src-list" aria-autocomplete="list" aria-labelledby="src-l" autocomplete="off">
+      <ul id="src-list" role="listbox" class="hidden"></ul>
+    </div>
+  </div>
+
+  <div><label for="np">Notice period</label>
+    <select id="np" name="notice"><option value="">Select…</option><option>Immediately</option><option>15 days</option><option>30 days</option><option>60 days</option><option>90 days</option></select></div>
+  <div><label for="why">Why do you want to work here?</label><textarea id="why" name="why" maxlength="400"></textarea></div>
+  <label><input type="checkbox" name="consent"> I agree to the privacy policy *</label>
+  <button type="submit" id="submit">Submit application</button>
+</form>
+<script>
+const SOURCES = ["LinkedIn","Company website","Referral","Job board","Other"];
+function toggleVisa(){ const yes=document.querySelector('input[name=spons][value=yes]').checked; document.getElementById('visa').classList.toggle('hidden', !yes); }
+const src=document.getElementById('src'), list=document.getElementById('src-list');
+function open(){ list.innerHTML=''; SOURCES.filter(s=>s.toLowerCase().includes(src.value.toLowerCase())).forEach(s=>{
+  const li=document.createElement('li'); li.setAttribute('role','option'); li.textContent=s;
+  li.onclick=()=>{ src.value=s; list.classList.add('hidden'); src.setAttribute('aria-expanded','false'); }; list.appendChild(li); });
+  list.classList.remove('hidden'); src.setAttribute('aria-expanded','true'); }
+src.addEventListener('click', open); src.addEventListener('input', open);
+
+const Q = new URLSearchParams(location.search);
+if (Q.get('captcha')) { const f=document.createElement('iframe'); f.src='about:blank#hcaptcha-challenge'; f.style='width:300px;height:80px'; document.body.appendChild(f); }
+document.getElementById('submit').addEventListener('click', () => {
+  document.querySelectorAll('[role=alert]').forEach(a => a.remove());
+  const empty = [['fn','First name'],['em','Email']].filter(([id]) => !document.getElementById(id).value);
+  const vt = document.getElementById('vt'); const needVisa = !document.getElementById('visa').classList.contains('hidden') && !vt.value;
+  const missing = empty.length || needVisa || !document.getElementById('cv').files.length || !document.querySelector('input[name=consent]').checked
+                  || !document.getElementById('src').value || Q.get('reject');
+  if (missing) { const a=document.createElement('div'); a.setAttribute('role','alert'); a.className='err';
+    a.textContent = Q.get('reject') ? 'Invalid email address' : 'Please complete all required fields'; document.getElementById('top').appendChild(a); return; }
+  if (Q.get('otp3')) {  // like Databricks: a row of 8 single-character boxes with NO labels
+    if (!document.getElementById('b0')) { const w=document.createElement('div'); w.innerHTML='<p>Security code: enter the 8-character code we emailed you</p>'+[0,1,2,3,4,5,6,7].map(i=>'<input id="b'+i+'" maxlength="1" style="width:24px">').join(''); document.getElementById('top').appendChild(w); return; }
+    const v=[0,1,2,3,4,5,6,7].map(i=>document.getElementById('b'+i).value).join('');
+    if (v !== '12345678') { const a=document.createElement('div'); a.setAttribute('role','alert'); a.className='err'; a.textContent='Incorrect security code'; document.getElementById('top').appendChild(a); return; }
+  }
+  if (Q.get('otp2')) {  // like Greenhouse: the code box appears INSIDE the form and the same Submit button stays
+    const c = document.getElementById('code2');
+    if (!c) { const l=document.createElement('label'); l.textContent='Security code'; l.htmlFor='code2'; const i=document.createElement('input'); i.id='code2'; i.name='code2'; i.required=true;
+      document.getElementById('top').appendChild(l); document.getElementById('top').appendChild(i); return; }
+    if (c.value !== '12345678') { const a=document.createElement('div'); a.setAttribute('role','alert'); a.className='err'; a.textContent='Incorrect security code'; document.getElementById('top').appendChild(a); return; }
+  }
+  if (Q.get('otp')) { document.body.innerHTML = '<h1>Verify your email</h1><p>We sent a code to your email.</p><label for="code">Security code</label><input id="code" name="code">'; return; }
+  if (Q.get('latecaptcha')) { setTimeout(() => { const f=document.createElement('iframe'); f.src='about:blank#hcaptcha-challenge'; f.style='position:fixed;top:20px;left:20px;width:300px;height:400px'; document.body.appendChild(f); }, 1500); return; }
+  if (Q.get('silent')) { document.body.innerHTML = '<p>Working...</p>'; return; }
+  document.body.innerHTML = '<h1>Thank you for applying</h1><p>Your application has been submitted.</p>';
+});
+</script></body></html>

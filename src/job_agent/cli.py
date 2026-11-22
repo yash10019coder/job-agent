@@ -28,7 +28,6 @@ from job_agent.browser_applier import BrowserApplyAgent
 from job_agent.rate_limiter import RateLimiter
 import asyncio
 
-
 def _generate_resumes(args: argparse.Namespace) -> int:
     output_dir = Path(args.output_dir)
     results = generate_base_resumes(output_dir)
@@ -401,6 +400,11 @@ def build_parser() -> argparse.ArgumentParser:
     rate_check.add_argument("--url", required=True, help="Job URL to check")
     rate_check.set_defaults(func=_rate_limit_check)
 
+    # --- Brave (generic apply engine) ---
+    from job_agent.apply.commands import register as register_apply_commands
+
+    register_apply_commands(subparsers)
+
     # --- Login ---
     login = subparsers.add_parser("login-linkedin", help="Login to LinkedIn and save session for browser-apply.")
     login.add_argument("--email", required=True, help="LinkedIn email")
@@ -422,7 +426,6 @@ def main() -> int:
     except Exception as error:
         print(f"Error: {error}", file=sys.stderr)
         return 1
-
 
 def _main_with_subcommand(subcommand: str) -> int:
     parser = build_parser()

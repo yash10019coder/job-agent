@@ -1,0 +1,6 @@
+<!doctype html><title>t</title><main><form>
+<div class="entry"><label class="_required_x" for="q1">Will you now or in the future require sponsorship to work in the US?</label>
+<div class="yesno"><button type="button" aria-pressed="false" data-option="yes">Yes</button><button type="button" aria-pressed="false" data-option="no">No</button><input type="checkbox" tabindex="-1" name="q1" style="display:none"></div></div>
+<div class="entry"><label for="nm">Name</label><input id="nm"></div>
+<button type="submit">Submit Application</button></form></main>
+<script>document.querySelectorAll('.yesno button').forEach(b=>b.addEventListener('click',()=>{document.querySelectorAll('.yesno button').forEach(x=>x.setAttribute('aria-pressed',x===b?'true':'false'))}))</script>

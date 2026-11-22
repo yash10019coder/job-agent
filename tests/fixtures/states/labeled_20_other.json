@@ -1,0 +1,213 @@
+{
+ "name": "labeled_20_other",
+ "url": "https://careers.mt.com/en_US/careers/JobDetail/1/23770?source=Indeed",
+ "status": 200,
+ "frame_hosts": [],
+ "from_url": "https://careers.chwinery.com/en/jobs/18463332-manager-team-member-experience?tm_job=26-2365&tm_event=view&tm_company=48623",
+ "expect_state": "job_page",
+ "labels": {
+  "1 Entry type": "Company page + Apply leads to the ATS",
+  "2 Gate (account)": "login+signup",
+  "3 Extra checks": "captcha + email code",
+  "4 Form fields visible": "no - need more clicks",
+  "5 Steps": "multi-step",
+  "6 Vendor": "other"
+ },
+ "expect_application_form": false,
+ "expect_listing": false,
+ "model": {
+  "url": "https://careers.mt.com/en_US/careers/JobDetail/1/23770?source=Indeed",
+  "title": "Fabrication Welder - 2nd Shift - - 23770",
+  "headings": [
+   "Mettler Toledo",
+   "Fabrication Welder - 2nd Shift",
+   "Mettler Toledo"
+  ],
+  "alerts": [],
+  "fields": [],
+  "actions": [
+   {
+    "id": "f0-n1",
+    "kind": "link",
+    "label": "Mettler Toledo",
+    "primary": false,
+    "disabled": false,
+    "frame": 0
+   },
+   {
+    "id": "f0-n2",
+    "kind": "link",
+    "label": "Our Culture",
+    "primary": false,
+    "disabled": false,
+    "frame": 0
+   },
+   {
+    "id": "f0-n3",
+    "kind": "link",
+    "label": "Why Work Here",
+    "primary": false,
+    "disabled": false,
+    "frame": 0
+   },
+   {
+    "id": "f0-n4",
+    "kind": "link",
+    "label": "Login",
+    "primary": false,
+    "disabled": false,
+    "frame": 0
+   },
+   {
+    "id": "f0-n5",
+    "kind": "link",
+    "label": "English",
+    "primary": false,
+    "disabled": false,
+    "frame": 0
+   },
+   {
+    "id": "f0-n6",
+    "kind": "link",
+    "label": "Apply now",
+    "primary": true,
+    "disabled": false,
+    "frame": 0
+   },
+   {
+    "id": "f0-n7",
+    "kind": "link",
+    "label": "< Back to search results",
+    "primary": false,
+    "disabled": false,
+    "frame": 0
+   },
+   {
+    "id": "f0-n8",
+    "kind": "link",
+    "label": "Equal Employment Opportunity Policy",
+    "primary": false,
+    "disabled": false,
+    "frame": 0
+   },
+   {
+    "id": "f0-n9",
+    "kind": "link",
+    "label": "here",
+    "primary": false,
+    "disabled": false,
+    "frame": 0
+   },
+   {
+    "id": "f0-n10",
+    "kind": "link",
+    "label": "Apply now",
+    "primary": true,
+    "disabled": false,
+    "frame": 0
+   },
+   {
+    "id": "f0-n11",
+    "kind": "link",
+    "label": "< Back to search results",
+    "primary": false,
+    "disabled": false,
+    "frame": 0
+   },
+   {
+    "id": "f0-n12",
+    "kind": "link",
+    "label": "Mettler Toledo",
+    "primary": false,
+    "disabled": false,
+    "frame": 0
+   },
+   {
+    "id": "f0-n13",
+    "kind": "link",
+    "label": "Legal, Terms, Privacy",
+    "primary": false,
+    "disabled": false,
+    "frame": 0
+   },
+   {
+    "id": "f0-n14",
+    "kind": "link",
+    "label": "Contact us",
+    "primary": false,
+    "disabled": false,
+    "frame": 0
+   },
+   {
+    "id": "f0-n15",
+    "kind": "link",
+    "label": "Site Map",
+    "primary": false,
+    "disabled": false,
+    "frame": 0
+   },
+   {
+    "id": "f0-n16",
+    "kind": "link",
+    "label": "Global Presence",
+    "primary": false,
+    "disabled": false,
+    "frame": 0
+   },
+   {
+    "id": "f1-n1",
+    "kind": "button",
+    "label": "Play video",
+    "primary": false,
+    "disabled": false,
+    "frame": 1
+   },
+   {
+    "id": "f1-n2",
+    "kind": "button",
+    "label": "Hide player controls",
+    "primary": false,
+    "disabled": false,
+    "frame": 1
+   },
+   {
+    "id": "f1-n3",
+    "kind": "link",
+    "label": "US Virtual Facility Tour - Tampa Bay | @mtproductinspection",
+    "primary": false,
+    "disabled": false,
+    "frame": 1
+   },
+   {
+    "id": "f1-n4",
+    "kind": "link",
+    "label": "Product Inspection from METTLER TOLEDO",
+    "primary": false,
+    "disabled": false,
+    "frame": 1
+   },
+   {
+    "id": "f1-n5",
+    "kind": "button",
+    "label": "Share",
+    "primary": false,
+    "disabled": false,
+    "frame": 1
+   },
+   {
+    "id": "f1-n6",
+    "kind": "link",
+    "label": "Watch on",
+    "primary": false,
+    "disabled": false,
+    "frame": 1
+   }
+  ],
+  "text_digest": "Skip to content Mettler Toledo Open Positions Veteran Hiring College Hiring What To Expect Our Culture Why Work Here Login English Fabrication Welder - 2nd Shift Apply now < Back to search results Our Opening and Your Responsibilities The Fabricator will be responsible for reading and interpreting blueprints and technical drawings to fabricate and weld metal parts and components. This role requires TIG welding experience, accurate measuring and layout skills, and the ability to operate fabrication tools and equipment. The individual will ensure all work meets quality standards while following established procedures and workplace safety requirements. Essential Duties and Responsibilities: Read and interpret blueprints, technical drawings, and weld symbols provided by designers and engineers. Retrieve and review technical drawings to support fabrication activities. Accurately use metric an",
+  "unparsed": []
+ },
+ "acceptable": [
+  "job_page"
+ ],
+ "label_source": "page_text_reviewed"
+}

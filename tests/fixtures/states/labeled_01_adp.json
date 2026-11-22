@@ -1,0 +1,140 @@
+{
+ "name": "labeled_01_adp",
+ "url": "https://hos.lackawanna.edu/hr/results.asp?ind=1166",
+ "status": 200,
+ "frame_hosts": [],
+ "from_url": "https://hos.lackawanna.edu/hr/results.asp?ind=1166",
+ "expect_state": "job_page",
+ "labels": {
+  "1 Entry type": "Company page + Apply leads to the ATS",
+  "2 Gate (account)": "login+signup+sso (all)",
+  "3 Extra checks": "email code",
+  "4 Form fields visible": "no - need more clicks",
+  "5 Steps": "multi-step",
+  "6 Vendor": "adp"
+ },
+ "expect_application_form": false,
+ "expect_listing": false,
+ "model": {
+  "url": "https://hos.lackawanna.edu/hr/results.asp?ind=1166",
+  "title": "Lackawanna College Employment",
+  "headings": [
+   "Adjunct"
+  ],
+  "alerts": [],
+  "fields": [],
+  "actions": [
+   {
+    "id": "f0-n1",
+    "kind": "link",
+    "label": "Covington Twp.",
+    "primary": false,
+    "disabled": false,
+    "frame": 0
+   },
+   {
+    "id": "f0-n2",
+    "kind": "link",
+    "label": "Hawley",
+    "primary": false,
+    "disabled": false,
+    "frame": 0
+   },
+   {
+    "id": "f0-n3",
+    "kind": "link",
+    "label": "Hazleton",
+    "primary": false,
+    "disabled": false,
+    "frame": 0
+   },
+   {
+    "id": "f0-n4",
+    "kind": "link",
+    "label": "Sunbury",
+    "primary": false,
+    "disabled": false,
+    "frame": 0
+   },
+   {
+    "id": "f0-n5",
+    "kind": "link",
+    "label": "Towanda",
+    "primary": false,
+    "disabled": false,
+    "frame": 0
+   },
+   {
+    "id": "f0-n6",
+    "kind": "link",
+    "label": "Tunkhannock",
+    "primary": false,
+    "disabled": false,
+    "frame": 0
+   },
+   {
+    "id": "f0-n7",
+    "kind": "link",
+    "label": "Bethlehem",
+    "primary": false,
+    "disabled": false,
+    "frame": 0
+   },
+   {
+    "id": "f0-n8",
+    "kind": "link",
+    "label": "Chambersburg",
+    "primary": false,
+    "disabled": false,
+    "frame": 0
+   },
+   {
+    "id": "f0-n9",
+    "kind": "link",
+    "label": "Greensburg",
+    "primary": false,
+    "disabled": false,
+    "frame": 0
+   },
+   {
+    "id": "f0-n10",
+    "kind": "link",
+    "label": "Continuing Education department",
+    "primary": false,
+    "disabled": false,
+    "frame": 0
+   },
+   {
+    "id": "f0-n11",
+    "kind": "link",
+    "label": "most cost-efficient",
+    "primary": false,
+    "disabled": false,
+    "frame": 0
+   },
+   {
+    "id": "f0-n12",
+    "kind": "link",
+    "label": "https://workforcenow.adp.com/mascsr/default/mdf/recruitment/recruitment.html?ci\u2026",
+    "primary": false,
+    "disabled": false,
+    "frame": 0
+   },
+   {
+    "id": "f0-n13",
+    "kind": "link",
+    "label": "\u2190previous page",
+    "primary": false,
+    "disabled": false,
+    "frame": 0
+   }
+  ],
+  "text_digest": "Adjunct Date Posted: 11/10/2026 Deadline: 11/1/2027 Description: LACKAWANNA COLLEGE HAS BEEN VOTED ONE OF THE \u201cBEST PLACES TO WORK IN PA\u201d FOR 2014, 2015, 2016, 2017, 2019, 2020, 2023, 2024 and 2025! Lackawanna College is a private, accredited college serving the people of Northeastern Pennsylvania. Our main campus is located in downtown Scranton, and our footprint includes satellite centers in Covington Twp., Hawley, Hazleton, Sunbury, Towanda, Tunkhannock, Bethlehem, Chambersburg, and Greensburg. Our mission is to provide a quality education to all persons who seek to improve their lives and better the communities in which they live. We provide our students with a direct path to a bachelor\u2019s degree, associate degree, or one of many different professional certifications. Additionally, our Continuing Education department helps put the people of Northeastern Pennsylvania back to work with ",
+  "unparsed": []
+ },
+ "acceptable": [
+  "job_page",
+  "unknown"
+ ],
+ "label_source": "page_text_reviewed"
+}

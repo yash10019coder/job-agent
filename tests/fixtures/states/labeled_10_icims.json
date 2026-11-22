@@ -1,0 +1,983 @@
+{
+ "name": "labeled_10_icims",
+ "url": "https://www.databricks.com/company/careers/support/senior-technical-solutions-engineer-platform-8041698002?gh_jid=8041698002",
+ "status": 200,
+ "frame_hosts": [],
+ "from_url": "https://careers.wanzek.com/jobs/71753/job?utm_source=indeed_integration&iis=Job%20Board&iisn=Indeed&indeed-apply-token=73a2d2b2a8d6d5c0a62696875eaebd669103652d3f0c2cd5445d3e66b1592b0f",
+ "expect_state": "form_step",
+ "labels": {
+  "1 Entry type": "Company page + Apply leads to the ATS",
+  "2 Gate (account)": "login+signup",
+  "3 Extra checks": "email code",
+  "4 Form fields visible": "no - need more clicks",
+  "5 Steps": "multi-step",
+  "6 Vendor": "icims"
+ },
+ "expect_application_form": true,
+ "expect_listing": false,
+ "model": {
+  "url": "https://www.databricks.com/company/careers/support/senior-technical-solutions-engineer-platform-8041698002?gh_jid=8041698002",
+  "title": "Senior Technical Solutions Engineer (Platform) - Databricks",
+  "headings": [
+   "Senior Technical Solutions Engineer (Platform)"
+  ],
+  "alerts": [],
+  "fields": [
+   {
+    "id": "f1-n1",
+    "kind": "text",
+    "label": "First Name",
+    "help": "",
+    "required": true,
+    "value": "",
+    "options": null,
+    "async_options": false,
+    "placeholder": "",
+    "maxlength": 255,
+    "pattern": null,
+    "accept": null,
+    "invalid": false,
+    "error": "",
+    "section": "",
+    "frame": 1,
+    "readonly": false,
+    "cards": false
+   },
+   {
+    "id": "f1-n2",
+    "kind": "text",
+    "label": "Last Name",
+    "help": "",
+    "required": true,
+    "value": "",
+    "options": null,
+    "async_options": false,
+    "placeholder": "",
+    "maxlength": 255,
+    "pattern": null,
+    "accept": null,
+    "invalid": false,
+    "error": "",
+    "section": "",
+    "frame": 1,
+    "readonly": false,
+    "cards": false
+   },
+   {
+    "id": "f1-n3",
+    "kind": "text",
+    "label": "Preferred First Name",
+    "help": "",
+    "required": true,
+    "value": "",
+    "options": null,
+    "async_options": false,
+    "placeholder": "",
+    "maxlength": 255,
+    "pattern": null,
+    "accept": null,
+    "invalid": false,
+    "error": "",
+    "section": "",
+    "frame": 1,
+    "readonly": false,
+    "cards": false
+   },
+   {
+    "id": "f1-n4",
+    "kind": "text",
+    "label": "Email",
+    "help": "",
+    "required": true,
+    "value": "",
+    "options": null,
+    "async_options": false,
+    "placeholder": "",
+    "maxlength": 255,
+    "pattern": null,
+    "accept": null,
+    "invalid": false,
+    "error": "",
+    "section": "",
+    "frame": 1,
+    "readonly": false,
+    "cards": false
+   },
+   {
+    "id": "f1-n5",
+    "kind": "combobox",
+    "label": "Country",
+    "help": "",
+    "required": true,
+    "value": "",
+    "options": null,
+    "async_options": true,
+    "placeholder": "",
+    "maxlength": null,
+    "pattern": null,
+    "accept": null,
+    "invalid": false,
+    "error": "",
+    "section": "",
+    "frame": 1,
+    "readonly": false,
+    "cards": false
+   },
+   {
+    "id": "f1-n7",
+    "kind": "tel",
+    "label": "Phone",
+    "help": "",
+    "required": true,
+    "value": "",
+    "options": null,
+    "async_options": false,
+    "placeholder": "",
+    "maxlength": 255,
+    "pattern": null,
+    "accept": null,
+    "invalid": false,
+    "error": "",
+    "section": "",
+    "frame": 1,
+    "readonly": false,
+    "cards": false
+   },
+   {
+    "id": "f1-n9",
+    "kind": "file",
+    "label": "Resume",
+    "help": "",
+    "required": false,
+    "value": "",
+    "options": null,
+    "async_options": false,
+    "placeholder": "",
+    "maxlength": null,
+    "pattern": null,
+    "accept": ".pdf,.doc,.docx,.txt,.rtf",
+    "invalid": false,
+    "error": "",
+    "section": "",
+    "frame": 1,
+    "readonly": false,
+    "cards": false
+   },
+   {
+    "id": "f1-n13",
+    "kind": "file",
+    "label": "Cover letter",
+    "help": "",
+    "required": false,
+    "value": "",
+    "options": null,
+    "async_options": false,
+    "placeholder": "",
+    "maxlength": null,
+    "pattern": null,
+    "accept": ".pdf,.doc,.docx,.txt,.rtf",
+    "invalid": false,
+    "error": "",
+    "section": "",
+    "frame": 1,
+    "readonly": false,
+    "cards": false
+   },
+   {
+    "id": "f1-n16",
+    "kind": "text",
+    "label": "LinkedIn Profile",
+    "help": "",
+    "required": false,
+    "value": "",
+    "options": null,
+    "async_options": false,
+    "placeholder": "",
+    "maxlength": 255,
+    "pattern": null,
+    "accept": null,
+    "invalid": false,
+    "error": "",
+    "section": "",
+    "frame": 1,
+    "readonly": false,
+    "cards": false
+   },
+   {
+    "id": "f1-n17",
+    "kind": "text",
+    "label": "Website",
+    "help": "",
+    "required": false,
+    "value": "",
+    "options": null,
+    "async_options": false,
+    "placeholder": "",
+    "maxlength": 255,
+    "pattern": null,
+    "accept": null,
+    "invalid": false,
+    "error": "",
+    "section": "",
+    "frame": 1,
+    "readonly": false,
+    "cards": false
+   },
+   {
+    "id": "f1-n18",
+    "kind": "text",
+    "label": "How did you hear about this job?",
+    "help": "",
+    "required": false,
+    "value": "",
+    "options": null,
+    "async_options": false,
+    "placeholder": "",
+    "maxlength": 255,
+    "pattern": null,
+    "accept": null,
+    "invalid": false,
+    "error": "",
+    "section": "",
+    "frame": 1,
+    "readonly": false,
+    "cards": false
+   },
+   {
+    "id": "f1-n19",
+    "kind": "combobox",
+    "label": "Are you legally authorized to work in the country in which you are applying?",
+    "help": "Select...",
+    "required": true,
+    "value": "",
+    "options": null,
+    "async_options": true,
+    "placeholder": "",
+    "maxlength": null,
+    "pattern": null,
+    "accept": null,
+    "invalid": false,
+    "error": "",
+    "section": "",
+    "frame": 1,
+    "readonly": false,
+    "cards": false
+   },
+   {
+    "id": "f1-n21",
+    "kind": "combobox",
+    "label": "Do you now or will you in the future need sponsorship for employment visa status in the country in which you are applying?",
+    "help": "Select...",
+    "required": true,
+    "value": "",
+    "options": null,
+    "async_options": true,
+    "placeholder": "",
+    "maxlength": null,
+    "pattern": null,
+    "accept": null,
+    "invalid": false,
+    "error": "",
+    "section": "",
+    "frame": 1,
+    "readonly": false,
+    "cards": false
+   },
+   {
+    "id": "f1-n23",
+    "kind": "combobox",
+    "label": "Do you currently or have you previously worked for Databricks in the past?",
+    "help": "Select...",
+    "required": true,
+    "value": "",
+    "options": null,
+    "async_options": true,
+    "placeholder": "",
+    "maxlength": null,
+    "pattern": null,
+    "accept": null,
+    "invalid": false,
+    "error": "",
+    "section": "",
+    "frame": 1,
+    "readonly": false,
+    "cards": false
+   },
+   {
+    "id": "f1-n25",
+    "kind": "checkbox_group",
+    "label": "Please confirm whether any of the below applies to you. Select all that apply. Note: This information will only be used to ensure compliance with U.S. sanctions and export controls.",
+    "help": "",
+    "required": true,
+    "value": "",
+    "options": [
+     {
+      "id": "f1-n25",
+      "label": "Citizen or permanent resident of Cuba, Iran, North Korea, or Syria",
+      "value": null
+     },
+     {
+      "id": "f1-n26",
+      "label": "Ordinarily a resident of Cuba, Iran, North Korea, Syria or the Crimea, Donetsk, Luhansk, Zaporizhzhia, or Kherson regions of Ukraine",
+      "value": null
+     },
+     {
+      "id": "f1-n27",
+      "label": "Ordinarily a resident of Russia or Belarus and not willing to relocate for a Databricks role",
+      "value": null
+     },
+     {
+      "id": "f1-n28",
+      "label": "None of the above",
+      "value": null
+     }
+    ],
+    "async_options": false,
+    "placeholder": "",
+    "maxlength": null,
+    "pattern": null,
+    "accept": null,
+    "invalid": false,
+    "error": "",
+    "section": "",
+    "frame": 1,
+    "readonly": false,
+    "cards": false
+   },
+   {
+    "id": "f1-n29",
+    "kind": "checkbox_group",
+    "label": "If you selected a response to the prior question other than \u201cnone of the above,\u201d please confirm whether any of the following also applies to you. Select all that apply.",
+    "help": "",
+    "required": true,
+    "value": "",
+    "options": [
+     {
+      "id": "f1-n29",
+      "label": "U.S. citizen",
+      "value": null
+     },
+     {
+      "id": "f1-n30",
+      "label": "U.S. non-citizen national",
+      "value": null
+     },
+     {
+      "id": "f1-n31",
+      "label": "U.S. permanent resident (Green Card holder)",
+      "value": null
+     },
+     {
+      "id": "f1-n32",
+      "label": "Individual granted asylum in the U.S.",
+      "value": null
+     },
+     {
+      "id": "f1-n33",
+      "label": "Individual granted refugee status in the U.S.",
+      "value": null
+     },
+     {
+      "id": "f1-n34",
+      "label": "Individual granted citizenship in a country other than Cuba, Iran, North Korea, or Syria",
+      "value": null
+     },
+     {
+      "id": "f1-n35",
+      "label": "Individual granted permanent residency in a country other than Cuba, Iran, North Korea, or Syria",
+      "value": null
+     },
+     {
+      "id": "f1-n36",
+      "label": "None of these apply to me",
+      "value": null
+     },
+     {
+      "id": "f1-n37",
+      "label": "Not applicable (i.e., I selected \u201cnone of the above\u201d for the prior question)",
+      "value": null
+     }
+    ],
+    "async_options": false,
+    "placeholder": "",
+    "maxlength": null,
+    "pattern": null,
+    "accept": null,
+    "invalid": false,
+    "error": "",
+    "section": "",
+    "frame": 1,
+    "readonly": false,
+    "cards": false
+   }
+  ],
+  "actions": [
+   {
+    "id": "f0-n1",
+    "kind": "link",
+    "label": "Skip to main content",
+    "primary": false,
+    "disabled": false,
+    "frame": 0
+   },
+   {
+    "id": "f0-n2",
+    "kind": "link",
+    "label": "Header databricks logo",
+    "primary": false,
+    "disabled": false,
+    "frame": 0
+   },
+   {
+    "id": "f0-n3",
+    "kind": "button",
+    "label": "Why Databricks",
+    "primary": false,
+    "disabled": false,
+    "frame": 0
+   },
+   {
+    "id": "f0-n4",
+    "kind": "button",
+    "label": "Product",
+    "primary": false,
+    "disabled": false,
+    "frame": 0
+   },
+   {
+    "id": "f0-n5",
+    "kind": "button",
+    "label": "Solutions",
+    "primary": false,
+    "disabled": false,
+    "frame": 0
+   },
+   {
+    "id": "f0-n6",
+    "kind": "button",
+    "label": "Resources",
+    "primary": false,
+    "disabled": false,
+    "frame": 0
+   },
+   {
+    "id": "f0-n7",
+    "kind": "button",
+    "label": "About",
+    "primary": false,
+    "disabled": false,
+    "frame": 0
+   },
+   {
+    "id": "f0-n8",
+    "kind": "button",
+    "label": "Switch language. Current Language - English",
+    "primary": false,
+    "disabled": false,
+    "frame": 0
+   },
+   {
+    "id": "f0-n9",
+    "kind": "button",
+    "label": "Site search",
+    "primary": false,
+    "disabled": false,
+    "frame": 0
+   },
+   {
+    "id": "f0-n10",
+    "kind": "link",
+    "label": "Login",
+    "primary": false,
+    "disabled": false,
+    "frame": 0
+   },
+   {
+    "id": "f0-n11",
+    "kind": "link",
+    "label": "Contact Us",
+    "primary": false,
+    "disabled": false,
+    "frame": 0
+   },
+   {
+    "id": "f0-n12",
+    "kind": "link",
+    "label": "Try Databricks",
+    "primary": false,
+    "disabled": false,
+    "frame": 0
+   },
+   {
+    "id": "f0-n13",
+    "kind": "link",
+    "label": "Overview",
+    "primary": false,
+    "disabled": false,
+    "frame": 0
+   },
+   {
+    "id": "f0-n14",
+    "kind": "link",
+    "label": "Culture",
+    "primary": false,
+    "disabled": false,
+    "frame": 0
+   },
+   {
+    "id": "f0-n15",
+    "kind": "link",
+    "label": "Benefits",
+    "primary": false,
+    "disabled": false,
+    "frame": 0
+   },
+   {
+    "id": "f0-n16",
+    "kind": "link",
+    "label": "Diversity",
+    "primary": false,
+    "disabled": false,
+    "frame": 0
+   },
+   {
+    "id": "f0-n17",
+    "kind": "link",
+    "label": "Engineering",
+    "primary": false,
+    "disabled": false,
+    "frame": 0
+   },
+   {
+    "id": "f0-n18",
+    "kind": "link",
+    "label": "Research",
+    "primary": false,
+    "disabled": false,
+    "frame": 0
+   },
+   {
+    "id": "f0-n19",
+    "kind": "link",
+    "label": "Students & new grads",
+    "primary": false,
+    "disabled": false,
+    "frame": 0
+   },
+   {
+    "id": "f0-n20",
+    "kind": "link",
+    "label": "Back to search results",
+    "primary": false,
+    "disabled": false,
+    "frame": 0
+   },
+   {
+    "id": "f0-n21",
+    "kind": "button",
+    "label": "Apply now",
+    "primary": true,
+    "disabled": false,
+    "frame": 0
+   },
+   {
+    "id": "f0-n22",
+    "kind": "link",
+    "label": "LinkedIn",
+    "primary": false,
+    "disabled": false,
+    "frame": 0
+   },
+   {
+    "id": "f0-n23",
+    "kind": "link",
+    "label": "X",
+    "primary": false,
+    "disabled": false,
+    "frame": 0
+   },
+   {
+    "id": "f0-n24",
+    "kind": "link",
+    "label": "YouTube",
+    "primary": false,
+    "disabled": false,
+    "frame": 0
+   },
+   {
+    "id": "f0-n25",
+    "kind": "link",
+    "label": "Instagram",
+    "primary": false,
+    "disabled": false,
+    "frame": 0
+   },
+   {
+    "id": "f0-n26",
+    "kind": "link",
+    "label": "here",
+    "primary": false,
+    "disabled": false,
+    "frame": 0
+   },
+   {
+    "id": "f0-n27",
+    "kind": "link",
+    "label": "Applicant Privacy Notice",
+    "primary": false,
+    "disabled": false,
+    "frame": 0
+   },
+   {
+    "id": "f0-n28",
+    "kind": "link",
+    "label": "For App Developers",
+    "primary": false,
+    "disabled": false,
+    "frame": 0
+   },
+   {
+    "id": "f0-n29",
+    "kind": "link",
+    "label": "For Executives",
+    "primary": false,
+    "disabled": false,
+    "frame": 0
+   },
+   {
+    "id": "f0-n30",
+    "kind": "link",
+    "label": "For Startups",
+    "primary": false,
+    "disabled": false,
+    "frame": 0
+   },
+   {
+    "id": "f0-n31",
+    "kind": "link",
+    "label": "Lakehouse Architecture",
+    "primary": false,
+    "disabled": false,
+    "frame": 0
+   },
+   {
+    "id": "f0-n32",
+    "kind": "link",
+    "label": "Databricks AI Research",
+    "primary": false,
+    "disabled": false,
+    "frame": 0
+   },
+   {
+    "id": "f0-n33",
+    "kind": "link",
+    "label": "Customer Stories",
+    "primary": false,
+    "disabled": false,
+    "frame": 0
+   },
+   {
+    "id": "f0-n34",
+    "kind": "link",
+    "label": "Partner Overview",
+    "primary": false,
+    "disabled": false,
+    "frame": 0
+   },
+   {
+    "id": "f0-n35",
+    "kind": "link",
+    "label": "Partner Program",
+    "primary": false,
+    "disabled": false,
+    "frame": 0
+   },
+   {
+    "id": "f0-n36",
+    "kind": "link",
+    "label": "Find a Partner",
+    "primary": false,
+    "disabled": false,
+    "frame": 0
+   },
+   {
+    "id": "f0-n37",
+    "kind": "link",
+    "label": "Partner Spotlight",
+    "primary": false,
+    "disabled": false,
+    "frame": 0
+   },
+   {
+    "id": "f0-n38",
+    "kind": "link",
+    "label": "Cloud Providers",
+    "primary": false,
+    "disabled": false,
+    "frame": 0
+   },
+   {
+    "id": "f0-n39",
+    "kind": "link",
+    "label": "Partner Solutions",
+    "primary": false,
+    "disabled": false,
+    "frame": 0
+   },
+   {
+    "id": "f0-n40",
+    "kind": "link",
+    "label": "Platform Overview",
+    "primary": false,
+    "disabled": false,
+    "frame": 0
+   },
+   {
+    "id": "f0-n41",
+    "kind": "link",
+    "label": "AI Assistant",
+    "primary": false,
+    "disabled": false,
+    "frame": 0
+   },
+   {
+    "id": "f0-n42",
+    "kind": "link",
+    "label": "Application Development",
+    "primary": false,
+    "disabled": false,
+    "frame": 0
+   },
+   {
+    "id": "f0-n43",
+    "kind": "link",
+    "label": "Artificial Intelligence",
+    "primary": false,
+    "disabled": false,
+    "frame": 0
+   },
+   {
+    "id": "f0-n44",
+    "kind": "link",
+    "label": "Business Intelligence",
+    "primary": false,
+    "disabled": false,
+    "frame": 0
+   },
+   {
+    "id": "f0-n45",
+    "kind": "link",
+    "label": "Customer Data Platform",
+    "primary": false,
+    "disabled": false,
+    "frame": 0
+   },
+   {
+    "id": "f0-n46",
+    "kind": "link",
+    "label": "Data Engineering",
+    "primary": false,
+    "disabled": false,
+    "frame": 0
+   },
+   {
+    "id": "f0-n47",
+    "kind": "link",
+    "label": "Data Warehousing",
+    "primary": false,
+    "disabled": false,
+    "frame": 0
+   },
+   {
+    "id": "f0-n48",
+    "kind": "link",
+    "label": "Database",
+    "primary": false,
+    "disabled": false,
+    "frame": 0
+   },
+   {
+    "id": "f0-n49",
+    "kind": "link",
+    "label": "Governance",
+    "primary": false,
+    "disabled": false,
+    "frame": 0
+   },
+   {
+    "id": "f0-n50",
+    "kind": "link",
+    "label": "Neon",
+    "primary": false,
+    "disabled": false,
+    "frame": 0
+   },
+   {
+    "id": "f0-n51",
+    "kind": "link",
+    "label": "Security",
+    "primary": false,
+    "disabled": false,
+    "frame": 0
+   },
+   {
+    "id": "f0-n52",
+    "kind": "link",
+    "label": "Sharing",
+    "primary": false,
+    "disabled": false,
+    "frame": 0
+   },
+   {
+    "id": "f0-n53",
+    "kind": "link",
+    "label": "Pricing Overview",
+    "primary": false,
+    "disabled": false,
+    "frame": 0
+   },
+   {
+    "id": "f0-n54",
+    "kind": "link",
+    "label": "Pricing Calculator",
+    "primary": false,
+    "disabled": false,
+    "frame": 0
+   },
+   {
+    "id": "f0-n55",
+    "kind": "link",
+    "label": "Open Source",
+    "primary": false,
+    "disabled": false,
+    "frame": 0
+   },
+   {
+    "id": "f0-n56",
+    "kind": "link",
+    "label": "Marketplace",
+    "primary": false,
+    "disabled": false,
+    "frame": 0
+   },
+   {
+    "id": "f0-n57",
+    "kind": "link",
+    "label": "IDE Integrations",
+    "primary": false,
+    "disabled": false,
+    "frame": 0
+   },
+   {
+    "id": "f0-n58",
+    "kind": "link",
+    "label": "Partner Connect",
+    "primary": false,
+    "disabled": false,
+    "frame": 0
+   },
+   {
+    "id": "f0-n59",
+    "kind": "link",
+    "label": "Communications",
+    "primary": false,
+    "disabled": false,
+    "frame": 0
+   },
+   {
+    "id": "f0-n60",
+    "kind": "link",
+    "label": "Financial Services",
+    "primary": false,
+    "disabled": false,
+    "frame": 0
+   },
+   {
+    "id": "f0-n61",
+    "kind": "link",
+    "label": "Healthcare and Life Sciences",
+    "primary": false,
+    "disabled": false,
+    "frame": 0
+   },
+   {
+    "id": "f0-n62",
+    "kind": "link",
+    "label": "Manufacturing",
+    "primary": false,
+    "disabled": false,
+    "frame": 0
+   },
+   {
+    "id": "f0-n63",
+    "kind": "link",
+    "label": "Media and Entertainment",
+    "primary": false,
+    "disabled": false,
+    "frame": 0
+   },
+   {
+    "id": "f0-n64",
+    "kind": "link",
+    "label": "Public Sector",
+    "primary": false,
+    "disabled": false,
+    "frame": 0
+   },
+   {
+    "id": "f0-n65",
+    "kind": "link",
+    "label": "Retail",
+    "primary": false,
+    "disabled": false,
+    "frame": 0
+   },
+   {
+    "id": "f0-n66",
+    "kind": "link",
+    "label": "View All",
+    "primary": false,
+    "disabled": false,
+    "frame": 0
+   },
+   {
+    "id": "f0-n67",
+    "kind": "link",
+    "label": "AI Agents",
+    "primary": false,
+    "disabled": false,
+    "frame": 0
+   },
+   {
+    "id": "f0-n68",
+    "kind": "link",
+    "label": "AI Governance",
+    "primary": false,
+    "disabled": false,
+    "frame": 0
+   },
+   {
+    "id": "f0-n69",
+    "kind": "link",
+    "label": "Cybersecurity",
+    "primary": false,
+    "disabled": false,
+    "frame": 0
+   },
+   {
+    "id": "f0-n70",
+    "kind": "link",
+    "label": "Marketing",
+    "primary": false,
+    "disabled": false,
+    "frame": 0
+   }
+  ],
+  "text_digest": "Skip to main content Why Databricks Product Solutions Resources About Login Contact Us Try Databricks Overview Culture Benefits Diversity Engineering Research Students & new grads Back to search results Senior Technical Solutions Engineer (Platform) Bengaluru, India Apply now CSQ426R86 Job Overview: We are seeking a highly skilled Frontline Senior Technical Solutions Engineer with over 7+ years of experience to join our Platform Support team. This role is pivotal in delivering exceptional support for our Databricks Data Intelligence platform, addressing complex technical challenges, and ensuring the seamless operation of our data solutions. As a frontline engineer, you will be the primary point of contact for critical issues, working closely with both internal teams and customers to resolve high-impact problems and drive platform improvements. Key Responsibilities: Frontline Support: Ser",
+  "unparsed": []
+ },
+ "acceptable": [
+  "form_step"
+ ],
+ "label_source": "page_text_reviewed"
+}

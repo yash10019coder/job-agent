@@ -14,7 +14,11 @@ dependencies = [
   "pypdf>=6.9.1",
   "scrapling[fetchers]>=0.4.2",
   "httpx>=0.27.0",
+  "playwright>=1.40",
   "python-jobspy>=1.1.82",
+  "openpyxl>=3.1",
+  "keyring>=25",
+  "fastembed>=0.3",
 ]
 
 [project.optional-dependencies]

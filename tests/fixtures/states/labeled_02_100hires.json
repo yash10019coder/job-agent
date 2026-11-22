@@ -1,0 +1,176 @@
+{
+ "name": "labeled_02_100hires",
+ "url": "https://100hires.com/j/FDiH84d/apply",
+ "status": 200,
+ "frame_hosts": [],
+ "from_url": "https://100hires.com/j/FDiH84d",
+ "expect_state": "form_step",
+ "labels": {
+  "1 Entry type": "Dead / closed posting",
+  "2 Gate (account)": "none (no account needed)",
+  "3 Extra checks": "none",
+  "4 Form fields visible": "no - need more clicks",
+  "5 Steps": "single step",
+  "6 Vendor": "100hires"
+ },
+ "expect_application_form": true,
+ "expect_listing": false,
+ "model": {
+  "url": "https://100hires.com/j/FDiH84d/apply",
+  "title": "HR Asst/Safety Leader/Receptionist",
+  "headings": [
+   "HR Asst/Safety Leader/Receptionist"
+  ],
+  "alerts": [],
+  "fields": [
+   {
+    "id": "f0-n3",
+    "kind": "file",
+    "label": "Btn upload file control 4",
+    "help": "",
+    "required": false,
+    "value": "",
+    "options": null,
+    "async_options": false,
+    "placeholder": "",
+    "maxlength": null,
+    "pattern": null,
+    "accept": null,
+    "invalid": false,
+    "error": "",
+    "section": "HR Asst/Safety Leader/Receptionist",
+    "frame": 0,
+    "readonly": false,
+    "cards": false
+   },
+   {
+    "id": "f0-n4",
+    "kind": "text",
+    "label": "First name",
+    "help": "",
+    "required": false,
+    "value": "",
+    "options": null,
+    "async_options": false,
+    "placeholder": "",
+    "maxlength": null,
+    "pattern": null,
+    "accept": null,
+    "invalid": false,
+    "error": "",
+    "section": "HR Asst/Safety Leader/Receptionist",
+    "frame": 0,
+    "readonly": false,
+    "cards": false
+   },
+   {
+    "id": "f0-n5",
+    "kind": "text",
+    "label": "Last name",
+    "help": "",
+    "required": false,
+    "value": "",
+    "options": null,
+    "async_options": false,
+    "placeholder": "",
+    "maxlength": null,
+    "pattern": null,
+    "accept": null,
+    "invalid": false,
+    "error": "",
+    "section": "HR Asst/Safety Leader/Receptionist",
+    "frame": 0,
+    "readonly": false,
+    "cards": false
+   },
+   {
+    "id": "f0-n6",
+    "kind": "text",
+    "label": "Email",
+    "help": "",
+    "required": false,
+    "value": "",
+    "options": null,
+    "async_options": false,
+    "placeholder": "",
+    "maxlength": null,
+    "pattern": null,
+    "accept": null,
+    "invalid": false,
+    "error": "",
+    "section": "HR Asst/Safety Leader/Receptionist",
+    "frame": 0,
+    "readonly": false,
+    "cards": false
+   },
+   {
+    "id": "f0-n7",
+    "kind": "tel",
+    "label": "",
+    "help": "",
+    "required": false,
+    "value": "",
+    "options": null,
+    "async_options": false,
+    "placeholder": "",
+    "maxlength": null,
+    "pattern": null,
+    "accept": null,
+    "invalid": false,
+    "error": "",
+    "section": "HR Asst/Safety Leader/Receptionist",
+    "frame": 0,
+    "readonly": false,
+    "cards": false
+   }
+  ],
+  "actions": [
+   {
+    "id": "f0-n1",
+    "kind": "link",
+    "label": "CT Polymers",
+    "primary": false,
+    "disabled": false,
+    "frame": 0
+   },
+   {
+    "id": "f0-n2",
+    "kind": "link",
+    "label": "Back to the job description",
+    "primary": false,
+    "disabled": false,
+    "frame": 0
+   },
+   {
+    "id": "f0-n8",
+    "kind": "button",
+    "label": "Apply",
+    "primary": true,
+    "disabled": false,
+    "frame": 0
+   },
+   {
+    "id": "f0-n9",
+    "kind": "link",
+    "label": "policy",
+    "primary": false,
+    "disabled": false,
+    "frame": 0
+   },
+   {
+    "id": "f0-n10",
+    "kind": "link",
+    "label": "AI recruiting software for small businesses",
+    "primary": false,
+    "disabled": false,
+    "frame": 0
+   }
+  ],
+  "text_digest": "CT Polymers Back to the job description HR Asst/Safety Leader/Receptionist BOURBON, IN \u00b7 18 - 20 USD HOURLY Resume/CV * Attach First name Last name Email Phone Apply We use cookies to offer you our service. By continuing to use this site, you consent to our use of cookies as described in our policy \u00a9 CT Polymers Powered by AI recruiting software for small businesses",
+  "unparsed": []
+ },
+ "acceptable": [
+  "form_step"
+ ],
+ "label_source": "page_text_reviewed"
+}

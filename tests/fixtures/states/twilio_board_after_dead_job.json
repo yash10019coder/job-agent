@@ -1,0 +1,486 @@
+{
+ "name": "twilio_board_after_dead_job",
+ "url": "https://job-boards.greenhouse.io/twilio?error=true",
+ "status": 200,
+ "frame_hosts": [],
+ "from_url": "https://job-boards.greenhouse.io/twilio/jobs/8319386",
+ "expect_application_form": false,
+ "expect_listing": true,
+ "model": {
+  "url": "https://job-boards.greenhouse.io/twilio?error=true",
+  "title": "Jobs at Twilio",
+  "headings": [
+   "Current openings at Twilio",
+   "114 jobs"
+  ],
+  "alerts": [],
+  "fields": [
+   {
+    "id": "f0-n1",
+    "kind": "text",
+    "label": "Search",
+    "required": false,
+    "value": "",
+    "section": "Current openings at Twilio"
+   },
+   {
+    "id": "f0-n2",
+    "kind": "combobox",
+    "label": "Department",
+    "required": false,
+    "value": "",
+    "async_options": true,
+    "section": "Current openings at Twilio"
+   },
+   {
+    "id": "f0-n4",
+    "kind": "combobox",
+    "label": "Office",
+    "required": false,
+    "value": "",
+    "async_options": true,
+    "section": "Current openings at Twilio"
+   }
+  ],
+  "actions": [
+   {
+    "id": "f0-n10",
+    "kind": "link",
+    "label": "Billing Operations Analyst",
+    "primary": false,
+    "disabled": false,
+    "frame": 0
+   },
+   {
+    "id": "f0-n11",
+    "kind": "link",
+    "label": "Payroll Tax and Compliance",
+    "primary": false,
+    "disabled": false,
+    "frame": 0
+   },
+   {
+    "id": "f0-n12",
+    "kind": "link",
+    "label": "Senior Accounting Manager",
+    "primary": false,
+    "disabled": false,
+    "frame": 0
+   },
+   {
+    "id": "f0-n13",
+    "kind": "link",
+    "label": "Senior Financial Manager",
+    "primary": false,
+    "disabled": false,
+    "frame": 0
+   },
+   {
+    "id": "f0-n14",
+    "kind": "link",
+    "label": "Executive Assistant 3",
+    "primary": false,
+    "disabled": false,
+    "frame": 0
+   },
+   {
+    "id": "f0-n15",
+    "kind": "link",
+    "label": "Account Executive",
+    "primary": false,
+    "disabled": false,
+    "frame": 0
+   },
+   {
+    "id": "f0-n16",
+    "kind": "link",
+    "label": "Billing Operations Analyst",
+    "primary": false,
+    "disabled": false,
+    "frame": 0
+   },
+   {
+    "id": "f0-n17",
+    "kind": "link",
+    "label": "Payroll Tax and Compliance",
+    "primary": false,
+    "disabled": false,
+    "frame": 0
+   },
+   {
+    "id": "f0-n18",
+    "kind": "link",
+    "label": "Senior Accounting Manager",
+    "primary": false,
+    "disabled": false,
+    "frame": 0
+   },
+   {
+    "id": "f0-n19",
+    "kind": "link",
+    "label": "Senior Financial Manager",
+    "primary": false,
+    "disabled": false,
+    "frame": 0
+   },
+   {
+    "id": "f0-n20",
+    "kind": "link",
+    "label": "Executive Assistant 3",
+    "primary": false,
+    "disabled": false,
+    "frame": 0
+   },
+   {
+    "id": "f0-n21",
+    "kind": "link",
+    "label": "Account Executive",
+    "primary": false,
+    "disabled": false,
+    "frame": 0
+   },
+   {
+    "id": "f0-n22",
+    "kind": "link",
+    "label": "Billing Operations Analyst",
+    "primary": false,
+    "disabled": false,
+    "frame": 0
+   },
+   {
+    "id": "f0-n23",
+    "kind": "link",
+    "label": "Payroll Tax and Compliance",
+    "primary": false,
+    "disabled": false,
+    "frame": 0
+   },
+   {
+    "id": "f0-n24",
+    "kind": "link",
+    "label": "Senior Accounting Manager",
+    "primary": false,
+    "disabled": false,
+    "frame": 0
+   },
+   {
+    "id": "f0-n25",
+    "kind": "link",
+    "label": "Senior Financial Manager",
+    "primary": false,
+    "disabled": false,
+    "frame": 0
+   },
+   {
+    "id": "f0-n26",
+    "kind": "link",
+    "label": "Executive Assistant 3",
+    "primary": false,
+    "disabled": false,
+    "frame": 0
+   },
+   {
+    "id": "f0-n27",
+    "kind": "link",
+    "label": "Account Executive",
+    "primary": false,
+    "disabled": false,
+    "frame": 0
+   },
+   {
+    "id": "f0-n28",
+    "kind": "link",
+    "label": "Billing Operations Analyst",
+    "primary": false,
+    "disabled": false,
+    "frame": 0
+   },
+   {
+    "id": "f0-n29",
+    "kind": "link",
+    "label": "Payroll Tax and Compliance",
+    "primary": false,
+    "disabled": false,
+    "frame": 0
+   },
+   {
+    "id": "f0-n30",
+    "kind": "link",
+    "label": "Senior Accounting Manager",
+    "primary": false,
+    "disabled": false,
+    "frame": 0
+   },
+   {
+    "id": "f0-n31",
+    "kind": "link",
+    "label": "Senior Financial Manager",
+    "primary": false,
+    "disabled": false,
+    "frame": 0
+   },
+   {
+    "id": "f0-n32",
+    "kind": "link",
+    "label": "Executive Assistant 3",
+    "primary": false,
+    "disabled": false,
+    "frame": 0
+   },
+   {
+    "id": "f0-n33",
+    "kind": "link",
+    "label": "Account Executive",
+    "primary": false,
+    "disabled": false,
+    "frame": 0
+   },
+   {
+    "id": "f0-n34",
+    "kind": "link",
+    "label": "Billing Operations Analyst",
+    "primary": false,
+    "disabled": false,
+    "frame": 0
+   },
+   {
+    "id": "f0-n35",
+    "kind": "link",
+    "label": "Payroll Tax and Compliance",
+    "primary": false,
+    "disabled": false,
+    "frame": 0
+   },
+   {
+    "id": "f0-n36",
+    "kind": "link",
+    "label": "Senior Accounting Manager",
+    "primary": false,
+    "disabled": false,
+    "frame": 0
+   },
+   {
+    "id": "f0-n37",
+    "kind": "link",
+    "label": "Senior Financial Manager",
+    "primary": false,
+    "disabled": false,
+    "frame": 0
+   },
+   {
+    "id": "f0-n38",
+    "kind": "link",
+    "label": "Executive Assistant 3",
+    "primary": false,
+    "disabled": false,
+    "frame": 0
+   },
+   {
+    "id": "f0-n39",
+    "kind": "link",
+    "label": "Account Executive",
+    "primary": false,
+    "disabled": false,
+    "frame": 0
+   },
+   {
+    "id": "f0-n40",
+    "kind": "link",
+    "label": "Billing Operations Analyst",
+    "primary": false,
+    "disabled": false,
+    "frame": 0
+   },
+   {
+    "id": "f0-n41",
+    "kind": "link",
+    "label": "Payroll Tax and Compliance",
+    "primary": false,
+    "disabled": false,
+    "frame": 0
+   },
+   {
+    "id": "f0-n42",
+    "kind": "link",
+    "label": "Senior Accounting Manager",
+    "primary": false,
+    "disabled": false,
+    "frame": 0
+   },
+   {
+    "id": "f0-n43",
+    "kind": "link",
+    "label": "Senior Financial Manager",
+    "primary": false,
+    "disabled": false,
+    "frame": 0
+   },
+   {
+    "id": "f0-n44",
+    "kind": "link",
+    "label": "Executive Assistant 3",
+    "primary": false,
+    "disabled": false,
+    "frame": 0
+   },
+   {
+    "id": "f0-n45",
+    "kind": "link",
+    "label": "Account Executive",
+    "primary": false,
+    "disabled": false,
+    "frame": 0
+   },
+   {
+    "id": "f0-n46",
+    "kind": "link",
+    "label": "Billing Operations Analyst",
+    "primary": false,
+    "disabled": false,
+    "frame": 0
+   },
+   {
+    "id": "f0-n47",
+    "kind": "link",
+    "label": "Payroll Tax and Compliance",
+    "primary": false,
+    "disabled": false,
+    "frame": 0
+   },
+   {
+    "id": "f0-n48",
+    "kind": "link",
+    "label": "Senior Accounting Manager",
+    "primary": false,
+    "disabled": false,
+    "frame": 0
+   },
+   {
+    "id": "f0-n49",
+    "kind": "link",
+    "label": "Senior Financial Manager",
+    "primary": false,
+    "disabled": false,
+    "frame": 0
+   },
+   {
+    "id": "f0-n50",
+    "kind": "link",
+    "label": "Executive Assistant 3",
+    "primary": false,
+    "disabled": false,
+    "frame": 0
+   },
+   {
+    "id": "f0-n51",
+    "kind": "link",
+    "label": "Account Executive",
+    "primary": false,
+    "disabled": false,
+    "frame": 0
+   },
+   {
+    "id": "f0-n52",
+    "kind": "link",
+    "label": "Billing Operations Analyst",
+    "primary": false,
+    "disabled": false,
+    "frame": 0
+   },
+   {
+    "id": "f0-n53",
+    "kind": "link",
+    "label": "Payroll Tax and Compliance",
+    "primary": false,
+    "disabled": false,
+    "frame": 0
+   },
+   {
+    "id": "f0-n54",
+    "kind": "link",
+    "label": "Senior Accounting Manager",
+    "primary": false,
+    "disabled": false,
+    "frame": 0
+   },
+   {
+    "id": "f0-n55",
+    "kind": "link",
+    "label": "Senior Financial Manager",
+    "primary": false,
+    "disabled": false,
+    "frame": 0
+   },
+   {
+    "id": "f0-n56",
+    "kind": "link",
+    "label": "Executive Assistant 3",
+    "primary": false,
+    "disabled": false,
+    "frame": 0
+   },
+   {
+    "id": "f0-n57",
+    "kind": "link",
+    "label": "Account Executive",
+    "primary": false,
+    "disabled": false,
+    "frame": 0
+   },
+   {
+    "id": "f0-n58",
+    "kind": "link",
+    "label": "Billing Operations Analyst",
+    "primary": false,
+    "disabled": false,
+    "frame": 0
+   },
+   {
+    "id": "f0-n59",
+    "kind": "link",
+    "label": "Payroll Tax and Compliance",
+    "primary": false,
+    "disabled": false,
+    "frame": 0
+   },
+   {
+    "id": "f0-n60",
+    "kind": "link",
+    "label": "Senior Accounting Manager",
+    "primary": false,
+    "disabled": false,
+    "frame": 0
+   },
+   {
+    "id": "f0-n61",
+    "kind": "link",
+    "label": "Senior Financial Manager",
+    "primary": false,
+    "disabled": false,
+    "frame": 0
+   },
+   {
+    "id": "f0-n62",
+    "kind": "link",
+    "label": "Executive Assistant 3",
+    "primary": false,
+    "disabled": false,
+    "frame": 0
+   },
+   {
+    "id": "f0-n63",
+    "kind": "link",
+    "label": "Account Executive",
+    "primary": false,
+    "disabled": false,
+    "frame": 0
+   }
+  ],
+  "text_digest": "Current openings at Twilio 114 jobs Search Department Office"
+ },
+ "expect_state": "listing",
+ "acceptable": [
+  "listing"
+ ],
+ "label_source": "page_text_reviewed"
+}

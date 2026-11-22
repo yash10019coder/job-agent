@@ -1,0 +1,9 @@
+<!doctype html><html><body><main><h1>Enter your information</h1>
+<label id=l>Country Code</label>
+<div id=cb role=combobox aria-labelledby=l aria-expanded=false tabindex=0 aria-controls=lb>Country Code — Make a selection</div>
+<ul id=lb role=listbox hidden><li role=option>United States +1</li><li role=option>India +91</li></ul>
+<script>
+const cb=document.getElementById('cb'), lb=document.getElementById('lb');
+cb.onclick=()=>{lb.hidden=!lb.hidden; cb.setAttribute('aria-expanded', String(!lb.hidden));};
+lb.querySelectorAll('[role=option]').forEach(o=>o.onclick=()=>{cb.textContent=o.textContent; lb.hidden=true; cb.setAttribute('aria-expanded','false');});
+</script></main></body></html>

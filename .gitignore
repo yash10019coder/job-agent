@@ -59,3 +59,34 @@ Thumbs.db
 # Tests cache
 .pytest_cache/
 .pytest-*/
+
+# Generated job-fetch dumps and one-off scratch scripts in data/ (keep resume_inventory*.json, email_templates.json, applicant_profile.example.json tracked)
+data/*_jobs.json
+data/sde_*.json
+data/*.csv
+data/*.xlsx
+data/create_*.py
+data/check_companies.py
+data/explore_ats.py
+data/test_*.py
+data/worktree-jobs/
+
+# Personal answers (EEO disclosures, assumed legal facts): keep the real file local, commit only the example
+data/applicant_profile.json
+
+# Editor backup files
+*~
+.*.un~
+
+# ...but keep the tiny test-fixture PDF that *.pdf above would otherwise hide
+!tests/fixtures/*.pdf
+data/runs/
+data/batch_jobs_*.json
+data/surveys/
+data/ats_categories.json
+data/vendor_research/
+data/mixed_*.json
+data/autopilot/
+
+# Recordings of manual applications hold personal data and session details
+data/recordings/
